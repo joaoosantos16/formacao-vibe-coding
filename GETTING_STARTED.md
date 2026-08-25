@@ -54,6 +54,12 @@ and only then does each team pull that into its branch (step 6 below,
 "sync"). If the pages are genuinely independent of each other, the
 trainer can skip this step.
 
+The same goes for the site's "shell" — the shared navigation bar and
+layout common to every page. That's decided in
+`docs/estrutura-do-site.md` and built once in `components/NavBar.jsx`,
+also before teams split up. **No team builds its own navigation bar** —
+each team only builds the content inside its own page.
+
 **This is not "define everything upfront."** Only what's genuinely
 shared between pages goes here — everything else (how each team
 organizes its own page) is free, decided by each team however it likes.
