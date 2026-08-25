@@ -16,18 +16,34 @@ construída **uma vez, em `main`**, por quem estiver a facilitar a Fase
 
 ## Páginas e rotas
 
-_(preencher com a lista de páginas decidida na sessão "Desenhar a
-ferramenta": o nome, o caminho/URL, e a equipa responsável)_
-
 | Página | Rota (URL) | Equipa |
 |---|---|---|
-| _exemplo:_ Lista de Projetos | `/projetos` | A |
-| | | |
+| Benefit Tracking Kaizen | `/benefit-tracking-kaizen` | A (`equipa-a`) |
+| Benefit Tracking Projetos | `/benefit-tracking-projetos` | B (`equipa-b`) |
+| Benchmarking | `/benchmarking` | C (`equipa-c`) |
+
+`equipa-d` fica livre/reserva (não há uma 4ª página) — só é preciso se
+surgir um grupo extra ou se uma das três equipas quiser dividir-se.
 
 ## Menu de navegação
 
-_(a lista e ordem dos links que aparecem na barra partilhada —
-normalmente igual à tabela acima)_
+Menu fixo no topo, nesta ordem: Benefit Tracking Kaizen → Benefit
+Tracking Projetos → Benchmarking (igual à tabela acima).
+
+## Direção visual (decidido — é para concurso, a estética conta muito)
+
+- Tons claros, fundo em gradiente suave (slate/sky/violet pastel).
+- Menu em pílula flutuante, efeito vidro (glassmorphism: fundo
+  translúcido + blur), sombra suave, cantos muito arredondados.
+- Item de menu ativo com gradiente e leve elevação (efeito "bubbly" ao
+  fazer hover: sobe ligeiramente + sombra).
+- O menu desaparece com fade ao fazer scroll para baixo, e volta a
+  aparecer ao fazer scroll para cima, ao clicar perto do topo, ou ao
+  passar o rato perto do topo do ecrã.
+- Já implementado em `components/NavBar.jsx` — cada equipa deve manter
+  o mesmo estilo (cartões translúcidos com `backdrop-blur`, cantos
+  arredondados `rounded-3xl`, sombras suaves) dentro da sua própria
+  página, para a app parecer um produto só.
 
 ## Onde isto vive no código
 
