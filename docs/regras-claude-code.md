@@ -35,7 +35,26 @@
   pedir isso explicitamente e confirmar que percebe que pode apagar
   trabalho.
 
-## 3. Supabase / SQL — regras específicas
+## 3. Campos já decididos — usa estes, não inventes outros
+
+Se estiveres a construir algo relacionado com **projetos, clientes ou
+benefit tracking** (em qualquer uma das 3 páginas — Kaizen, Projetos ou
+Benchmarking), a tabela partilhada `projetos` **já existe** no
+Supabase, com estes campos exatos:
+
+`id`, `codigo`, `em` (Engagement Manager), `setor`, `subsetor`,
+`consultores`, `kpi`, `revenue`, `colaboradores`, `ebitda`, `cliente`,
+`estado` (`ativo` / `desativado`, ver `lib/constants.js` →
+`PROJETO_ESTADO`), `created_at`, `updated_at`.
+
+**Usa exatamente estes nomes de campo.** Não crias uma tabela nova para
+guardar a mesma coisa, não inventas variações (ex: `codigo_projeto` em
+vez de `codigo`) — consulta `docs/modelo-de-dados.md` para a definição
+completa antes de escrever qualquer código que leia ou escreva
+projetos/clientes. Se precisares de um campo que não está nesta lista,
+trata-o como partilhado (ver secção 1) e avisa antes de o inventar.
+
+## 4. Supabase / SQL — regras específicas
 
 - **Nunca peças ao utilizador uma service-role key, uma connection
   string com password, ou qualquer credencial de administração da base
@@ -63,7 +82,7 @@
   nome `AAAAMMDD_HHmm_equipa-x_descricao.sql` (sem `equipa-x` se for
   partilhada) — mesmo que quem aplique a migração seja o formador.
 
-## 4. Desenvolvimento local — não partir o `npm run dev`
+## 5. Desenvolvimento local — não partir o `npm run dev`
 
 - **Nunca corras `npm run build` numa janela de terminal diferente
   enquanto o `npm run dev` do utilizador está a correr** — os dois
@@ -80,7 +99,7 @@
   simples — parar e voltar a correr `npm run dev` regenera a pasta
   `.next` correta. Não é preciso reinstalar nada nem apagar mais nada.
 
-## 5. Antes de terminar uma sessão
+## 6. Antes de terminar uma sessão
 
 - Confirma que o código corre localmente (`npm run dev`, sem erros)
   antes de sugerires `commit`/`push`.
@@ -90,7 +109,7 @@
   levar isso à próxima integração com o formador — não assumas que
   fica resolvido só por estar na tua branch.
 
-## 6. Design — regra fixa
+## 7. Design — regra fixa
 
 O site chama-se **"KI BT&B"** (não "Benefit Tracking"). **Nunca uses
 ícones nem emojis em nada que construíres** — nem no título, nem no
@@ -98,7 +117,7 @@ conteúdo da tua página, nem em mensagens de estado. Só elementos
 minimalistas: texto, tipografia, formas simples e cor. Ver
 `docs/estrutura-do-site.md`, secção "Direção visual".
 
-## 7. Quando em dúvida
+## 8. Quando em dúvida
 
 Por omissão, sê conservador: se não tens a certeza se algo é "só da tua
 página" ou "partilhado", trata como partilhado e pede confirmação antes
