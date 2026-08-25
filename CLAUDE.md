@@ -38,10 +38,16 @@ vocabulário (ex: os valores de um estado) têm de ser decididos **em
 conjunto, uma única vez, em `main`**, antes de as branches serem usadas
 — não inventados independentemente por cada equipa.
 
-Isto fica registado em dois sítios, preenchidos todos juntos:
+Isto fica registado em quatro sítios, preenchidos todos juntos:
 - `docs/modelo-de-dados.md` — as entidades, campos e vocabulário/estados.
 - `lib/constants.js` — esses mesmos valores como constantes de código,
   para que nenhuma página escreva texto de estado à mão.
+- `docs/estrutura-do-site.md` — a lista de páginas/rotas e o menu de
+  navegação partilhado.
+- `components/NavBar.jsx` + `app/layout.js` — a casca da app (barra de
+  navegação e layout comum a todas as páginas). Construída uma única
+  vez, por quem facilitar a Fase 0 — nenhuma equipa cria a sua própria
+  versão disto na sua branch.
 
 Só depois disto estar commitado em `main` é que cada equipa corre
 `git merge main` na sua branch (ver `COMO_COMECAR.md`) e começa a
@@ -56,6 +62,9 @@ isso antes de assumir.
   Supabase (`@supabase/supabase-js`).
 - A app mostra apenas uma página de estado (sem funcionalidades de produto
   ainda).
+- Esqueleto da casca partilhada já criado: `app/layout.js` já renderiza
+  `components/NavBar.jsx` (vazio, por preencher na Fase 0 — ver
+  `docs/estrutura-do-site.md`).
 - Projeto Vercel criado e ligado ao repositório: cada branch tem o seu
   próprio deploy automático. Produção (`main`): https://formacao-vibe-coding.vercel.app
 - Projeto Supabase dedicado criado (org Kaizen Institute, região eu-west-1,
