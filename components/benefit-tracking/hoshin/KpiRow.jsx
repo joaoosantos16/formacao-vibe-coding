@@ -15,10 +15,9 @@ export default function KpiRow() {
         const value = kpis[key];
         const negative = value < 0;
         return (
-          <div key={key} className="border border-gray-200 rounded-lg p-4">
-            <p className="text-xs text-gray-500">{label}</p>
-            <p className={`mt-1 text-xl font-semibold flex items-center gap-1 ${negative ? 'text-red-600' : 'text-green-700'}`}>
-              <span aria-hidden="true">{negative ? '▼' : '▲'}</span>
+          <div key={key} className="rounded-3xl bg-white/70 backdrop-blur-xl shadow-[0_8px_30px_rgb(0,0,0,0.06)] ring-1 ring-black/5 p-4">
+            <p className="text-xs text-slate-500">{label}</p>
+            <p className={`mt-1 text-xl font-semibold ${negative ? 'text-red-600' : 'text-emerald-700'}`}>
               {format(value)}
             </p>
           </div>

@@ -10,17 +10,17 @@ export default function HoshinMeter() {
   const { deltaHoshinYTDPct } = getHoshinKpis();
   const ratio = Math.min(deliveredM / targetM, 1);
 
-  const fillColor = deltaHoshinYTDPct >= 0 ? '#0ca30c' : deltaHoshinYTDPct > -10 ? '#fab219' : '#d03b3b';
+  const fillColor = deltaHoshinYTDPct >= 0 ? '#059669' : deltaHoshinYTDPct > -10 ? '#fab219' : '#d03b3b';
 
   return (
-    <div className="flex flex-col items-center border border-gray-200 rounded-lg p-4">
+    <div className="flex flex-col items-center rounded-3xl bg-white/70 backdrop-blur-xl shadow-[0_8px_30px_rgb(0,0,0,0.06)] ring-1 ring-black/5 p-4">
       <svg viewBox="0 0 240 140" className="w-full max-w-[240px]">
-        <path d={describeArc(CX, CY, R, 0, 1)} fill="none" stroke="#e1e0d9" strokeWidth={STROKE} strokeLinecap="round" />
+        <path d={describeArc(CX, CY, R, 0, 1)} fill="none" stroke="#e2e8f0" strokeWidth={STROKE} strokeLinecap="round" />
         <path d={describeArc(CX, CY, R, 0, ratio)} fill="none" stroke={fillColor} strokeWidth={STROKE} strokeLinecap="round" />
-        <text x={CX} y={CY - 18} textAnchor="middle" className="fill-gray-900" style={{ fontSize: 28, fontWeight: 600 }}>
+        <text x={CX} y={CY - 18} textAnchor="middle" className="fill-slate-800" style={{ fontSize: 28, fontWeight: 600 }}>
           {deliveredM.toFixed(2)}M €
         </text>
-        <text x={CX} y={CY + 4} textAnchor="middle" className="fill-gray-500" style={{ fontSize: 12 }}>
+        <text x={CX} y={CY + 4} textAnchor="middle" className="fill-slate-500" style={{ fontSize: 12 }}>
           de {targetM.toFixed(2)}M € Hoshin
         </text>
       </svg>
