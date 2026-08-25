@@ -49,8 +49,17 @@ Isto é feito **em grupo, projetado no ecrã, em `main`** (antes de
 entrarmos nas branches das equipas), preenchendo o ficheiro
 `docs/modelo-de-dados.md` e as constantes em `lib/constants.js`. Depois
 disso é commitado e enviado, e só aí é que cada equipa vai buscar isso à
-sua branch (passo 5 abaixo, "sincronizar"). Se as páginas forem mesmo
+sua branch (passo 6 abaixo, "sincronizar"). Se as páginas forem mesmo
 independentes umas das outras, o formador pode dispensar este passo.
+
+**Isto não é definir tudo à partida.** Só entra aqui o que é
+genuinamente partilhado entre páginas — o resto (como cada equipa
+organiza a sua própria página) fica livre, decidido por cada equipa à
+vontade. Costuma ser 10-15 minutos, não uma reunião longa. E não é um
+portão único: se a meio do dia surgir a necessidade de mais uma coisa
+partilhada, acrescenta-se ao ficheiro, faz-se commit para `main`, e as
+outras equipas voltam a correr `git merge main` — não é preciso parar
+tudo outra vez.
 
 ## 5. A tua equipa
 
