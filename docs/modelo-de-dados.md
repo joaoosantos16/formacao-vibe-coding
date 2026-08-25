@@ -16,6 +16,25 @@ ficheiro é o único sítio combinado por todos, para que o Claude Code de
 qualquer equipa saiba exatamente que nomes e valores usar — sem ter de
 adivinhar o que as outras equipas fizeram.
 
+**Isto NÃO é "definir tudo à partida".** Só entra aqui o que é
+genuinamente **partilhado** — uma entidade ou um campo que mais do que
+uma página/equipa vai ler ou escrever. Tudo o resto (estado interno de
+uma página, componentes, variáveis, como cada equipa organiza o seu
+próprio código) fica de fora deste ficheiro e é decidido livremente por
+cada equipa, sem precisar de combinação nenhuma. Na maioria das
+formações isto acaba por ser 1 a 3 tabelas e um punhado de valores — um
+exercício de 10-15 minutos, não uma especificação completa.
+
+**Isto também não é um portão único.** Se a meio do dia uma equipa
+perceber que precisa de mais uma coisa partilhada que ninguém previu:
+1. Acrescenta essa entidade/campo/valor aqui e em `lib/constants.js`.
+2. Faz commit e push para `main` (ou pede ao formador para o fazer).
+3. Avisa as outras equipas para correrem `git merge main` outra vez.
+
+Não é preciso parar tudo nem voltar a reunir toda a gente — só manter
+este ficheiro como a única fonte de verdade sempre que algo passa a ser
+partilhado.
+
 ## Entidades principais
 
 _(preencher: nome da entidade/tabela, os seus campos, e o tipo de cada campo)_
