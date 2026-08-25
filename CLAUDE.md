@@ -67,8 +67,8 @@ isso antes de assumir.
   Supabase (`@supabase/supabase-js`).
 - A app mostra apenas uma página de estado (sem funcionalidades de produto
   ainda).
-- **Produto decidido: "Benefit Tracking"** — plataforma interna Kaizen
-  para standardizar o benefit tracking, com 3 páginas/equipas:
+- **Produto decidido: "KI BT&B"** — plataforma interna Kaizen para
+  standardizar o benefit tracking, com 3 páginas/equipas:
   - `equipa-a` → **Benchmarking** (`/benchmarking`)
   - `equipa-b` → **Benefit Tracking Projetos** (`/benefit-tracking-projetos`)
   - `equipa-c` → **Benefit Tracking Kaizen** (`/benefit-tracking-kaizen`)
