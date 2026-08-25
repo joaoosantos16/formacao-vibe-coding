@@ -12,7 +12,7 @@ const COLUMNS = [
   { key: 'potentialK', label: 'Potential', type: 'number' },
   { key: 'invoicedK', label: 'Invoiced', type: 'number' },
   { key: 'status', label: 'Status', type: 'text' },
-  { key: 'quarter', label: 'Quarter', type: 'text' },
+  { key: 'quarter', label: 'Quarter Potential', type: 'text' },
   { key: 'quarterInvoiced', label: 'Quarter Invoiced', type: 'text' },
   { key: 'lastUpdate', label: 'Last Update', type: 'date' },
 ];
