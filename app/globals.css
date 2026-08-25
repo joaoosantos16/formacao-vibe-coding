@@ -1,3 +1,23 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Usado só pela landing page (app/page.js) — glow de fundo, movimento
+   lento e subtil, uma única família de cor (índigo/violeta). */
+@keyframes drift-slow {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(4vw, -3vh, 0) scale(1.08); }
+}
+@keyframes drift-slower {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(-3vw, 4vh, 0) scale(1.05); }
+}
+.animate-drift-slow { animation: drift-slow 18s ease-in-out infinite; }
+.animate-drift-slower { animation: drift-slower 22s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-drift-slow,
+  .animate-drift-slower {
+    animation: none;
+  }
+}

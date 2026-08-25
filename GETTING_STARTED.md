@@ -86,8 +86,13 @@ see `equipa-x` in the commands below, swap it for your team's branch
 
 ## 6. Start working (do this once, at the start)
 
-Open a terminal (on Windows: search for "Git Bash" in the Start menu)
-and paste these commands, one at a time:
+Open a terminal: on Windows, search for "Git Bash" in the Start menu.
+Once you have the `formacao-vibe-coding` folder (the first time, that's
+right after the `git clone` below), on later sessions you can open Git
+Bash **directly inside it**: in File Explorer, go into the folder,
+right-click an empty spot, and choose **"Git Bash Here"**.
+
+Paste these commands, one at a time:
 
 ```bash
 git clone https://github.com/joaoosantos16/formacao-vibe-coding.git
@@ -106,9 +111,13 @@ npm install
 
 ```bash
 cp .env.example .env.local
+notepad .env.local
 ```
-*(ask the trainer for the two values to put inside `.env.local` — open
-that file in any text editor and replace the example values)*
+*(`notepad .env.local` opens the file in Notepad — that's where, as
+text inside the file, you paste the two values the trainer gives you,
+replacing the example lines. **Don't paste the values into the
+terminal/command line** — they have to go inside the file. After
+pasting, Save (Ctrl+S) and close Notepad.)*
 
 ```bash
 npm run dev
@@ -174,3 +183,10 @@ that name already exists. Check whether the project is already there
 (`cd formacao-vibe-coding` then `git status`) before deleting anything —
 if it says "On branch main" or similar, everything is fine, just
 continue from there.
+
+**"I pasted the Supabase credentials but it still says they're
+missing":** you probably pasted the values into the command line
+instead of inside the `.env.local` file. The credentials have to be
+**inside the file** (use `notepad .env.local` to open it), not typed
+into the terminal. After fixing and saving, stop `npm run dev` with
+`Ctrl+C` and run it again.

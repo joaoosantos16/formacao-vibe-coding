@@ -37,15 +37,23 @@ partilhado.
 
 ## Entidades principais
 
-_(preencher: nome da entidade/tabela, os seus campos, e o tipo de cada campo)_
+### `projetos` (partilhada — sem prefixo de equipa)
 
-Formato sugerido:
-
-### `nome_da_tabela`
 | Campo | Tipo | Notas |
 |---|---|---|
-| id | uuid | gerado automaticamente |
-| ... | ... | ... |
+| `id` | uuid | gerado automaticamente |
+| `codigo` | text | identificador único do projeto (ex: código interno Kaizen) |
+| `em` | text | nome do Engagement Manager (responsável do projeto) |
+| `setor` | text | |
+| `subsetor` | text | |
+| `consultores` | text | |
+| `kpi` | text | |
+| `revenue` | numeric | |
+| `colaboradores` | integer | nº de colaboradores do cliente (campo original "#Colaboradores") |
+| `ebitda` | numeric | |
+| `cliente` | text | |
+| `estado` | text | ver "Vocabulário / estados" abaixo |
+| `created_at` / `updated_at` | timestamptz | geridos automaticamente |
 
 ## Vocabulário / estados
 
@@ -57,17 +65,14 @@ mão no código: todos importam de `lib/constants.js` (ver esse ficheiro).
 
 | Valor no código (`lib/constants.js`) | Rótulo em português a mostrar |
 |---|---|
-| _exemplo:_ `em_projeto` | _exemplo:_ "Em Projeto" |
-| | |
+| `ativo` | "Ativo" |
+| `desativado` | "Desativado" |
 
 ## Quem constrói/lê o quê
 
-_(que equipa/página cria ou atualiza cada entidade, e que outras equipas
-apenas leem essa informação — para se saber quem "é dono" de cada tabela)_
-
 | Entidade | Equipa responsável (cria/edita) | Outras equipas que leem |
 |---|---|---|
-| | | |
+| `projetos` | Todas podem criar/editar registos (é a entidade central do benefit tracking) | Todas (Kaizen, Projetos, Benchmarking) |
 
 ---
 

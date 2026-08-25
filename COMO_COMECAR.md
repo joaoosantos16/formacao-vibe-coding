@@ -81,8 +81,14 @@ nos comandos abaixo, troca pelo nome da tua equipa (ex: `equipa-b`).
 
 ## 6. Começar a trabalhar (fazer isto uma vez, no início)
 
-Abre um terminal (no Windows: procura por "Git Bash" no menu Iniciar) e
-cola estes comandos, um de cada vez:
+Abre um terminal: no Windows, procura por "Git Bash" no menu Iniciar.
+Depois de teres a pasta `formacao-vibe-coding` (na primeira vez, é só a
+seguir ao `git clone` abaixo), para abrir o Git Bash **diretamente
+dentro dela** nas vezes seguintes: no Explorador de Ficheiros, entra na
+pasta, clica com o botão direito num espaço vazio, e escolhe **"Git
+Bash Here"**.
+
+Cola estes comandos, um de cada vez:
 
 ```bash
 git clone https://github.com/joaoosantos16/formacao-vibe-coding.git
@@ -101,8 +107,13 @@ npm install
 
 ```bash
 cp .env.example .env.local
+notepad .env.local
 ```
-*(pede ao formador os dois valores para colocares dentro do `.env.local` — abre esse ficheiro num editor de texto qualquer e substitui os valores de exemplo)*
+*(o `notepad .env.local` abre o ficheiro no Bloco de Notas — é lá dentro,
+como texto, que colas os dois valores que o formador te der,
+substituindo as linhas de exemplo. **Não colar os valores na linha de
+comandos** — tem de ser dentro do ficheiro. Depois de colar, Guardar
+(Ctrl+S) e fechar o Bloco de Notas.)*
 
 ```bash
 npm run dev
@@ -170,3 +181,10 @@ pasta com esse nome. Confirma se já está lá o projeto (`cd
 formacao-vibe-coding` seguido de `git status`) antes de apagar nada —
 se disser "On branch main" ou parecido, já está tudo bem, só precisas
 de continuar a partir daí.
+
+**"Colei as credenciais do Supabase mas continua a dizer que faltam":**
+provavelmente colaste os valores na linha de comandos em vez de dentro
+do ficheiro `.env.local`. As credenciais têm de estar **dentro do
+ficheiro** (usa `notepad .env.local` para o abrir), não digitadas no
+terminal. Depois de corrigir e gravar, para o `npm run dev` com
+`Ctrl+C` e corre-o outra vez.

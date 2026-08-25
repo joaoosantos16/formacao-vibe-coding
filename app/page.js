@@ -1,29 +1,62 @@
-export default function Home() {
-  const supabaseConfigured = Boolean(
-    process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-  );
+import Link from 'next/link';
+import { Inter } from 'next/font/google';
 
+// Página inicial partilhada — não é de nenhuma equipa em particular
+// (ver docs/estrutura-do-site.md). Mudanças aqui devem ser combinadas
+// entre equipas, tal como o layout e o menu.
+//
+// Exceção deliberada à regra "sem cor forte" (ver
+// docs/regras-claude-code.md): só esta página tem fundo escuro e cor —
+// uma única família de cor (índigo/violeta), tipografia simples,
+// movimento lento e subtil. O menu e as páginas de cada equipa
+// continuam claros e minimalistas.
+const inter = Inter({ subsets: ['latin'], weight: ['500', '700'] });
+
+const SECTIONS = [
+  { label: 'Benefit Tracking Kaizen', href: '/benefit-tracking-kaizen' },
+  { label: 'Benefit Tracking Projetos', href: '/benefit-tracking-projetos' },
+  { label: 'Benchmarking', href: '/benchmarking' },
+];
+
+export default function Home() {
   return (
-    <main className="min-h-screen flex items-center justify-center p-8">
-      <div className="max-w-xl text-center space-y-4">
-        <h1 className="text-3xl font-bold">Base do projeto pronta 🚀</h1>
-        <p className="text-gray-600">
-          Ainda não há nenhuma funcionalidade definida. Este é o ponto de
-          partida para a formação — a próxima pessoa a continuar deve
-          consultar o <code className="mx-1 px-1 bg-gray-100 rounded">CLAUDE.md</code>
-          para saber o estado atual e o próximo passo.
-        </p>
-        <p className={supabaseConfigured ? 'text-green-600' : 'text-amber-600'}>
-          Supabase:{' '}
-          {supabaseConfigured
-            ? 'variáveis de ambiente configuradas ✅'
-            : 'variáveis de ambiente em falta ⚠️ (ver .env.example)'}
-        </p>
-        <div className="w-40 h-24 bg-blue-500 rounded-lg mx-auto" />
-        <p className="text-sm text-gray-500">
-          Equipa C — teste de deployment
-        </p>
+    <section
+      className="relative -mt-28 overflow-hidden bg-slate-950 pt-28"
+      style={{ marginLeft: 'calc(50% - 50vw)', marginRight: 'calc(50% - 50vw)', width: '100vw' }}
+    >
+      {/* glow de fundo — uma só cor, movimento lento */}
+      <div aria-hidden className="pointer-events-none absolute inset-0">
+        <div className="animate-drift-slow absolute left-1/4 top-1/3 h-[34rem] w-[34rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-indigo-600/25 blur-[110px]" />
+        <div className="animate-drift-slower absolute right-1/4 bottom-1/4 h-[28rem] w-[28rem] translate-x-1/2 translate-y-1/2 rounded-full bg-violet-600/20 blur-[110px]" />
       </div>
-    </main>
+
+      <div className="relative mx-auto flex min-h-screen max-w-3xl flex-col items-center justify-center gap-14 px-6 text-center">
+        <div className="space-y-5">
+          <span className="text-xs font-medium uppercase tracking-[0.35em] text-slate-500">
+            Kaizen Institute
+          </span>
+          <h1
+            className={`${inter.className} text-6xl font-bold tracking-tight text-white sm:text-7xl`}
+          >
+            KI BT&amp;B
+          </h1>
+          <p className="text-lg text-slate-400">
+            Benefit tracking e benchmarking Kaizen, num único sítio.
+          </p>
+        </div>
+
+        <div className="flex flex-wrap items-center justify-center gap-4">
+          {SECTIONS.map((section) => (
+            <Link
+              key={section.href}
+              href={section.href}
+              className="rounded-full border border-white/15 px-6 py-3 text-sm font-medium text-slate-200 transition-all duration-300 hover:border-transparent hover:bg-gradient-to-r hover:from-indigo-500 hover:to-violet-600 hover:text-white"
+            >
+              {section.label}
+            </Link>
+          ))}
+        </div>
+      </div>
+    </section>
   );
 }
