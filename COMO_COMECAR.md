@@ -150,3 +150,17 @@ chegares a um ponto que funciona, para não arriscares perder trabalho.
 Cola a mensagem de erro toda no Claude Code e pergunta "o que significa
 isto e como resolvo?" — na maior parte das vezes ele resolve sozinho. Se
 não resolver, chama o formador.
+
+**Erro comum: usar a "Command Prompt" do Windows em vez do Git Bash.**
+Se colares vários comandos de uma vez na Command Prompt (cmd.exe), ela
+junta-os todos numa linha só em vez de correr um de cada vez — dá erros
+estranhos tipo "the system cannot find the path specified" ou
+"not a git repository". Usa sempre o **Git Bash** (procura por "Git
+Bash" no menu Iniciar), e se tiveres dúvidas cola **um comando de cada
+vez**, com Enter a seguir a cada um.
+
+**Erro "destination path already exists":** significa que já existe uma
+pasta com esse nome. Confirma se já está lá o projeto (`cd
+formacao-vibe-coding` seguido de `git status`) antes de apagar nada —
+se disser "On branch main" ou parecido, já está tudo bem, só precisas
+de continuar a partir daí.
