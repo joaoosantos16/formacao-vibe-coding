@@ -20,6 +20,7 @@ export default function Home() {
             ? 'variáveis de ambiente configuradas'
             : 'variáveis de ambiente em falta (ver .env.example)'}
         </p>
+        <div className="w-24 h-24 bg-black mx-auto" />
       </div>
     </div>
   );
