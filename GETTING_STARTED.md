@@ -154,3 +154,17 @@ point that works, so you don't risk losing work.
 Paste the whole error message into Claude Code and ask "what does this
 mean and how do I fix it?" — most of the time it fixes itself. If it
 doesn't, call the trainer.
+
+**Common mistake: using Windows "Command Prompt" instead of Git Bash.**
+If you paste several commands at once into Command Prompt (cmd.exe), it
+joins them all into a single line instead of running them one by one —
+this produces strange errors like "the system cannot find the path
+specified" or "not a git repository". Always use **Git Bash** (search
+for "Git Bash" in the Start menu), and if in doubt, paste **one command
+at a time**, pressing Enter after each one.
+
+**"Destination path already exists" error:** this means a folder with
+that name already exists. Check whether the project is already there
+(`cd formacao-vibe-coding` then `git status`) before deleting anything —
+if it says "On branch main" or similar, everything is fine, just
+continue from there.
