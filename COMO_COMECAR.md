@@ -34,12 +34,12 @@ Três palavras que vais ver muitas vezes:
 
 ## 4. A tua equipa
 
-| Equipa | Nome do "branch" (a tua sala de trabalho) | Prefixo das tuas tabelas na base de dados |
-|---|---|---|
-| A | `equipa-a` | `equipa_a_` |
-| B | `equipa-b` | `equipa_b_` |
-| C | `equipa-c` | `equipa_c_` |
-| D | `equipa-d` | `equipa_d_` |
+| Equipa | Nome do "branch" (a tua sala de trabalho) | O teu site ao vivo (atualiza sozinho) | Prefixo das tuas tabelas na base de dados |
+|---|---|---|---|
+| A | `equipa-a` | [formacao-vibe-coding-git-equipa-a-joaoosantos16s-projects.vercel.app](https://formacao-vibe-coding-git-equipa-a-joaoosantos16s-projects.vercel.app) | `equipa_a_` |
+| B | `equipa-b` | [formacao-vibe-coding-git-equipa-b-joaoosantos16s-projects.vercel.app](https://formacao-vibe-coding-git-equipa-b-joaoosantos16s-projects.vercel.app) | `equipa_b_` |
+| C | `equipa-c` | [formacao-vibe-coding-git-equipa-c-joaoosantos16s-projects.vercel.app](https://formacao-vibe-coding-git-equipa-c-joaoosantos16s-projects.vercel.app) | `equipa_c_` |
+| D | `equipa-d` | [formacao-vibe-coding-git-equipa-d-joaoosantos16s-projects.vercel.app](https://formacao-vibe-coding-git-equipa-d-joaoosantos16s-projects.vercel.app) | `equipa_d_` |
 
 Confirma com o formador qual é a tua equipa. Sempre que vires `equipa-x`
 nos comandos abaixo, troca pelo nome da tua equipa (ex: `equipa-b`).

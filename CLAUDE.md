@@ -12,12 +12,12 @@ Este projeto **não** usa um único fio de trabalho sequencial. Está dividido
 em 4 equipas que trabalham ao mesmo tempo, cada uma na sua própria branch,
 com o seu próprio link de site ao vivo (preview do Vercel):
 
-| Equipa | Branch      | Prefixo de tabelas no Supabase |
-|--------|-------------|----------------------------------|
-| A      | `equipa-a`  | `equipa_a_`                      |
-| B      | `equipa-b`  | `equipa_b_`                      |
-| C      | `equipa-c`  | `equipa_c_`                      |
-| D      | `equipa-d`  | `equipa_d_`                      |
+| Equipa | Branch      | Preview (Vercel)                                                                 | Prefixo de tabelas no Supabase |
+|--------|-------------|-----------------------------------------------------------------------------------|----------------------------------|
+| A      | `equipa-a`  | formacao-vibe-coding-git-equipa-a-joaoosantos16s-projects.vercel.app              | `equipa_a_`                      |
+| B      | `equipa-b`  | formacao-vibe-coding-git-equipa-b-joaoosantos16s-projects.vercel.app              | `equipa_b_`                      |
+| C      | `equipa-c`  | formacao-vibe-coding-git-equipa-c-joaoosantos16s-projects.vercel.app              | `equipa_c_`                      |
+| D      | `equipa-d`  | formacao-vibe-coding-git-equipa-d-joaoosantos16s-projects.vercel.app              | `equipa_d_`                      |
 
 Regras importantes:
 - Ninguém trabalha diretamente em `main`. Cada equipa só mexe na sua branch.
