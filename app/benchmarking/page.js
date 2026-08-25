@@ -1,4 +1,4 @@
-// Equipa C — branch `equipa-c`.
+// Equipa A — branch `equipa-a`.
 // Constrói aqui o conteúdo desta página. O menu e o layout à volta
 // (components/NavBar.jsx, app/layout.js) são partilhados — não mexer
 // nesses sem combinar com as outras equipas.
@@ -8,7 +8,7 @@ export default function BenchmarkingPage() {
       <h1 className="text-3xl font-semibold tracking-tight text-slate-800">
         Benchmarking
       </h1>
-      <p className="mt-3 text-slate-500">Em construção — Equipa C.</p>
+      <p className="mt-3 text-slate-500">Em construção — Equipa A.</p>
     </div>
   );
 }
