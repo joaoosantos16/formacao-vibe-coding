@@ -18,10 +18,10 @@ export default function HoshinMeter() {
         <path d={describeArc(CX, CY, R, 0, 1)} fill="none" stroke="#e2e8f0" strokeWidth={STROKE} strokeLinecap="round" />
         <path d={describeArc(CX, CY, R, 0, ratio)} fill="none" stroke={fillColor} strokeWidth={STROKE} strokeLinecap="round" />
         <text x={CX} y={CY - 18} textAnchor="middle" className="fill-slate-800" style={{ fontSize: 28, fontWeight: 600 }}>
-          {deliveredM.toFixed(2)}M €
+          €{deliveredM.toFixed(2)}M
         </text>
         <text x={CX} y={CY + 4} textAnchor="middle" className="fill-slate-500" style={{ fontSize: 12 }}>
-          de {targetM.toFixed(2)}M € Hoshin
+          of €{targetM.toFixed(2)}M Hoshin
         </text>
       </svg>
     </div>

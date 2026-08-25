@@ -133,11 +133,11 @@ export default function DeliveredChart() {
               {hovered.month} 2026
             </text>
             <text x={8} y={hovered.delivered != null ? 28 : 24} className="fill-slate-600" style={{ fontSize: 11 }}>
-              Hoshin: {hovered.hoshin.toFixed(2)}M €
+              Hoshin: €{hovered.hoshin.toFixed(2)}M
             </text>
             {hovered.delivered != null && (
               <text x={8} y={42} className="fill-emerald-700" style={{ fontSize: 11, fontWeight: 600 }}>
-                Delivered: {hovered.delivered.toFixed(2)}M €
+                Delivered: €{hovered.delivered.toFixed(2)}M
               </text>
             )}
           </g>

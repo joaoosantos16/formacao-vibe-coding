@@ -46,5 +46,5 @@ export default function TeamTable() {
 }
 
 function formatK(valueK) {
-  return `${valueK.toLocaleString('pt-PT', { maximumFractionDigits: 1 })}K €`;
+  return `€${valueK.toLocaleString('en-GB', { maximumFractionDigits: 1 })}K`;
 }

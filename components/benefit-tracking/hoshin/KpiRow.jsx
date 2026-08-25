@@ -3,7 +3,7 @@ import { getHoshinKpis } from '@/lib/benefitTracking';
 const TILES = [
   { key: 'deltaHoshinYTDPct', label: 'Δ Hoshin YTD', format: formatPct },
   { key: 'gapHoshinM', label: 'Gap Hoshin', format: formatGap },
-  { key: 'deltaSamePeriodLYPct', label: 'Δ vs. Período Homólogo', format: formatPct },
+  { key: 'deltaSamePeriodLYPct', label: 'Δ vs. Same Period LY', format: formatPct },
 ];
 
 export default function KpiRow() {
@@ -32,5 +32,5 @@ function formatPct(value) {
 }
 
 function formatGap(value) {
-  return `${value > 0 ? '+' : ''}${value.toFixed(2)}M €`;
+  return `${value > 0 ? '+' : ''}€${value.toFixed(2)}M`;
 }
