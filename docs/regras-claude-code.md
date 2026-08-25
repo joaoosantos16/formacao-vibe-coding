@@ -63,7 +63,24 @@
   nome `AAAAMMDD_HHmm_equipa-x_descricao.sql` (sem `equipa-x` se for
   partilhada) — mesmo que quem aplique a migração seja o formador.
 
-## 4. Antes de terminar uma sessão
+## 4. Desenvolvimento local — não partir o `npm run dev`
+
+- **Nunca corras `npm run build` numa janela de terminal diferente
+  enquanto o `npm run dev` do utilizador está a correr** — os dois
+  processos partilham a pasta `.next` e vão pisar-se um ao outro
+  (chunks JS partidos, erros 404, página presa em "A carregar...").
+- Para validar que o código compila sem erros, usa antes uma destas
+  opções, nesta ordem de preferência:
+  1. Confia no próprio `npm run dev` — se não há erro no terminal onde
+     ele está a correr, o código compila.
+  2. Se precisares mesmo de correr `npm run build`, avisa primeiro o
+     utilizador para parar o `npm run dev` (`Ctrl+C`), corre o build,
+     e no fim manda reiniciar o `npm run dev`.
+- Se isto já aconteceu e a página ficou presa a carregar: a correção é
+  simples — parar e voltar a correr `npm run dev` regenera a pasta
+  `.next` correta. Não é preciso reinstalar nada nem apagar mais nada.
+
+## 5. Antes de terminar uma sessão
 
 - Confirma que o código corre localmente (`npm run dev`, sem erros)
   antes de sugerires `commit`/`push`.
@@ -73,7 +90,7 @@
   levar isso à próxima integração com o formador — não assumas que
   fica resolvido só por estar na tua branch.
 
-## 5. Design — regra fixa
+## 6. Design — regra fixa
 
 O site chama-se **"KI BT&B"** (não "Benefit Tracking"). **Nunca uses
 ícones nem emojis em nada que construíres** — nem no título, nem no
@@ -81,7 +98,7 @@ conteúdo da tua página, nem em mensagens de estado. Só elementos
 minimalistas: texto, tipografia, formas simples e cor. Ver
 `docs/estrutura-do-site.md`, secção "Direção visual".
 
-## 6. Quando em dúvida
+## 7. Quando em dúvida
 
 Por omissão, sê conservador: se não tens a certeza se algo é "só da tua
 página" ou "partilhado", trata como partilhado e pede confirmação antes
