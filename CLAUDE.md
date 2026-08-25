@@ -64,9 +64,9 @@ isso antes de assumir.
   ainda).
 - **Produto decidido: "Benefit Tracking"** — plataforma interna Kaizen
   para standardizar o benefit tracking, com 3 páginas/equipas:
-  - `equipa-a` → **Benefit Tracking Kaizen** (`/benefit-tracking-kaizen`)
+  - `equipa-a` → **Benchmarking** (`/benchmarking`)
   - `equipa-b` → **Benefit Tracking Projetos** (`/benefit-tracking-projetos`)
-  - `equipa-c` → **Benchmarking** (`/benchmarking`)
+  - `equipa-c` → **Benefit Tracking Kaizen** (`/benefit-tracking-kaizen`)
   - `equipa-d` fica livre/reserva (não há 4ª página).
 - Casca partilhada construída: `app/layout.js` renderiza
   `components/NavBar.jsx` (menu fixo no topo, com as 3 páginas acima),

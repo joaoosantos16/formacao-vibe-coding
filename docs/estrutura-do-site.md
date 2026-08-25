@@ -18,9 +18,9 @@ construída **uma vez, em `main`**, por quem estiver a facilitar a Fase
 
 | Página | Rota (URL) | Equipa |
 |---|---|---|
-| Benefit Tracking Kaizen | `/benefit-tracking-kaizen` | A (`equipa-a`) |
+| Benchmarking | `/benchmarking` | A (`equipa-a`) |
 | Benefit Tracking Projetos | `/benefit-tracking-projetos` | B (`equipa-b`) |
-| Benchmarking | `/benchmarking` | C (`equipa-c`) |
+| Benefit Tracking Kaizen | `/benefit-tracking-kaizen` | C (`equipa-c`) |
 
 `equipa-d` fica livre/reserva (não há uma 4ª página) — só é preciso se
 surgir um grupo extra ou se uma das três equipas quiser dividir-se.
