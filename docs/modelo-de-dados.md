@@ -37,34 +37,37 @@ partilhado.
 
 ## Entidades principais
 
-### `projetos`
+_(preencher: nome da entidade/tabela, os seus campos, e o tipo de cada campo)_
+
+Formato sugerido:
+
+### `nome_da_tabela`
 | Campo | Tipo | Notas |
 |---|---|---|
 | id | uuid | gerado automaticamente |
-| code | text | código do projeto, único |
-| company | text | nome da empresa/cliente |
-| sector | text | setor da empresa |
-| em | text | Engagement Manager / consultor responsável |
-| logo_url | text | link para o logo (Supabase Storage, bucket `project-logos`); opcional |
-| estado | text | `active` / `close` — ver vocabulário abaixo |
-| created_at | timestamptz | gerado automaticamente |
-
-> Nota: ainda não há autenticação implementada na app, por isso não há
-> campo de "dono" do projeto por utilizador — as políticas RLS estão
-> abertas por agora (ver `supabase/migrations/20260825_1500_projetos.sql`).
+| ... | ... | ... |
 
 ## Vocabulário / estados
 
+Qualquer campo do tipo "estado" ou "categoria" (ex: o estado de um
+projeto, o tipo de um pedido) tem de ter aqui a **lista fechada** de
+valores possíveis — o valor tal como vai ser guardado no código, e o
+rótulo em português a mostrar ao utilizador. Ninguém escreve texto à
+mão no código: todos importam de `lib/constants.js` (ver esse ficheiro).
+
 | Valor no código (`lib/constants.js`) | Rótulo em português a mostrar |
 |---|---|
-| `active` | "Active" |
-| `close` | "Close" |
+| _exemplo:_ `em_projeto` | _exemplo:_ "Em Projeto" |
+| | |
 
 ## Quem constrói/lê o quê
 
+_(que equipa/página cria ou atualiza cada entidade, e que outras equipas
+apenas leem essa informação — para se saber quem "é dono" de cada tabela)_
+
 | Entidade | Equipa responsável (cria/edita) | Outras equipas que leem |
 |---|---|---|
-| `projetos` | Equipa B (Benefits Tracking) | _(a confirmar com as outras equipas)_ |
+| | | |
 
 ---
 
