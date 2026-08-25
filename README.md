@@ -1,58 +1,29 @@
 # Formação Vibe Coding — Plataforma Kaizen
 
-Este repositório é a base de uma plataforma web construída ao vivo, em
-grupo, numa formação Kaizen sobre "vibe coding" (programar com apoio de
-IA, no Claude Code) em sessões curtas e rotativas: quando uma pessoa fica
-sem créditos, outra pessoa, noutro computador, continua exatamente de onde
-ficou — mesmo código, mesma base de dados, mesmo deployment.
+Plataforma web construída ao vivo, em equipas, numa formação Kaizen sobre
+"vibe coding" (programar com apoio de IA, no Claude Code).
 
-## Antes de começares
+**Se és consultor(a) e é a primeira vez que fazes isto, não leias este
+ficheiro — vai direto a [`COMO_COMECAR.md`](./COMO_COMECAR.md).** Este
+README é a referência técnica; o outro ficheiro explica tudo em
+linguagem simples, passo a passo.
 
-1. Lê o [CLAUDE.md](./CLAUDE.md) — diz o estado atual do projeto, as
-   decisões já tomadas, e qual é o próximo passo. É sempre o ponto de
-   partida de qualquer sessão nova.
-2. Confirma que tens acesso a três coisas (o formador distribui isto —
-   ver instruções à parte, nunca em texto simples num canal público):
-   - o repositório no GitHub;
-   - o projeto no Vercel;
-   - as credenciais do Supabase (`NEXT_PUBLIC_SUPABASE_URL` e
-     `NEXT_PUBLIC_SUPABASE_ANON_KEY`).
+## Modelo de trabalho
+
+4 equipas trabalham em paralelo, cada uma na sua branch, com o seu
+próprio site de pré-visualização (deploy automático no Vercel). Ver
+`CLAUDE.md` para a tabela de equipas/branches/prefixos, e
+`COMO_COMECAR.md` para o passo a passo de cada equipa.
 
 ## Stack
 
 - [Next.js](https://nextjs.org/) (App Router) — frontend e backend no
   mesmo projeto.
 - [Tailwind CSS](https://tailwindcss.com/) — estilos.
-- [Supabase](https://supabase.com/) — base de dados Postgres + autenticação.
-- [Vercel](https://vercel.com/) — deployment automático a cada `git push`
-  para o branch principal.
-
-## Começar uma sessão
-
-```bash
-git clone <URL-do-repositorio>       # só na primeira vez
-cd formacao-vibe-coding
-git pull                              # traz o trabalho da pessoa anterior
-npm install                           # instala/atualiza dependências
-cp .env.example .env.local            # só na primeira vez; depois preencher
-npm run dev                           # abre em http://localhost:3000
-```
-
-Depois abre o Claude Code nesta pasta e pede-lhe para **ler o `CLAUDE.md`
-antes de continuar qualquer trabalho**.
-
-## Terminar uma sessão
-
-```bash
-git add -A
-git commit -m "descrição curta do que foi feito"
-git push
-```
-
-Antes do `git push`, pede ao Claude Code para **atualizar o `CLAUDE.md`**
-(pelo menos as secções "Estado Atual", "Próximo Passo Imediato" e, se
-aplicável, "Problemas Conhecidos"). É isso que permite à próxima pessoa
-continuar sem perder contexto — sem isto, o handoff não funciona.
+- [Supabase](https://supabase.com/) — base de dados Postgres + autenticação,
+  partilhada por todas as equipas (com prefixo de tabela por equipa).
+- [Vercel](https://vercel.com/) — deployment automático a cada `git push`,
+  um preview por branch/equipa.
 
 ## Estrutura do projeto
 
@@ -62,18 +33,13 @@ components/         componentes de UI reutilizáveis
 lib/                código partilhado (ex: ligação ao Supabase)
 public/             imagens e ficheiros estáticos
 supabase/           histórico de alterações à base de dados (migrations)
-CLAUDE.md           estado do projeto e memória entre sessões
+CLAUDE.md           estado consolidado do projeto (memória do Claude Code)
+COMO_COMECAR.md     guia passo a passo para quem nunca usou estas ferramentas
 .env.example        variáveis de ambiente necessárias (sem valores reais)
 ```
 
-## Base de dados
+## Integração para `main`
 
-Todas as alterações à estrutura da base de dados (novas tabelas, colunas,
-policies de RLS) devem ficar registadas em `supabase/` — ver
-[supabase/README.md](./supabase/README.md) para a convenção.
-
-## Deployment
-
-O deploy é automático: o Vercel está ligado a este repositório e faz
-deploy de qualquer `git push` para o branch principal. Não há passos
-manuais de deploy a fazer.
+As equipas não fazem push para `main`. Quando uma equipa quer integrar o
+seu trabalho, avisa o formador, que faz o merge da branch da equipa para
+`main` (e atualiza o `CLAUDE.md` com o estado consolidado).
