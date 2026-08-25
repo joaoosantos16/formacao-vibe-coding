@@ -63,50 +63,43 @@ isso antes de assumir.
 ## Estado Atual do Projeto (o que já está feito)
 
 - Repositório Git no GitHub: https://github.com/joaoosantos16/formacao-vibe-coding (privado).
-- Arquitetura base criada: Next.js 14 (App Router) + Tailwind CSS +
-  Supabase (`@supabase/supabase-js`).
-- A app mostra apenas uma página de estado (sem funcionalidades de produto
-  ainda).
-- **Produto decidido: "KI BT&B"** — plataforma interna Kaizen para
-  standardizar o benefit tracking, com 3 páginas/equipas:
+- Arquitetura base: Next.js 14 (App Router) + Tailwind CSS + Supabase
+  (`@supabase/supabase-js`).
+- **Produto: "KI BT&B"** — plataforma interna Kaizen de benefit
+  tracking, com 3 páginas/equipas:
   - `equipa-a` → **Benchmarking** (`/benchmarking`)
   - `equipa-b` → **Benefit Tracking Projetos** (`/benefit-tracking-projetos`)
   - `equipa-c` → **Benefit Tracking Kaizen** (`/benefit-tracking-kaizen`)
-  - `equipa-d` fica livre/reserva (não há 4ª página).
-- Casca partilhada construída: `app/layout.js` renderiza
-  `components/NavBar.jsx` (menu fixo no topo, com as 3 páginas acima),
-  com direção visual decidida — glassmorphism, tons claros, sombras
-  suaves, menu que esconde/mostra com o scroll (ver
-  `docs/estrutura-do-site.md`, secção "Direção visual").
-- As 3 páginas já existem como esqueleto em `app/<rota>/page.js`,
-  prontas para cada equipa construir o conteúdo.
-- **Primeira integração feita** (todas as branches de equipa merged em
-  `main`): a Equipa A já tem um botão de teste em `/benchmarking`
-  (contador de cliques, confirma que a página é interativa). Notas de
-  cada equipa vivem em `NOTAS-EQUIPA-A.md` a `NOTAS-EQUIPA-D.md`
-  (foram unificadas de `NOTAS.md` por causa de um conflito de nome ao
-  integrar).
-- **Página inicial (`/`) redesenhada como landing a sério**: título
-  "KI BT&B", frase de apresentação, e 3 cartões que ligam diretamente
-  às páginas das equipas. Removida toda a informação de debug (estado
-  do Supabase, referência ao CLAUDE.md) e os elementos de teste das
-  equipas B/C que lá estavam — não fazia sentido mostrar isso numa
-  página pensada para quem for avaliar o produto.
-- **Landing page (só ela) tem fundo escuro e cor**: 1ª versão era
-  demasiado carregada (várias cores, tipografia pesada, efeito 3D
-  agressivo) — foi refeita mais contida: fundo quase preto,
-  full-bleed (fora do contentor partilhado), uma só família de cor
-  (índigo/violeta), tipografia simples (Inter), glow de fundo com
-  movimento lento. O menu e as 3 páginas das equipas continuam claros e
-  minimalistas, sem ícones/emojis (ver `docs/estrutura-do-site.md`,
-  secção "Direção visual").
-- Projeto Vercel criado e ligado ao repositório: cada branch tem o seu
-  próprio deploy automático. Produção (`main`): https://formacao-vibe-coding.vercel.app
-- Projeto Supabase dedicado criado (org Kaizen Institute, região eu-west-1,
-  ref `lkwgkupyzictgknpyxzs`). URL: https://lkwgkupyzictgknpyxzs.supabase.co
-  Variáveis de ambiente já configuradas no Vercel.
-- 4 branches de equipa criadas (`equipa-a` a `equipa-d`), todas a partir
-  do estado atual de `main`.
+  - `equipa-d` ficou livre/reserva (sem trabalho, não há 4ª página).
+- Casca partilhada: `app/layout.js` + `components/NavBar.jsx` (menu
+  fixo, esconde/mostra com scroll), landing page (`/`) com fundo escuro
+  full-bleed, 1 cor (índigo/violeta), tipografia Inter — ver
+  `docs/estrutura-do-site.md`.
+- **Modelo de dados fechado e tabela criada**: `projetos` no Supabase
+  (`codigo`, `em`, `setor`, `subsetor`, `consultores`, `kpi`, `revenue`,
+  `colaboradores`, `ebitda`, `cliente`, `estado`), RLS ativo com
+  políticas abertas (sem auth implementada) — ver
+  `docs/modelo-de-dados.md`.
+- **Integração final feita (25/08) — as 3 páginas têm conteúdo real**:
+  - **Benchmarking** (Equipa A): drill-down de KPIs por GQCDM com
+    matching de projetos relacionados, barras "bullet" comparativas,
+    ordenação, e um gerador de apresentação
+    (`app/benchmarking/PresentationGenerator.jsx`). Dados em
+    `app/benchmarking/data.js` (mock).
+  - **Benefit Tracking Projetos** (Equipa B): portfólio de projetos,
+    criação de projeto novo (`/benefit-tracking-projetos/novo`), página
+    individual por projeto (`/benefit-tracking-projetos/[id]`),
+    componentes reutilizáveis (`components/bt/`). Dados em
+    `lib/benefitTrackingStore.js` — **100% dummy, em localStorage do
+    browser, não lê nem escreve no Supabase ainda**.
+  - **Benefit Tracking Kaizen** (Equipa C): sub-navegação própria
+    (Hoshin Overview, Productivity, Variables —
+    `components/benefit-tracking/`), gráficos e tabelas. Dados em
+    `lib/benefitTracking.js` — **também mock, não ligado ao Supabase**.
+- Projeto Vercel ligado ao repositório: deploy automático por branch.
+  Produção (`main`): https://formacao-vibe-coding.vercel.app
+- Projeto Supabase dedicado (org Kaizen Institute, região eu-west-1,
+  ref `lkwgkupyzictgknpyxzs`): https://lkwgkupyzictgknpyxzs.supabase.co
 
 ## Decisões Tomadas e Porquê
 
@@ -145,12 +138,16 @@ acrescentadas aqui por quem as tomar, com uma frase do porquê)_
 
 ## Próximo Passo Imediato
 
-1. Falta só o **modelo de dados partilhado** (ver `docs/modelo-de-dados.md`):
-   que tabelas/campos o benefit tracking precisa e o vocabulário de
-   estados. A estrutura do site e o menu já estão feitos.
-2. Cada equipa faz `git merge main` na sua branch e começa a construir
-   o conteúdo da sua página (já existe o esqueleto em
-   `app/<rota>/page.js`) — ver `COMO_COMECAR.md`.
+1. **Ligar as 3 páginas à tabela `projetos` real no Supabase**, em vez
+   dos dados mock/localStorage atuais — é o maior trabalho que falta.
+   Os campos já batem certo com `docs/modelo-de-dados.md`, por isso é
+   sobretudo troca de fonte de dados, não redesenho.
+2. Decidir se as políticas de RLS abertas da tabela `projetos` ficam
+   assim (é uma formação, sem dados sensíveis a sério) ou se vale a
+   pena apertar antes de mostrar a alguém de fora.
+3. Rever visualmente as 3 páginas em conjunto — foram construídas em
+   paralelo, vale a pena confirmar que a linguagem visual (cores,
+   ícones/emojis, cartões) ficou mesmo consistente entre elas.
 
 ## Problemas Conhecidos / Por Resolver
 
