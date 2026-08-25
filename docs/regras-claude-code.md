@@ -73,7 +73,15 @@
   levar isso à próxima integração com o formador — não assumas que
   fica resolvido só por estar na tua branch.
 
-## 5. Quando em dúvida
+## 5. Design — regra fixa
+
+O site chama-se **"KI BT&B"** (não "Benefit Tracking"). **Nunca uses
+ícones nem emojis em nada que construíres** — nem no título, nem no
+conteúdo da tua página, nem em mensagens de estado. Só elementos
+minimalistas: texto, tipografia, formas simples e cor. Ver
+`docs/estrutura-do-site.md`, secção "Direção visual".
+
+## 6. Quando em dúvida
 
 Por omissão, sê conservador: se não tens a certeza se algo é "só da tua
 página" ou "partilhado", trata como partilhado e pede confirmação antes

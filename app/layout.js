@@ -2,8 +2,8 @@ import './globals.css';
 import NavBar from '@/components/NavBar';
 
 export const metadata = {
-  title: 'Benefit Tracking · Kaizen',
-  description: 'Plataforma de benefit tracking Kaizen — Kaizen, Projetos e Benchmarking.',
+  title: 'KI BT&B',
+  description: 'Plataforma de benefit tracking e benchmarking Kaizen — Kaizen, Projetos e Benchmarking.',
 };
 
 // Casca partilhada por toda a app (ver components/NavBar.jsx e
