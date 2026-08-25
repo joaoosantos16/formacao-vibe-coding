@@ -81,8 +81,14 @@ nos comandos abaixo, troca pelo nome da tua equipa (ex: `equipa-b`).
 
 ## 6. Começar a trabalhar (fazer isto uma vez, no início)
 
-Abre um terminal (no Windows: procura por "Git Bash" no menu Iniciar) e
-cola estes comandos, um de cada vez:
+Abre um terminal: no Windows, procura por "Git Bash" no menu Iniciar.
+Depois de teres a pasta `formacao-vibe-coding` (na primeira vez, é só a
+seguir ao `git clone` abaixo), para abrir o Git Bash **diretamente
+dentro dela** nas vezes seguintes: no Explorador de Ficheiros, entra na
+pasta, clica com o botão direito num espaço vazio, e escolhe **"Git
+Bash Here"**.
+
+Cola estes comandos, um de cada vez:
 
 ```bash
 git clone https://github.com/joaoosantos16/formacao-vibe-coding.git
