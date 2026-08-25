@@ -2,8 +2,8 @@ import './globals.css';
 import NavBar from '@/components/NavBar';
 
 export const metadata = {
-  title: 'Formação Vibe Coding',
-  description: 'Plataforma construída em formação Kaizen com sessões rotativas.',
+  title: 'Benefit Tracking · Kaizen',
+  description: 'Plataforma de benefit tracking Kaizen — Kaizen, Projetos e Benchmarking.',
 };
 
 // Casca partilhada por toda a app (ver components/NavBar.jsx e
@@ -13,9 +13,11 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="pt">
-      <body>
+      <body className="min-h-screen bg-gradient-to-br from-slate-50 via-sky-50 to-violet-50 text-slate-800">
         <NavBar />
-        {children}
+        <main className="pt-28 px-4 sm:px-8 pb-16 max-w-6xl mx-auto">
+          {children}
+        </main>
       </body>
     </html>
   );
