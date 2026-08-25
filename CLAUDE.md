@@ -82,12 +82,16 @@ isso antes de assumir.
   prontas para cada equipa construir o conteúdo.
 - **Primeira integração feita** (todas as branches de equipa merged em
   `main`): a Equipa A já tem um botão de teste em `/benchmarking`
-  (contador de cliques, confirma que a página é interativa). As
-  equipas B e C testaram o deploy com elementos visuais na página
-  inicial partilhada (ver "Problemas Conhecidos" — provavelmente para
-  remover antes de conteúdo a sério). Notas de cada equipa vivem agora
-  em `NOTAS-EQUIPA-A.md` a `NOTAS-EQUIPA-D.md` (foram unificadas de
-  `NOTAS.md` por causa de um conflito de nome ao integrar).
+  (contador de cliques, confirma que a página é interativa). Notas de
+  cada equipa vivem em `NOTAS-EQUIPA-A.md` a `NOTAS-EQUIPA-D.md`
+  (foram unificadas de `NOTAS.md` por causa de um conflito de nome ao
+  integrar).
+- **Página inicial (`/`) redesenhada como landing a sério**: título
+  "KI BT&B", frase de apresentação, e 3 cartões que ligam diretamente
+  às páginas das equipas. Removida toda a informação de debug (estado
+  do Supabase, referência ao CLAUDE.md) e os elementos de teste das
+  equipas B/C que lá estavam — não fazia sentido mostrar isso numa
+  página pensada para quem for avaliar o produto.
 - Projeto Vercel criado e ligado ao repositório: cada branch tem o seu
   próprio deploy automático. Produção (`main`): https://formacao-vibe-coding.vercel.app
 - Projeto Supabase dedicado criado (org Kaizen Institute, região eu-west-1,
@@ -142,12 +146,10 @@ acrescentadas aqui por quem as tomar, com uma frase do porquê)_
 
 ## Problemas Conhecidos / Por Resolver
 
-- A página inicial (`app/page.js`, partilhada) tem dois elementos de
-  teste deixados pelas equipas B e C durante a validação do deploy
-  (um quadrado preto, um retângulo azul com "Equipa C — teste de
-  deployment"). São inofensivos mas não são conteúdo a sério — alguém
-  deve limpá-los quando a página inicial for desenhada de verdade
-  (lembrar: é partilhada, avisar as equipas antes de mexer).
+- Confirmar no Vercel que as variáveis `NEXT_PUBLIC_SUPABASE_URL` e
+  `NEXT_PUBLIC_SUPABASE_ANON_KEY` estão marcadas também para
+  **Preview**, não só Production — os links de preview de cada equipa
+  estavam a mostrar "variáveis em falta".
 
 ## Como Correr o Projeto Localmente
 
