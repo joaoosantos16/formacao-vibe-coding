@@ -86,8 +86,13 @@ see `equipa-x` in the commands below, swap it for your team's branch
 
 ## 6. Start working (do this once, at the start)
 
-Open a terminal (on Windows: search for "Git Bash" in the Start menu)
-and paste these commands, one at a time:
+Open a terminal: on Windows, search for "Git Bash" in the Start menu.
+Once you have the `formacao-vibe-coding` folder (the first time, that's
+right after the `git clone` below), on later sessions you can open Git
+Bash **directly inside it**: in File Explorer, go into the folder,
+right-click an empty spot, and choose **"Git Bash Here"**.
+
+Paste these commands, one at a time:
 
 ```bash
 git clone https://github.com/joaoosantos16/formacao-vibe-coding.git
