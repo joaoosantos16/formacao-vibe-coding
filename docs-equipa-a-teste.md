@@ -1,1 +1,0 @@
-# Equipa A
