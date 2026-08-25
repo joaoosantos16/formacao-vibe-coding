@@ -8,13 +8,19 @@
 
 ## Estado Atual do Projeto (o que já está feito)
 
-- Repositório Git inicializado.
+- Repositório Git inicializado e no GitHub:
+  https://github.com/joaoosantos16/formacao-vibe-coding (privado).
 - Arquitetura base criada: Next.js 14 (App Router) + Tailwind CSS +
   Supabase (`@supabase/supabase-js`).
 - A app mostra apenas uma página de estado (sem funcionalidades de produto
   ainda) — confirma se as variáveis de ambiente do Supabase estão definidas.
-- Ainda não foi criado nenhum projeto Supabase real nem feito nenhum deploy
-  no Vercel (isso é feito manualmente antes da formação — ver README.md).
+- Projeto Vercel criado e ligado ao repositório (deploy automático a cada
+  `git push` para `main`): https://formacao-vibe-coding.vercel.app
+- Projeto Supabase dedicado criado (org Kaizen Institute, região eu-west-1,
+  ref `lkwgkupyzictgknpyxzs`). URL: https://lkwgkupyzictgknpyxzs.supabase.co
+- Ainda por fazer: confirmar que as variáveis de ambiente
+  (`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`) estão
+  configuradas no Vercel (Settings → Environment Variables).
 
 ## Decisões Tomadas e Porquê
 
@@ -51,11 +57,11 @@ Nenhum, por agora.
 ## Como Correr o Projeto Localmente
 
 ```bash
-git clone <URL-do-repositorio>      # só se ainda não tiveres o repositório
+git clone https://github.com/joaoosantos16/formacao-vibe-coding.git
 cd formacao-vibe-coding
 git pull                             # trazer o trabalho mais recente
 npm install
-cp .env.example .env.local           # preencher com as credenciais reais do Supabase
+cp .env.example .env.local           # preencher com as credenciais reais do Supabase (pedir ao formador)
 npm run dev
 ```
 
