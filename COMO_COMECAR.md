@@ -52,6 +52,12 @@ disso é commitado e enviado, e só aí é que cada equipa vai buscar isso à
 sua branch (passo 6 abaixo, "sincronizar"). Se as páginas forem mesmo
 independentes umas das outras, o formador pode dispensar este passo.
 
+O mesmo vale para a "casca" do site — a barra de navegação e o layout
+comum a todas as páginas. Isso fica decidido em `docs/estrutura-do-site.md`
+e construído uma única vez em `components/NavBar.jsx`, também antes de
+as equipas se separarem. **Nenhuma equipa cria a sua própria barra de
+navegação** — só constrói o conteúdo de dentro da sua página.
+
 **Isto não é definir tudo à partida.** Só entra aqui o que é
 genuinamente partilhado entre páginas — o resto (como cada equipa
 organiza a sua própria página) fica livre, decidido por cada equipa à
