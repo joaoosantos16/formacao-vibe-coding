@@ -80,6 +80,14 @@ isso antes de assumir.
   `docs/estrutura-do-site.md`, secção "Direção visual").
 - As 3 páginas já existem como esqueleto em `app/<rota>/page.js`,
   prontas para cada equipa construir o conteúdo.
+- **Primeira integração feita** (todas as branches de equipa merged em
+  `main`): a Equipa A já tem um botão de teste em `/benchmarking`
+  (contador de cliques, confirma que a página é interativa). As
+  equipas B e C testaram o deploy com elementos visuais na página
+  inicial partilhada (ver "Problemas Conhecidos" — provavelmente para
+  remover antes de conteúdo a sério). Notas de cada equipa vivem agora
+  em `NOTAS-EQUIPA-A.md` a `NOTAS-EQUIPA-D.md` (foram unificadas de
+  `NOTAS.md` por causa de um conflito de nome ao integrar).
 - Projeto Vercel criado e ligado ao repositório: cada branch tem o seu
   próprio deploy automático. Produção (`main`): https://formacao-vibe-coding.vercel.app
 - Projeto Supabase dedicado criado (org Kaizen Institute, região eu-west-1,
@@ -134,7 +142,12 @@ acrescentadas aqui por quem as tomar, com uma frase do porquê)_
 
 ## Problemas Conhecidos / Por Resolver
 
-Nenhum, por agora.
+- A página inicial (`app/page.js`, partilhada) tem dois elementos de
+  teste deixados pelas equipas B e C durante a validação do deploy
+  (um quadrado preto, um retângulo azul com "Equipa C — teste de
+  deployment"). São inofensivos mas não são conteúdo a sério — alguém
+  deve limpá-los quando a página inicial for desenhada de verdade
+  (lembrar: é partilhada, avisar as equipas antes de mexer).
 
 ## Como Correr o Projeto Localmente
 
