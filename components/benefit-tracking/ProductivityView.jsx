@@ -1,35 +1,50 @@
-import { getProductivity } from '@/lib/benefitTracking';
+'use client';
+
+import { useState } from 'react';
+import TopFreeTable from '@/components/benefit-tracking/productivity/TopFreeTable';
+import OccupationRanking from '@/components/benefit-tracking/productivity/OccupationRanking';
+import ProjectOverviewChart from '@/components/benefit-tracking/productivity/ProjectOverviewChart';
+
+const VIEWS = [
+  { key: 'project', label: 'Project' },
+  { key: 'consultant', label: 'Consultant' },
+];
 
 export default function ProductivityView() {
-  const rows = getProductivity();
+  const [view, setView] = useState('project');
 
   return (
-    <div className="overflow-x-auto border border-gray-200 rounded-lg">
-      <table className="min-w-full text-sm">
-        <thead className="bg-gray-50 text-left text-gray-500">
-          <tr>
-            <th className="px-4 py-2 font-medium">Projeto</th>
-            <th className="px-4 py-2 font-medium">Horas Planeadas</th>
-            <th className="px-4 py-2 font-medium">Horas Reais</th>
-            <th className="px-4 py-2 font-medium">Produtividade</th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-gray-100">
-          {rows.map((row) => {
-            const productivity = Math.round((row.horasPlaneadas / row.horasReais) * 100);
-            return (
-              <tr key={row.project}>
-                <td className="px-4 py-2 font-medium">{row.project}</td>
-                <td className="px-4 py-2 text-gray-600">{row.horasPlaneadas}h</td>
-                <td className="px-4 py-2 text-gray-600">{row.horasReais}h</td>
-                <td className={`px-4 py-2 font-medium ${productivity >= 100 ? 'text-green-600' : 'text-amber-600'}`}>
-                  {productivity}%
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+    <div className="space-y-4">
+      <div className="inline-flex gap-1 rounded-full bg-white/70 backdrop-blur-xl shadow-[0_4px_20px_rgb(0,0,0,0.06)] ring-1 ring-black/5 p-1.5">
+        {VIEWS.map((v) => (
+          <button
+            key={v.key}
+            type="button"
+            onClick={() => setView(v.key)}
+            className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all duration-300 ${
+              view === v.key
+                ? 'bg-gradient-to-br from-indigo-500 to-violet-600 text-white shadow-md'
+                : 'text-slate-600 hover:bg-slate-900/5'
+            }`}
+          >
+            {v.label}
+          </button>
+        ))}
+      </div>
+
+      {view === 'project' ? (
+        <div className="space-y-4">
+          <div className="grid grid-cols-1 lg:grid-cols-[1.4fr_1fr] gap-4 items-start">
+            <TopFreeTable />
+            <OccupationRanking />
+          </div>
+          <ProjectOverviewChart />
+        </div>
+      ) : (
+        <div className="rounded-3xl bg-white/70 backdrop-blur-xl shadow-[0_8px_30px_rgb(0,0,0,0.06)] ring-1 ring-black/5 p-10">
+          <p className="text-slate-500">Consultant view — to be defined.</p>
+        </div>
+      )}
     </div>
   );
 }
