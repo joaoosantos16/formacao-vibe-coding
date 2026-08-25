@@ -6,6 +6,11 @@
 > o merge) começa a sua sessão pedindo ao Claude Code para ler este
 > ficheiro primeiro.
 
+> **OBRIGATÓRIO:** lê também [`docs/regras-claude-code.md`](docs/regras-claude-code.md)
+> antes de fazeres seja o que for — são as regras de como trabalhar
+> neste projeto (git, Supabase/SQL, o que é partilhado vs. o que é só
+> da tua página).
+
 ## Modelo de trabalho: equipas em paralelo (não é sessão única)
 
 Este projeto **não** usa um único fio de trabalho sequencial. Está dividido
@@ -62,8 +67,8 @@ isso antes de assumir.
   Supabase (`@supabase/supabase-js`).
 - A app mostra apenas uma página de estado (sem funcionalidades de produto
   ainda).
-- **Produto decidido: "Benefit Tracking"** — plataforma interna Kaizen
-  para standardizar o benefit tracking, com 3 páginas/equipas:
+- **Produto decidido: "KI BT&B"** — plataforma interna Kaizen para
+  standardizar o benefit tracking, com 3 páginas/equipas:
   - `equipa-a` → **Benchmarking** (`/benchmarking`)
   - `equipa-b` → **Benefit Tracking Projetos** (`/benefit-tracking-projetos`)
   - `equipa-c` → **Benefit Tracking Kaizen** (`/benefit-tracking-kaizen`)
