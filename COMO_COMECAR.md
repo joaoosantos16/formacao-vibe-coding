@@ -52,6 +52,12 @@ disso é commitado e enviado, e só aí é que cada equipa vai buscar isso à
 sua branch (passo 6 abaixo, "sincronizar"). Se as páginas forem mesmo
 independentes umas das outras, o formador pode dispensar este passo.
 
+O mesmo vale para a "casca" do site — a barra de navegação e o layout
+comum a todas as páginas. Isso fica decidido em `docs/estrutura-do-site.md`
+e construído uma única vez em `components/NavBar.jsx`, também antes de
+as equipas se separarem. **Nenhuma equipa cria a sua própria barra de
+navegação** — só constrói o conteúdo de dentro da sua página.
+
 **Isto não é definir tudo à partida.** Só entra aqui o que é
 genuinamente partilhado entre páginas — o resto (como cada equipa
 organiza a sua própria página) fica livre, decidido por cada equipa à
@@ -150,3 +156,17 @@ chegares a um ponto que funciona, para não arriscares perder trabalho.
 Cola a mensagem de erro toda no Claude Code e pergunta "o que significa
 isto e como resolvo?" — na maior parte das vezes ele resolve sozinho. Se
 não resolver, chama o formador.
+
+**Erro comum: usar a "Command Prompt" do Windows em vez do Git Bash.**
+Se colares vários comandos de uma vez na Command Prompt (cmd.exe), ela
+junta-os todos numa linha só em vez de correr um de cada vez — dá erros
+estranhos tipo "the system cannot find the path specified" ou
+"not a git repository". Usa sempre o **Git Bash** (procura por "Git
+Bash" no menu Iniciar), e se tiveres dúvidas cola **um comando de cada
+vez**, com Enter a seguir a cada um.
+
+**Erro "destination path already exists":** significa que já existe uma
+pasta com esse nome. Confirma se já está lá o projeto (`cd
+formacao-vibe-coding` seguido de `git status`) antes de apagar nada —
+se disser "On branch main" ou parecido, já está tudo bem, só precisas
+de continuar a partir daí.
