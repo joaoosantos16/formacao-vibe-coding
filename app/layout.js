@@ -13,7 +13,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="pt">
-      <body className="min-h-screen bg-gradient-to-br from-slate-50 via-sky-50 to-violet-50 text-slate-800">
+      <body className="min-h-screen overflow-x-hidden bg-gradient-to-br from-slate-50 via-sky-50 to-violet-50 text-slate-800">
         <NavBar />
         <main className="pt-28 px-4 sm:px-8 pb-16 max-w-6xl mx-auto">
           {children}

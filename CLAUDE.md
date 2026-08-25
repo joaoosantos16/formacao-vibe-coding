@@ -92,12 +92,14 @@ isso antes de assumir.
   do Supabase, referência ao CLAUDE.md) e os elementos de teste das
   equipas B/C que lá estavam — não fazia sentido mostrar isso numa
   página pensada para quem for avaliar o produto.
-- **Landing page (só ela) foge à regra "minimalista"**: gradientes
-  vivos, blobs 3D animados, tipografia de destaque (Unbounded via
-  `next/font/google`), cartões com efeito de inclinação 3D no hover.
-  Pedido explícito para ser "super pro e fora de série" — o menu e as
-  3 páginas das equipas continuam minimalistas, sem ícones/emojis (ver
-  `docs/estrutura-do-site.md`, secção "Direção visual").
+- **Landing page (só ela) tem fundo escuro e cor**: 1ª versão era
+  demasiado carregada (várias cores, tipografia pesada, efeito 3D
+  agressivo) — foi refeita mais contida: fundo quase preto,
+  full-bleed (fora do contentor partilhado), uma só família de cor
+  (índigo/violeta), tipografia simples (Inter), glow de fundo com
+  movimento lento. O menu e as 3 páginas das equipas continuam claros e
+  minimalistas, sem ícones/emojis (ver `docs/estrutura-do-site.md`,
+  secção "Direção visual").
 - Projeto Vercel criado e ligado ao repositório: cada branch tem o seu
   próprio deploy automático. Produção (`main`): https://formacao-vibe-coding.vercel.app
 - Projeto Supabase dedicado criado (org Kaizen Institute, região eu-west-1,

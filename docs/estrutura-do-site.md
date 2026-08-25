@@ -37,12 +37,13 @@ Tracking Projetos → Benchmarking (igual à tabela acima).
   minimalistas** (texto, tipografia, formas simples, cor). Isto aplica-se
   ao menu, aos títulos, e ao conteúdo que cada equipa construir dentro
   da sua página.
-- **Exceção: a página inicial (`/`, `app/page.js`)** foge deliberadamente
-  ao minimalismo — gradientes vivos, efeito 3D no hover dos cartões,
-  tipografia de destaque (Unbounded). Continua sem ícones/emojis, mas
-  não é "tons claros discretos" como o resto do site. Esta exceção é só
-  para a landing — as 3 páginas das equipas e o menu mantêm-se
-  minimalistas.
+- **Exceção: a página inicial (`/`, `app/page.js`)** é a única com fundo
+  escuro e cor — mas continua minimalista: **1-2 cores no máximo**
+  (índigo/violeta), tipografia simples (Inter), movimento lento e
+  subtil (glow de fundo a mexer-se devagar), sem exagero. Ocupa o ecrã
+  todo (full-bleed), não fica presa ao contentor partilhado. Sem
+  ícones/emojis, como o resto do site. Esta exceção é só para a
+  landing — as 3 páginas das equipas e o menu mantêm-se claros.
 - Tons claros, fundo em gradiente suave (slate/sky/violet pastel).
 - Menu em pílula flutuante, efeito vidro (glassmorphism: fundo
   translúcido + blur), sombra suave, cantos muito arredondados.
