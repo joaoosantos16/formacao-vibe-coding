@@ -6,6 +6,11 @@
 > o merge) começa a sua sessão pedindo ao Claude Code para ler este
 > ficheiro primeiro.
 
+> **OBRIGATÓRIO:** lê também [`docs/regras-claude-code.md`](docs/regras-claude-code.md)
+> antes de fazeres seja o que for — são as regras de como trabalhar
+> neste projeto (git, Supabase/SQL, o que é partilhado vs. o que é só
+> da tua página).
+
 ## Modelo de trabalho: equipas em paralelo (não é sessão única)
 
 Este projeto **não** usa um único fio de trabalho sequencial. Está dividido
@@ -38,10 +43,16 @@ vocabulário (ex: os valores de um estado) têm de ser decididos **em
 conjunto, uma única vez, em `main`**, antes de as branches serem usadas
 — não inventados independentemente por cada equipa.
 
-Isto fica registado em dois sítios, preenchidos todos juntos:
+Isto fica registado em quatro sítios, preenchidos todos juntos:
 - `docs/modelo-de-dados.md` — as entidades, campos e vocabulário/estados.
 - `lib/constants.js` — esses mesmos valores como constantes de código,
   para que nenhuma página escreva texto de estado à mão.
+- `docs/estrutura-do-site.md` — a lista de páginas/rotas e o menu de
+  navegação partilhado.
+- `components/NavBar.jsx` + `app/layout.js` — a casca da app (barra de
+  navegação e layout comum a todas as páginas). Construída uma única
+  vez, por quem facilitar a Fase 0 — nenhuma equipa cria a sua própria
+  versão disto na sua branch.
 
 Só depois disto estar commitado em `main` é que cada equipa corre
 `git merge main` na sua branch (ver `COMO_COMECAR.md`) e começa a
@@ -56,6 +67,39 @@ isso antes de assumir.
   Supabase (`@supabase/supabase-js`).
 - A app mostra apenas uma página de estado (sem funcionalidades de produto
   ainda).
+- **Produto decidido: "KI BT&B"** — plataforma interna Kaizen para
+  standardizar o benefit tracking, com 3 páginas/equipas:
+  - `equipa-a` → **Benchmarking** (`/benchmarking`)
+  - `equipa-b` → **Benefit Tracking Projetos** (`/benefit-tracking-projetos`)
+  - `equipa-c` → **Benefit Tracking Kaizen** (`/benefit-tracking-kaizen`)
+  - `equipa-d` fica livre/reserva (não há 4ª página).
+- Casca partilhada construída: `app/layout.js` renderiza
+  `components/NavBar.jsx` (menu fixo no topo, com as 3 páginas acima),
+  com direção visual decidida — glassmorphism, tons claros, sombras
+  suaves, menu que esconde/mostra com o scroll (ver
+  `docs/estrutura-do-site.md`, secção "Direção visual").
+- As 3 páginas já existem como esqueleto em `app/<rota>/page.js`,
+  prontas para cada equipa construir o conteúdo.
+- **Primeira integração feita** (todas as branches de equipa merged em
+  `main`): a Equipa A já tem um botão de teste em `/benchmarking`
+  (contador de cliques, confirma que a página é interativa). Notas de
+  cada equipa vivem em `NOTAS-EQUIPA-A.md` a `NOTAS-EQUIPA-D.md`
+  (foram unificadas de `NOTAS.md` por causa de um conflito de nome ao
+  integrar).
+- **Página inicial (`/`) redesenhada como landing a sério**: título
+  "KI BT&B", frase de apresentação, e 3 cartões que ligam diretamente
+  às páginas das equipas. Removida toda a informação de debug (estado
+  do Supabase, referência ao CLAUDE.md) e os elementos de teste das
+  equipas B/C que lá estavam — não fazia sentido mostrar isso numa
+  página pensada para quem for avaliar o produto.
+- **Landing page (só ela) tem fundo escuro e cor**: 1ª versão era
+  demasiado carregada (várias cores, tipografia pesada, efeito 3D
+  agressivo) — foi refeita mais contida: fundo quase preto,
+  full-bleed (fora do contentor partilhado), uma só família de cor
+  (índigo/violeta), tipografia simples (Inter), glow de fundo com
+  movimento lento. O menu e as 3 páginas das equipas continuam claros e
+  minimalistas, sem ícones/emojis (ver `docs/estrutura-do-site.md`,
+  secção "Direção visual").
 - Projeto Vercel criado e ligado ao repositório: cada branch tem o seu
   próprio deploy automático. Produção (`main`): https://formacao-vibe-coding.vercel.app
 - Projeto Supabase dedicado criado (org Kaizen Institute, região eu-west-1,
@@ -89,22 +133,31 @@ isso antes de assumir.
 - **CLAUDE.md como memória entre sessões**: reflete sempre o estado
   consolidado em `main`, atualizado nos momentos de merge.
 
+- **"Benefit Tracking" com 3 páginas/equipas** (Kaizen, Projetos,
+  Benchmarking): o produto é para um concurso interno — a qualidade
+  visual conta muito, por isso o design (glassmorphism, tons claros,
+  menu animado) foi decidido e construído antes das equipas se
+  separarem, para todas as páginas partilharem a mesma linguagem
+  visual em vez de cada equipa inventar a sua.
+
 _(as próximas decisões — de arquitetura ou de produto — devem ser
 acrescentadas aqui por quem as tomar, com uma frase do porquê)_
 
 ## Próximo Passo Imediato
 
-1. Correr a **Fase 0** com todos os presentes (ver secção acima e
-   `docs/modelo-de-dados.md`): decidir as entidades partilhadas, os
-   campos e o vocabulário/estados, e commitar isso + a migração SQL +
-   `lib/constants.js` em `main`.
-2. Só depois disso, cada equipa faz `git merge main` na sua branch e
-   decide o que vai construir na sua página/parte da plataforma — ver
-   `COMO_COMECAR.md`.
+1. Falta só o **modelo de dados partilhado** (ver `docs/modelo-de-dados.md`):
+   que tabelas/campos o benefit tracking precisa e o vocabulário de
+   estados. A estrutura do site e o menu já estão feitos.
+2. Cada equipa faz `git merge main` na sua branch e começa a construir
+   o conteúdo da sua página (já existe o esqueleto em
+   `app/<rota>/page.js`) — ver `COMO_COMECAR.md`.
 
 ## Problemas Conhecidos / Por Resolver
 
-Nenhum, por agora.
+- Confirmar no Vercel que as variáveis `NEXT_PUBLIC_SUPABASE_URL` e
+  `NEXT_PUBLIC_SUPABASE_ANON_KEY` estão marcadas também para
+  **Preview**, não só Production — os links de preview de cada equipa
+  estavam a mostrar "variáveis em falta".
 
 ## Como Correr o Projeto Localmente
 
