@@ -22,6 +22,7 @@ ferramenta": o nome, o caminho/URL, e a equipa responsável)_
 | Página | Rota (URL) | Equipa |
 |---|---|---|
 | _exemplo:_ Lista de Projetos | `/projetos` | A |
+| Benefit Tracking (Hoshin Overview, Variables, Productivity) | `/benefit-tracking` | C |
 | | | |
 
 ## Menu de navegação

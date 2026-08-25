@@ -8,7 +8,7 @@ import Link from 'next/link';
 // a meio da formação, avisa as outras equipas — é partilhado, tal como
 // uma tabela partilhada no modelo de dados.
 const PAGES = [
-  // { label: 'Projetos', href: '/projetos' },
+  { label: 'Benefit Tracking', href: '/benefit-tracking' },
 ];
 
 export default function NavBar() {
