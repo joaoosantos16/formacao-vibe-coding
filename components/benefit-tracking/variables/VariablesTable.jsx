@@ -6,6 +6,7 @@ import { getVariablesRows } from '@/lib/benefitTracking';
 const COLUMNS = [
   { key: 'client', label: 'Client', type: 'text' },
   { key: 'project', label: 'Project', type: 'text' },
+  { key: 'projectCode', label: 'Project Code', type: 'text' },
   { key: 'em', label: 'EM', type: 'text' },
   { key: 'start', label: 'Start', type: 'date' },
   { key: 'end', label: 'End', type: 'date' },
@@ -116,6 +117,7 @@ export default function VariablesTable() {
                 <tr key={rowKey}>
                   <td className="px-4 py-2 font-medium text-slate-800 whitespace-nowrap">{row.client}</td>
                   <td className="px-4 py-2 text-slate-600 whitespace-nowrap">{row.project}</td>
+                  <td className="px-4 py-2 text-slate-600 whitespace-nowrap">{row.projectCode}</td>
                   <td className="px-4 py-2 text-slate-600 whitespace-nowrap">{row.em}</td>
                   <td className="px-4 py-2 text-slate-600 whitespace-nowrap">{formatDate(row.start)}</td>
                   <td className="px-4 py-2 text-slate-600 whitespace-nowrap">{formatDate(row.end)}</td>
