@@ -62,9 +62,19 @@ isso antes de assumir.
   Supabase (`@supabase/supabase-js`).
 - A app mostra apenas uma página de estado (sem funcionalidades de produto
   ainda).
-- Esqueleto da casca partilhada já criado: `app/layout.js` já renderiza
-  `components/NavBar.jsx` (vazio, por preencher na Fase 0 — ver
-  `docs/estrutura-do-site.md`).
+- **Produto decidido: "Benefit Tracking"** — plataforma interna Kaizen
+  para standardizar o benefit tracking, com 3 páginas/equipas:
+  - `equipa-a` → **Benefit Tracking Kaizen** (`/benefit-tracking-kaizen`)
+  - `equipa-b` → **Benefit Tracking Projetos** (`/benefit-tracking-projetos`)
+  - `equipa-c` → **Benchmarking** (`/benchmarking`)
+  - `equipa-d` fica livre/reserva (não há 4ª página).
+- Casca partilhada construída: `app/layout.js` renderiza
+  `components/NavBar.jsx` (menu fixo no topo, com as 3 páginas acima),
+  com direção visual decidida — glassmorphism, tons claros, sombras
+  suaves, menu que esconde/mostra com o scroll (ver
+  `docs/estrutura-do-site.md`, secção "Direção visual").
+- As 3 páginas já existem como esqueleto em `app/<rota>/page.js`,
+  prontas para cada equipa construir o conteúdo.
 - Projeto Vercel criado e ligado ao repositório: cada branch tem o seu
   próprio deploy automático. Produção (`main`): https://formacao-vibe-coding.vercel.app
 - Projeto Supabase dedicado criado (org Kaizen Institute, região eu-west-1,
@@ -98,18 +108,24 @@ isso antes de assumir.
 - **CLAUDE.md como memória entre sessões**: reflete sempre o estado
   consolidado em `main`, atualizado nos momentos de merge.
 
+- **"Benefit Tracking" com 3 páginas/equipas** (Kaizen, Projetos,
+  Benchmarking): o produto é para um concurso interno — a qualidade
+  visual conta muito, por isso o design (glassmorphism, tons claros,
+  menu animado) foi decidido e construído antes das equipas se
+  separarem, para todas as páginas partilharem a mesma linguagem
+  visual em vez de cada equipa inventar a sua.
+
 _(as próximas decisões — de arquitetura ou de produto — devem ser
 acrescentadas aqui por quem as tomar, com uma frase do porquê)_
 
 ## Próximo Passo Imediato
 
-1. Correr a **Fase 0** com todos os presentes (ver secção acima e
-   `docs/modelo-de-dados.md`): decidir as entidades partilhadas, os
-   campos e o vocabulário/estados, e commitar isso + a migração SQL +
-   `lib/constants.js` em `main`.
-2. Só depois disso, cada equipa faz `git merge main` na sua branch e
-   decide o que vai construir na sua página/parte da plataforma — ver
-   `COMO_COMECAR.md`.
+1. Falta só o **modelo de dados partilhado** (ver `docs/modelo-de-dados.md`):
+   que tabelas/campos o benefit tracking precisa e o vocabulário de
+   estados. A estrutura do site e o menu já estão feitos.
+2. Cada equipa faz `git merge main` na sua branch e começa a construir
+   o conteúdo da sua página (já existe o esqueleto em
+   `app/<rota>/page.js`) — ver `COMO_COMECAR.md`.
 
 ## Problemas Conhecidos / Por Resolver
 
