@@ -12,12 +12,12 @@ Este projeto **não** usa um único fio de trabalho sequencial. Está dividido
 em 4 equipas que trabalham ao mesmo tempo, cada uma na sua própria branch,
 com o seu próprio link de site ao vivo (preview do Vercel):
 
-| Equipa | Branch      | Prefixo de tabelas no Supabase |
-|--------|-------------|----------------------------------|
-| A      | `equipa-a`  | `equipa_a_`                      |
-| B      | `equipa-b`  | `equipa_b_`                      |
-| C      | `equipa-c`  | `equipa_c_`                      |
-| D      | `equipa-d`  | `equipa_d_`                      |
+| Equipa | Branch      | Preview (Vercel)                                                                 | Prefixo de tabelas no Supabase |
+|--------|-------------|-----------------------------------------------------------------------------------|----------------------------------|
+| A      | `equipa-a`  | formacao-vibe-coding-git-equipa-a-joaoosantos16s-projects.vercel.app              | `equipa_a_`                      |
+| B      | `equipa-b`  | formacao-vibe-coding-git-equipa-b-joaoosantos16s-projects.vercel.app              | `equipa_b_`                      |
+| C      | `equipa-c`  | formacao-vibe-coding-git-equipa-c-joaoosantos16s-projects.vercel.app              | `equipa_c_`                      |
+| D      | `equipa-d`  | formacao-vibe-coding-git-equipa-d-joaoosantos16s-projects.vercel.app              | `equipa_d_`                      |
 
 Regras importantes:
 - Ninguém trabalha diretamente em `main`. Cada equipa só mexe na sua branch.
@@ -27,6 +27,27 @@ Regras importantes:
 - Este `CLAUDE.md`, na raiz, reflete o estado **consolidado** do projeto
   (o que já foi integrado em `main`). Não é o sítio para notas do trabalho
   em curso de cada equipa — ver `COMO_COMECAR.md` para o fluxo do dia a dia.
+
+### Fase 0 — obrigatória antes de as equipas se separarem
+
+Cada branch é uma sessão de Claude Code isolada: **nenhuma equipa vê o
+código de outra automaticamente.** Se as páginas de equipas diferentes
+trabalham sobre a mesma entidade (ex: um "Projeto" que passa por vários
+estados, visto em páginas diferentes), os nomes de tabelas/campos e o
+vocabulário (ex: os valores de um estado) têm de ser decididos **em
+conjunto, uma única vez, em `main`**, antes de as branches serem usadas
+— não inventados independentemente por cada equipa.
+
+Isto fica registado em dois sítios, preenchidos todos juntos:
+- `docs/modelo-de-dados.md` — as entidades, campos e vocabulário/estados.
+- `lib/constants.js` — esses mesmos valores como constantes de código,
+  para que nenhuma página escreva texto de estado à mão.
+
+Só depois disto estar commitado em `main` é que cada equipa corre
+`git merge main` na sua branch (ver `COMO_COMECAR.md`) e começa a
+construir. Se as páginas das equipas forem genuinamente independentes
+(sem dados partilhados), a Fase 0 pode ser dispensada — mas confirma
+isso antes de assumir.
 
 ## Estado Atual do Projeto (o que já está feito)
 
@@ -51,9 +72,13 @@ Regras importantes:
 - **Tailwind CSS**: estilização dentro do próprio ficheiro do componente —
   menos ficheiros a coordenar entre pessoas diferentes.
 - **Supabase**, um único projeto dedicado a esta formação, partilhado por
-  todas as equipas: Postgres + Auth + API prontos a usar. Cada equipa usa
-  um prefixo de tabela próprio (ver tabela acima) para não colidir com as
-  outras no mesmo esquema partilhado.
+  todas as equipas: Postgres + Auth + API prontos a usar. Tabelas
+  **partilhadas** (a maioria) são definidas em conjunto na Fase 0, sem
+  prefixo; só tabelas genuinamente privadas de uma equipa levam prefixo
+  (ver `supabase/README.md`) — inicialmente assumi que cada equipa
+  isolava os seus dados por prefixo, mas isso só funciona se as páginas
+  forem independentes. Corrigido depois de perceber que várias páginas
+  vão ler/escrever a mesma entidade partilhada.
 - **Modelo de equipas em paralelo, em vez de sessão única sequencial**:
   com 20 pessoas, um único condutor de cada vez deixava a maioria parada.
   Dividir em 4 equipas com branches e previews próprios permite trabalho
@@ -69,9 +94,13 @@ acrescentadas aqui por quem as tomar, com uma frase do porquê)_
 
 ## Próximo Passo Imediato
 
-Ainda não há nenhuma funcionalidade definida. Cada equipa deve decidir o
-que vai construir na sua parte da plataforma e começar a trabalhar na sua
-branch — ver `COMO_COMECAR.md`.
+1. Correr a **Fase 0** com todos os presentes (ver secção acima e
+   `docs/modelo-de-dados.md`): decidir as entidades partilhadas, os
+   campos e o vocabulário/estados, e commitar isso + a migração SQL +
+   `lib/constants.js` em `main`.
+2. Só depois disso, cada equipa faz `git merge main` na sua branch e
+   decide o que vai construir na sua página/parte da plataforma — ver
+   `COMO_COMECAR.md`.
 
 ## Problemas Conhecidos / Por Resolver
 
