@@ -52,7 +52,7 @@ export default function NavBar() {
       >
         <nav className="flex items-center gap-1 rounded-full bg-white/70 backdrop-blur-xl shadow-[0_8px_30px_rgb(0,0,0,0.10)] ring-1 ring-black/5 px-2 py-2">
           <span className="hidden sm:inline-flex items-center px-4 font-semibold text-slate-700 tracking-tight">
-            🌱 Benefit&nbsp;Tracking
+            KI BT&amp;B
           </span>
           {PAGES.map((page) => {
             const active = pathname === page.href;
