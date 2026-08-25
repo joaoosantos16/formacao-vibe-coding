@@ -32,19 +32,39 @@ Três palavras que vais ver muitas vezes:
 3. **Claude Code** — segue as instruções que o formador te enviar.
 4. Uma conta no GitHub, com o convite do formador já aceite.
 
-## 4. A tua equipa
+## 4. Antes de nos separarmos: a Fase 0 (feita todos juntos)
 
-| Equipa | Nome do "branch" (a tua sala de trabalho) | Prefixo das tuas tabelas na base de dados |
-|---|---|---|
-| A | `equipa-a` | `equipa_a_` |
-| B | `equipa-b` | `equipa_b_` |
-| C | `equipa-c` | `equipa_c_` |
-| D | `equipa-d` | `equipa_d_` |
+Cada equipa vai trabalhar isolada, na sua própria "sala" (branch), com a
+sua própria sessão de Claude Code. **Isto quer dizer que a equipa A não
+vê automaticamente o que a equipa B está a escrever.** Se as páginas de
+equipas diferentes forem mostrar/editar a mesma coisa (ex: um "Projeto"
+que aparece em várias páginas, com um estado como "Em Projeto"), temos
+de combinar ANTES:
+
+- que tabelas e campos existem (ex: `projetos`, com um campo `status`);
+- as palavras exatas para cada estado/categoria (ex: `em_projeto` no
+  código, "Em Projeto" no que o utilizador vê).
+
+Isto é feito **em grupo, projetado no ecrã, em `main`** (antes de
+entrarmos nas branches das equipas), preenchendo o ficheiro
+`docs/modelo-de-dados.md` e as constantes em `lib/constants.js`. Depois
+disso é commitado e enviado, e só aí é que cada equipa vai buscar isso à
+sua branch (passo 5 abaixo, "sincronizar"). Se as páginas forem mesmo
+independentes umas das outras, o formador pode dispensar este passo.
+
+## 5. A tua equipa
+
+| Equipa | Nome do "branch" (a tua sala de trabalho) | O teu site ao vivo (atualiza sozinho) | Prefixo das tuas tabelas na base de dados |
+|---|---|---|---|
+| A | `equipa-a` | [formacao-vibe-coding-git-equipa-a-joaoosantos16s-projects.vercel.app](https://formacao-vibe-coding-git-equipa-a-joaoosantos16s-projects.vercel.app) | `equipa_a_` |
+| B | `equipa-b` | [formacao-vibe-coding-git-equipa-b-joaoosantos16s-projects.vercel.app](https://formacao-vibe-coding-git-equipa-b-joaoosantos16s-projects.vercel.app) | `equipa_b_` |
+| C | `equipa-c` | [formacao-vibe-coding-git-equipa-c-joaoosantos16s-projects.vercel.app](https://formacao-vibe-coding-git-equipa-c-joaoosantos16s-projects.vercel.app) | `equipa_c_` |
+| D | `equipa-d` | [formacao-vibe-coding-git-equipa-d-joaoosantos16s-projects.vercel.app](https://formacao-vibe-coding-git-equipa-d-joaoosantos16s-projects.vercel.app) | `equipa_d_` |
 
 Confirma com o formador qual é a tua equipa. Sempre que vires `equipa-x`
 nos comandos abaixo, troca pelo nome da tua equipa (ex: `equipa-b`).
 
-## 5. Começar a trabalhar (fazer isto uma vez, no início)
+## 6. Começar a trabalhar (fazer isto uma vez, no início)
 
 Abre um terminal (no Windows: procura por "Git Bash" no menu Iniciar) e
 cola estes comandos, um de cada vez:
@@ -53,8 +73,11 @@ cola estes comandos, um de cada vez:
 git clone https://github.com/joaoosantos16/formacao-vibe-coding.git
 cd formacao-vibe-coding
 git checkout equipa-x
+git merge main
 ```
-*(troca `equipa-x` pela tua equipa, ex: `git checkout equipa-b`)*
+*(troca `equipa-x` pela tua equipa, ex: `git checkout equipa-b`. O
+`git merge main` traz para a tua branch o que foi decidido na Fase 0 —
+faz isto sempre que o formador disser que atualizou o `main`.)*
 
 ```bash
 npm install
@@ -79,7 +102,7 @@ e escreve-lhe:
 
 > "Lê o ficheiro CLAUDE.md antes de fazeres seja o que for."
 
-## 6. O ciclo de trabalho (repetir isto o dia todo)
+## 7. O ciclo de trabalho (repetir isto o dia todo)
 
 1. **Pede ao Claude Code**, em português, o que queres construir ou mudar
    (ex: "Cria uma página com um formulário para pedir feedback").
@@ -101,7 +124,7 @@ Repete este ciclo tantas vezes quantas quiseres durante a formação —
 não há um número certo de vezes. Faz `commit` + `push` sempre que
 chegares a um ponto que funciona, para não arriscares perder trabalho.
 
-## 7. O que NÃO precisas de saber nem de fazer
+## 8. O que NÃO precisas de saber nem de fazer
 
 - **Não precisas de mexer em `main`** — só a tua branch (`equipa-x`).
 - **Não precisas de fazer "merge" nem "Pull Request"** — quando a tua
@@ -113,7 +136,7 @@ chegares a um ponto que funciona, para não arriscares perder trabalho.
 - **Não precisas de resolver "conflitos" de git sozinho** — se aparecer
   algo assim, chama o formador.
 
-## 8. Se alguma coisa correr mal
+## 9. Se alguma coisa correr mal
 
 Cola a mensagem de erro toda no Claude Code e pergunta "o que significa
 isto e como resolvo?" — na maior parte das vezes ele resolve sozinho. Se
