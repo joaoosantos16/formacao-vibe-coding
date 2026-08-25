@@ -19,6 +19,10 @@ export default function Home() {
             ? 'variáveis de ambiente configuradas ✅'
             : 'variáveis de ambiente em falta ⚠️ (ver .env.example)'}
         </p>
+        <div className="w-40 h-24 bg-blue-500 rounded-lg mx-auto" />
+        <p className="text-sm text-gray-500">
+          Equipa C — teste de deployment
+        </p>
       </div>
     </main>
   );
