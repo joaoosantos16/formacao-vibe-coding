@@ -1,4 +1,4 @@
-import VariablesTable from '@/components/benefit-tracking/VariablesTable';
+import VariablesTable from '@/components/benefit-tracking/variables/VariablesTable';
 
 export default function VariablesPage() {
   return <VariablesTable />;
