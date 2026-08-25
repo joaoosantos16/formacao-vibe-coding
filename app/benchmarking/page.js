@@ -20,449 +20,469 @@
 
 import { Fragment, useState } from "react";
 
-const STANDARD_INDUSTRIES = [
-  "Agriculture", "Automotive", "Building Materials", "Consumer Electronics",
-  "Consumer Goods", "Furniture", "Medical Devices", "Others", "Plastics",
-  "Stamping", "Tableware", "Textiles", "Hospital & Healthcare", "Laboratory",
-  "Pharmaceuticals", "Airlines/Aviation", "Maritime", "Package/Freight Delivery",
-  "Transportation/Trucking/Railroad", "Warehousing", "Warehousing & Transportation",
-  "Chemicals", "Food & Beverages", "Glass, Ceramics and Concrete", "Mining & Metals",
-  "Oil & Energy", "Paper & Forest Products", "Printing", "Construction",
-  "Information Technology and Services", "Research", "Central Administration",
-  "Local Administration", "Apparel & Fashion", "Luxury Goods & Jewerly", "Retail",
-  "Sporting goods", "Supermarkets", "Telecommunications", "Wholesale",
-  "After-sales services", "Banking", "Civic & Social Organization",
-  "Consumer Services", "Field Services", "Hospitality", "Insurance",
-  "Investment Management", "Leisure, Travel & Tourism", "Management Consulting",
-  "Public Relations & Communications", "Real Estate", "Shared Services", "Utilities",
-];
+import {
+  mockProjects,
+  mockGqcdm,
+  filterFields,
+  emptyFilters,
+  computeMatch,
+  parseBenefit,
+  formatBenefit,
+  parseMetric,
+  projectKpisFor,
+} from "./data";
+import PresentationGenerator from "./PresentationGenerator";
 
-const STANDARD_MACRO_SECTORS = [
-  "Healthcare", "Discrete & Assembly Industries", "Project Based, IT, Construction",
-  "Public Sector", "Retail", "Services Industries", "Logistics", "Services",
-  "Process Industries",
-];
 
-const STANDARD_BUSINESS_AREAS = [
-  "Analytics", "Office Production", "Customer Support", "Digital", "Finance",
-  "Human Resources", "IT", "Lean", "Warehouse & Transports", "Maintenance",
-  "Marketing", "Product Development", "Production & Internal Logistics",
-  "Project Management", "Quality", "Retail Stores", "Sales", "Sourcing", "Strat",
-  "Customer Experience", "Environment and Sustainability",
-];
+// Barra "bullet".
+//
+// A escala é o PRÓPRIO percurso do benchmark: 0 = baseline da categoria,
+// 1 = target da categoria. A posição de cada projeto é
+//   (target do projeto - baseline) / (target da categoria - baseline)
+// o que resolve sozinho o sentido do KPI — quando o bom é descer (Defect
+// Rate, Lead Time) o numerador e o denominador são ambos negativos e o
+// rácio continua positivo.
+//
+// Assim todas as linhas partilham a mesma escala e o que varia — e o que
+// portanto informa — são os pontos: à esquerda da marca ficaram aquém do
+// benchmark, em cima ou à direita atingiram-no ou superaram-no.
+const BAR_SCALE = 1.25; // 25% de folga à direita do target
 
-const STANDARD_WORKSHOPS = [
-  "3P Production Preparation Process", "5S", "AI/ML - Assessment",
-  "AI/ML - Implementation", "AI/ML Implementation", "Agile Organisation",
-  "Agile Software Development", "Analytics - Implementation",
-  "Analytics - Planning Phase", "Coaching", "Customer Experience",
-  "Daily Kaizen - Audits", "Daily Kaizen - Daily Management",
-  "Daily Kaizen - Kamishibai & Gemba Walks", "Daily Kaizen - Leader Standard Work",
-  "Daily Kaizen - Planning Phase", "Daily Kaizen - Problem Solving",
-  "Daily Kaizen - Standardisation", "Daily Kaizen - TDP (Manual & Deployment)",
-  "Data Architecture & Engineering", "Design Sprints", "Digital Kaizen - Assessment",
-  "Digital Kaizen - Implementation", "Follow-up & Process Confirmation",
-  "Innovation", "Internal Logistics", "KCM Assessment", "Kobetsu Kaizen",
-  "Leader Standard Work", "Lean Portfolio Management", "Lean Product Design",
-  "Lean Project Management", "Logistics & SC - Network design",
-  "Logistics & SC - Transport optimisation", "Logistics & SC - Warehouse design",
-  "M&A Due Diligence", "Maintenance - Autonomous Maintenance",
-  "Maintenance - Early Equipment Management", "Maintenance - Planned Maintenance",
-  "Maintenance - Predictive Maintenance", "Marketing & Sales",
-  "Material Development", "Office & Services - Process Optimisation",
-  "Portfolio and Capacity Management", "Process & Workflow Automation",
-  "Product Management", "Production - Layout and Line Design", "Production - SMED",
-  "Program Governance", "Project Buffer", "Pull Planning",
-  "Quality - Autonomous Quality", "Quality - Six Sigma",
-  "Resource Planning/ Dimensioning", "Safety", "Sales", "Seminar - Foundations",
-  "Seminar - Problem Solving", "Set Based Engineering", "Sourcing",
-  "Standard Work", "Steering Committee & Mission Control", "Stock Reduction",
-  "Strat Kaizen - Hoshin Review", "Strat Kaizen - Strat Planning",
-  "Sustainability - Implementation", "Sustainability - Strategy & Reporting",
-  "TWI (Job Instruction/ Job Relations)", "Training", "Training Academy",
-  "Transformation Kaizen", "Value Analysis Value Engineering (VAVE)",
-  "Value Review", "Value Stream Analysis", "Variable Fee", "Voice of Customer",
-];
+function BulletBar({ kpi }) {
+  const baseline = parseMetric(kpi.baseline);
+  const target = parseMetric(kpi.target);
+  if (baseline === null || target === null || baseline === target) return null;
 
-const COLABORADORES_RANGES = ["<50", "50-200", "200-500", "500+"];
-const REVENUE_RANGES = ["<20M", "20-50M", "50-100M", "100M+"];
+  const span = target - baseline;
+  const ratios = projectKpisFor(kpi.name)
+    .map((k) => parseMetric(k.target))
+    .filter((v) => v !== null)
+    .map((v) => (v - baseline) / span);
 
-const mockProjects = [
-  {
-    codigo: "PRJ-2311",
-    cliente: "Empresa A",
-    em: "Jane Silva",
-    consultores: "Marco Reis, Sofia Martins",
-    industry: "Automotive",
-    setor: "Discrete & Assembly Industries",
-    subSetor: "Production & Internal Logistics",
-    workshop: "Production - Layout and Line Design",
-    colaboradoresRange: "200-500",
-    colaboradores: 320,
-    country: "Portugal",
-    revenue: "€45M",
-    revenueRange: "20-50M",
-    ebitda: "18%",
-    ativo: true,
-    date: "2024-03-01",
-    duration: "6 months",
-    details: "Lean transformation on assembly line 3",
-    kpis: [
-      { name: "On-Time Delivery", baseline: "79%", target: "96%", increase: "+17pp", benefit: "€140K" },
-      { name: "Lead Time", baseline: "13 days", target: "5 days", increase: "-62%", benefit: "€190K" },
-      { name: "Cost per Unit", baseline: "€13.10", target: "€9.50", increase: "-27%", benefit: "€260K" },
-    ],
-  },
-  {
-    codigo: "PRJ-2287",
-    cliente: "Empresa B",
-    em: "Ricardo Alves",
-    consultores: "Marco Reis",
-    industry: "Consumer Electronics",
-    setor: "Discrete & Assembly Industries",
-    subSetor: "Quality",
-    workshop: "Quality - Six Sigma",
-    colaboradoresRange: "50-200",
-    colaboradores: 140,
-    country: "Spain",
-    revenue: "€22M",
-    revenueRange: "20-50M",
-    ebitda: "14%",
-    ativo: true,
-    date: "2023-11-15",
-    duration: "4 months",
-    details: "OEE improvement on SMT lines",
-    kpis: [
-      { name: "Defect Rate", baseline: "3.8%", target: "1.6%", increase: "-58%", benefit: "€165K" },
-      { name: "First Pass Yield", baseline: "86%", target: "95%", increase: "+9pp", benefit: "€120K" },
-    ],
-  },
-  {
-    codigo: "PRJ-2199",
-    cliente: "Empresa C",
-    em: "Ana Costa",
-    consultores: "Pedro Nunes, Laura Gomez",
-    industry: "Banking",
-    setor: "Services Industries",
-    subSetor: "Finance",
-    workshop: "Office & Services - Process Optimisation",
-    colaboradoresRange: "500+",
-    colaboradores: 1200,
-    country: "Germany",
-    revenue: "€310M",
-    revenueRange: "100M+",
-    ebitda: "27%",
-    ativo: true,
-    date: "2023-08-01",
-    duration: "8 months",
-    details: "Back-office process redesign",
-    kpis: [
-      { name: "Overhead Ratio", baseline: "19%", target: "15%", increase: "-4pp", benefit: "€310K" },
-      { name: "Employee Engagement", baseline: "6.1/10", target: "7.9/10", increase: "+30%", benefit: "€40K" },
-    ],
-  },
-  {
-    codigo: "PRJ-2345",
-    cliente: "Empresa D",
-    em: "Jane Silva",
-    consultores: "Tomasz Kowalski",
-    industry: "Warehousing & Transportation",
-    setor: "Logistics",
-    subSetor: "Warehouse & Transports",
-    workshop: "Logistics & SC - Warehouse design",
-    colaboradoresRange: "200-500",
-    colaboradores: 260,
-    country: "Portugal",
-    revenue: "€38M",
-    revenueRange: "20-50M",
-    ebitda: "11%",
-    ativo: true,
-    date: "2024-01-10",
-    duration: "5 months",
-    details: "Warehouse slotting and picking optimization",
-    kpis: [
-      { name: "On-Time Delivery", baseline: "80%", target: "98%", increase: "+18pp", benefit: "€150K" },
-      { name: "Lead Time", baseline: "15 days", target: "7 days", increase: "-53%", benefit: "€200K" },
-    ],
-  },
-  {
-    codigo: "PRJ-2410",
-    cliente: "Empresa E",
-    em: "Sofia Martins",
-    consultores: "Ana Costa",
-    industry: "Pharmaceuticals",
-    setor: "Healthcare",
-    subSetor: "Production & Internal Logistics",
-    workshop: "Production - SMED",
-    colaboradoresRange: "50-200",
-    colaboradores: 95,
-    country: "Brazil",
-    revenue: "€19M",
-    revenueRange: "<20M",
-    ebitda: "21%",
-    ativo: true,
-    date: "2024-05-20",
-    duration: "3 months",
-    details: "Production line balancing",
-    kpis: [
-      { name: "Cost per Unit", baseline: "€11.90", target: "€9.20", increase: "-23%", benefit: "€95K" },
-      { name: "Waste Reduction", baseline: "7%", target: "2.5%", increase: "-64%", benefit: "€70K" },
-    ],
-  },
-  {
-    codigo: "PRJ-2158",
-    cliente: "Empresa F",
-    em: "Ricardo Alves",
-    consultores: "Tomasz Kowalski",
-    industry: "Food & Beverages",
-    setor: "Process Industries",
-    subSetor: "Maintenance",
-    workshop: "Maintenance - Autonomous Maintenance",
-    colaboradoresRange: "<50",
-    colaboradores: 38,
-    country: "Poland",
-    revenue: "€6M",
-    revenueRange: "<20M",
-    ebitda: "9%",
-    ativo: false,
-    date: "2023-06-05",
-    duration: "4 months",
-    details: "Changeover time reduction",
-    kpis: [
-      { name: "Waste Reduction", baseline: "5.5%", target: "1.8%", increase: "-67%", benefit: "€35K" },
-      { name: "Defect Rate", baseline: "2.9%", target: "1.4%", increase: "-52%", benefit: "€28K" },
-    ],
-  },
-  {
-    codigo: "PRJ-2378",
-    cliente: "Empresa G",
-    em: "Laura Gomez",
-    consultores: "Marco Reis, Pedro Nunes",
-    industry: "Automotive",
-    setor: "Discrete & Assembly Industries",
-    subSetor: "Project Management",
-    workshop: "Lean Project Management",
-    colaboradoresRange: "500+",
-    colaboradores: 890,
-    country: "Spain",
-    revenue: "€180M",
-    revenueRange: "100M+",
-    ebitda: "16%",
-    ativo: true,
-    date: "2024-02-14",
-    duration: "7 months",
-    details: "Plant-wide layout redesign",
-    kpis: [
-      { name: "Revenue Growth", baseline: "7.5%", target: "14%", increase: "+6.5pp", benefit: "€980K" },
-      { name: "Market Share", baseline: "3.8%", target: "5.9%", increase: "+2.1pp", benefit: "€610K" },
-      { name: "On-Time Delivery", baseline: "84%", target: "98%", increase: "+14pp", benefit: "€220K" },
-    ],
-  },
-  {
-    codigo: "PRJ-2290",
-    cliente: "Empresa H",
-    em: "Ana Costa",
-    consultores: "Ricardo Alves",
-    industry: "Banking",
-    setor: "Services Industries",
-    subSetor: "Sales",
-    workshop: "Marketing & Sales",
-    colaboradoresRange: "200-500",
-    colaboradores: 410,
-    country: "Portugal",
-    revenue: "€64M",
-    revenueRange: "50-100M",
-    ebitda: "23%",
-    ativo: true,
-    date: "2023-12-01",
-    duration: "6 months",
-    details: "Loan approval process Kaizen",
-    kpis: [
-      { name: "Revenue Growth", baseline: "8.5%", target: "16%", increase: "+7.5pp", benefit: "€1.1M" },
-      { name: "New Client Acquisition", baseline: "14", target: "22", increase: "+57%", benefit: "€320K" },
-    ],
-  },
-];
+  const toPct = (ratio) =>
+    Math.max(0, Math.min(1, ratio / BAR_SCALE)) * 100;
+  const targetPct = toPct(1);
+  const metCount = ratios.filter((r) => r >= 0.999).length;
 
-const mockGqcdm = [
-  {
-    key: "growth",
-    label: "Growth",
-    kpis: [
-      { name: "Revenue Growth", baseline: "8%", target: "15%", increase: "+7pp", benefit: "€2.1M" },
-      { name: "New Client Acquisition", baseline: "12", target: "20", increase: "+67%", benefit: "€640K" },
-      { name: "Market Share", baseline: "4%", target: "6%", increase: "+2pp", benefit: "€1.3M" },
-    ],
-  },
-  {
-    key: "quality",
-    label: "Quality",
-    kpis: [
-      { name: "Defect Rate", baseline: "3.2%", target: "1.5%", increase: "-53%", benefit: "€480K" },
-      { name: "First Pass Yield", baseline: "88%", target: "96%", increase: "+8pp", benefit: "€310K" },
-    ],
-  },
-  {
-    key: "cost",
-    label: "Cost",
-    kpis: [
-      { name: "Cost per Unit", baseline: "€12.40", target: "€9.80", increase: "-21%", benefit: "€890K" },
-      { name: "Overhead Ratio", baseline: "18%", target: "14%", increase: "-4pp", benefit: "€520K" },
-      { name: "Waste Reduction", baseline: "6%", target: "2%", increase: "-67%", benefit: "€275K" },
-    ],
-  },
-  {
-    key: "delivery",
-    label: "Delivery",
-    kpis: [
-      { name: "On-Time Delivery", baseline: "82%", target: "97%", increase: "+15pp", benefit: "€410K" },
-      { name: "Lead Time", baseline: "14 days", target: "6 days", increase: "-57%", benefit: "€560K" },
-    ],
-  },
-  {
-    key: "motivation",
-    label: "Motivation",
-    kpis: [
-      { name: "Employee Engagement", baseline: "6.4/10", target: "8.2/10", increase: "+28%", benefit: "€95K" },
-      { name: "Absenteeism", baseline: "5.1%", target: "2.8%", increase: "-45%", benefit: "€150K" },
-      { name: "Suggestion Rate", baseline: "0.8/employee", target: "2.1/employee", increase: "+163%", benefit: "€60K" },
-    ],
-  },
-];
+  return (
+    <div
+      className="relative h-6 w-full min-w-[132px]"
+      title={
+        `${kpi.baseline} → ${kpi.target}` +
+        (ratios.length
+          ? `\n${ratios.length} project${ratios.length > 1 ? "s" : ""}, ` +
+            `${metCount} at or above the benchmark target`
+          : "\nNo projects linked yet")
+      }
+    >
+      {/* calha */}
+      <div className="absolute inset-x-0 top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-slate-900/[0.06]" />
 
-const uniqueValues = (field) =>
-  Array.from(new Set(mockProjects.map((p) => p[field]))).sort();
+      {/* percurso baseline -> target */}
+      <div
+        className="absolute left-0 top-1/2 h-1.5 -translate-y-1/2 rounded-l-full bg-gradient-to-r from-emerald-200 to-teal-400"
+        style={{ width: `${targetPct}%` }}
+      />
 
-const filterFields = [
-  { key: "industry", label: "Industry", options: STANDARD_INDUSTRIES },
-  { key: "setor", label: "Sector", options: STANDARD_MACRO_SECTORS },
-  { key: "subSetor", label: "Business Area", options: STANDARD_BUSINESS_AREAS },
-  { key: "workshop", label: "Workshop", options: STANDARD_WORKSHOPS },
-  { key: "colaboradoresRange", label: "# of Employees", options: COLABORADORES_RANGES },
-  { key: "revenueRange", label: "Revenue", options: REVENUE_RANGES },
-  { key: "country", label: "Country", options: uniqueValues("country") },
-];
+      {/* marca do target — é o ponto de referência da leitura */}
+      <span
+        className="absolute top-1/2 h-3.5 w-[2px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-teal-700"
+        style={{ left: `${targetPct}%` }}
+      />
 
-const emptyFilters = Object.fromEntries(filterFields.map((f) => [f.key, ""]));
-
-function computeMatch(project, filters) {
-  const active = filterFields.filter((f) => filters[f.key]);
-  if (active.length === 0) return 100;
-  const matched = active.filter((f) => project[f.key] === filters[f.key]);
-  return Math.round((matched.length / active.length) * 100);
+      {/* um ponto por projeto */}
+      {ratios.map((ratio, i) => (
+        <span
+          key={i}
+          className={`absolute top-1/2 h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full ring-2 ring-white ${
+            ratio >= 0.999 ? "bg-teal-700" : "bg-slate-400"
+          }`}
+          style={{ left: `${toPct(ratio)}%` }}
+        />
+      ))}
+    </div>
+  );
 }
 
-function FilterBar({ filters, setFilters }) {
+
+// Cabeçalho de coluna clicável para ordenar.
+function SortHeader({ label, columnKey, sort, setSort, className = "" }) {
+  const active = sort.key === columnKey;
   return (
-    <div className="rounded-3xl bg-white/70 backdrop-blur-xl shadow-[0_8px_30px_rgb(0,0,0,0.06)] ring-1 ring-black/5 p-8">
-      <h2 className="text-sm font-medium uppercase tracking-wide text-slate-500">
-        Filters
+    <th className={`font-medium ${className}`}>
+      <button
+        onClick={() =>
+          setSort((prev) =>
+            prev.key === columnKey
+              ? { key: columnKey, dir: prev.dir === "asc" ? "desc" : "asc" }
+              : { key: columnKey, dir: "asc" }
+          )
+        }
+        className={`inline-flex items-center gap-1 uppercase tracking-wider transition-colors hover:text-slate-600 ${
+          active ? "text-slate-600" : ""
+        }`}
+      >
+        {label}
+        <span className={active ? "text-emerald-600" : "text-transparent"}>
+          {active && sort.dir === "desc" ? "↓" : "↑"}
+        </span>
+      </button>
+    </th>
+  );
+}
+
+function sortRows(rows, sort, accessors) {
+  if (!sort.key) return rows;
+  const accessor = accessors[sort.key];
+  if (!accessor) return rows;
+  const sorted = [...rows].sort((a, b) => {
+    const av = accessor(a);
+    const bv = accessor(b);
+    if (typeof av === "number" && typeof bv === "number") return av - bv;
+    return String(av).localeCompare(String(bv));
+  });
+  return sort.dir === "desc" ? sorted.reverse() : sorted;
+}
+
+// Abre/fecha com transição de altura (truque grid 0fr -> 1fr), sem
+// animação para quem prefere movimento reduzido.
+function Collapsible({ open, children }) {
+  return (
+    <div
+      // `inert` tira o conteúdo fechado da navegação por teclado e dos
+      // leitores de ecrã, sem perder a animação de fecho.
+      inert={open ? undefined : ""}
+      className={`grid transition-all duration-300 ease-out motion-reduce:transition-none ${
+        open ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+      }`}
+    >
+      <div className="overflow-hidden">{children}</div>
+    </div>
+  );
+}
+
+function SectionCard({ children, className = "" }) {
+  return (
+    <div
+      className={`rounded-3xl bg-white/70 backdrop-blur-xl shadow-[0_8px_30px_rgb(0,0,0,0.06)] ring-1 ring-black/5 ${className}`}
+    >
+      {children}
+    </div>
+  );
+}
+
+function SectionLabel({ children, trailing }) {
+  return (
+    <div className="flex items-baseline justify-between gap-4">
+      <h2 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-400">
+        {children}
       </h2>
-      <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {filterFields.map((field) => (
-          <div key={field.key} className="flex flex-col gap-1.5">
-            <label className="text-xs text-slate-500">{field.label}</label>
+      {trailing}
+    </div>
+  );
+}
+
+function SummaryStrip({ filters }) {
+  // Os números do topo têm de descrever o conjunto FILTRADO, não a
+  // carteira toda — senão filtrar por "Logistics" continua a mostrar o
+  // benefício de todos os projetos, que é o número que alguém citaria.
+  const scored = mockProjects.map((p) => ({
+    project: p,
+    match: computeMatch(p, filters),
+  }));
+  const matched = scored.filter((s) => s.match === 100).map((s) => s.project);
+
+  const kpiNames = new Set();
+  let totalBenefit = 0;
+  for (const project of matched) {
+    for (const kpi of project.kpis) {
+      kpiNames.add(kpi.name);
+      totalBenefit += parseBenefit(kpi.benefit);
+    }
+  }
+
+  const avgMatch = Math.round(
+    scored.reduce((sum, s) => sum + s.match, 0) / (scored.length || 1)
+  );
+
+  const isFiltered = matched.length !== mockProjects.length;
+  const outOf = isFiltered ? `of ${mockProjects.length}` : null;
+
+  const stats = [
+    { label: "Projects", value: matched.length, sub: outOf },
+    { label: "KPIs covered", value: kpiNames.size },
+    { label: "Total benefit", value: formatBenefit(totalBenefit), accent: true },
+    { label: "Avg. match", value: `${avgMatch}%` },
+  ];
+
+  return (
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      {stats.map((stat) => (
+        <SectionCard key={stat.label} className="px-6 py-5">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-400">
+            {stat.label}
+          </p>
+          <p
+            className={`mt-2 text-2xl font-semibold tracking-tight tabular-nums ${
+              stat.accent ? "text-emerald-600" : "text-slate-800"
+            }`}
+          >
+            {stat.value}
+            {stat.sub && (
+              <span className="ml-1.5 text-sm font-normal text-slate-400">
+                {stat.sub}
+              </span>
+            )}
+          </p>
+        </SectionCard>
+      ))}
+    </div>
+  );
+}
+
+function FilterBar({ filters, setFilters, hideNonMatching, setHideNonMatching }) {
+  const activeFields = filterFields.filter((f) => filters[f.key]);
+
+  return (
+    <SectionCard className="px-8 py-6">
+      <SectionLabel
+        trailing={
+          activeFields.length > 0 ? (
+            <div className="flex shrink-0 items-center gap-2">
+              <button
+                onClick={() => setHideNonMatching((v) => !v)}
+                aria-pressed={hideNonMatching}
+                className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
+                  hideNonMatching
+                    ? "bg-emerald-500/15 text-emerald-800 ring-1 ring-emerald-300"
+                    : "bg-slate-900/5 text-slate-600 hover:bg-slate-900/10 hover:text-slate-800"
+                }`}
+              >
+                Hide non-matching
+              </button>
+              <button
+                onClick={() => setFilters(emptyFilters)}
+                className="rounded-full bg-slate-900/5 px-3 py-1.5 text-xs font-medium text-slate-600 transition-colors hover:bg-slate-900/10 hover:text-slate-800"
+              >
+                Clear all
+              </button>
+            </div>
+          ) : null
+        }
+      >
+        Filters
+      </SectionLabel>
+
+      {activeFields.length > 0 && (
+        <div className="mt-4 flex flex-wrap gap-2">
+          {activeFields.map((field) => (
+            <button
+              key={field.key}
+              onClick={() => setFilters((prev) => ({ ...prev, [field.key]: "" }))}
+              title={`Remove ${field.label} filter`}
+              className="group inline-flex max-w-full items-center gap-2 rounded-full bg-emerald-500/10 py-1.5 pl-3 pr-2.5 text-xs font-medium text-emerald-800 transition-colors hover:bg-emerald-500/20"
+            >
+              <span className="truncate">
+                <span className="text-emerald-600/70">{field.label}:</span>{" "}
+                {filters[field.key]}
+              </span>
+              <span className="text-emerald-600/60 transition-colors group-hover:text-emerald-800">
+                ×
+              </span>
+            </button>
+          ))}
+        </div>
+      )}
+
+      <div className="mt-4 grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7">
+        {filterFields.map((field) => {
+          const isActive = Boolean(filters[field.key]);
+          return (
             <select
+              key={field.key}
+              aria-label={field.label}
               value={filters[field.key]}
               onChange={(e) =>
                 setFilters((prev) => ({ ...prev, [field.key]: e.target.value }))
               }
-              className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-300"
+              className={`w-full truncate rounded-xl border px-3 py-2 text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-400/40 ${
+                isActive
+                  ? "border-emerald-300 bg-emerald-50/60 font-medium text-slate-800"
+                  : "border-slate-200 bg-white/80 text-slate-500 hover:border-slate-300 hover:text-slate-700"
+              }`}
             >
-              <option value="">All</option>
+              <option value="">{field.label}</option>
               {field.options.map((value) => (
                 <option key={value} value={value}>
                   {value}
                 </option>
               ))}
             </select>
-          </div>
-        ))}
+          );
+        })}
       </div>
-      {filterFields.some((f) => filters[f.key]) && (
-        <button
-          onClick={() => setFilters(emptyFilters)}
-          className="mt-4 text-xs text-slate-500 underline underline-offset-2 hover:text-slate-700"
-        >
-          Clear filters
-        </button>
-      )}
-    </div>
+    </SectionCard>
   );
 }
 
-function KpiTable({ category, expanded, onToggle, filters }) {
+function KpiTable({ category, expanded, onToggle, filters, hideNonMatching }) {
   const isExpanded = expanded.has(category.key);
+  const [sort, setSort] = useState({ key: null, dir: "asc" });
+  const categoryBenefit = category.kpis.reduce(
+    (sum, k) => sum + parseBenefit(k.benefit),
+    0
+  );
+
+  const sortedKpis = sortRows(category.kpis, sort, {
+    name: (k) => k.name,
+    baseline: (k) => parseMetric(k.baseline) ?? 0,
+    target: (k) => parseMetric(k.target) ?? 0,
+    increase: (k) => parseMetric(k.increase) ?? 0,
+    benefit: (k) => parseBenefit(k.benefit),
+  });
 
   return (
-    <div className="border-t border-slate-100 first:border-t-0 py-5">
+    <div className="border-t border-slate-200/70 first:border-t-0">
       <button
         onClick={() => onToggle(category.key)}
-        className="flex w-full items-center justify-between text-left"
+        className="group flex w-full items-center gap-4 px-2 py-5 text-left transition-colors hover:bg-slate-900/[0.02]"
       >
-        <h3 className="text-sm font-medium text-slate-700">{category.label}</h3>
-        <span className="text-xs text-slate-500 underline underline-offset-2">
-          {isExpanded ? "Hide KPIs" : `Show ${category.kpis.length} KPIs`}
+        <span
+          className={`grid h-9 w-9 shrink-0 place-items-center rounded-xl text-sm font-semibold transition-colors ${
+            isExpanded
+              ? "bg-gradient-to-br from-emerald-400 to-teal-500 text-white shadow-sm shadow-emerald-500/30"
+              : "bg-slate-900/5 text-slate-500 group-hover:bg-slate-900/10"
+          }`}
+        >
+          {category.label.charAt(0)}
+        </span>
+
+        <span className="min-w-0 flex-1">
+          <span className="block text-base font-medium tracking-tight text-slate-800">
+            {category.label}
+          </span>
+          <span className="block text-xs text-slate-400">
+            {category.kpis.length} KPIs · {formatBenefit(categoryBenefit)} benefit
+          </span>
+        </span>
+
+        <span className="shrink-0 rounded-full bg-slate-900/5 px-3.5 py-1.5 text-xs font-medium text-slate-600 transition-colors group-hover:bg-slate-900/10">
+          {isExpanded ? "Hide" : "Expand"}
         </span>
       </button>
-      {isExpanded && (
-        <table className="mt-3 w-full text-sm">
-          <thead>
-            <tr className="text-left text-xs text-slate-400">
-              <th className="font-normal pb-2">KPI</th>
-              <th className="font-normal pb-2">Average Baseline</th>
-              <th className="font-normal pb-2">Benchmark Target</th>
-              <th className="font-normal pb-2">Average % Increase</th>
-              <th className="font-normal pb-2">Financial Benefit</th>
-              <th className="font-normal pb-2"></th>
-            </tr>
-          </thead>
-          <tbody>
-            {category.kpis.map((kpi) => (
-              <KpiRow key={kpi.name} kpi={kpi} filters={filters} />
-            ))}
-          </tbody>
-        </table>
-      )}
+
+      <Collapsible open={isExpanded}>
+        <div className="overflow-x-auto pb-5">
+          <table className="w-full min-w-[940px] text-sm">
+            <thead>
+              <tr className="text-left text-[11px] uppercase tracking-wider text-slate-400 [&_th]:pb-3">
+                <SortHeader
+                  label="KPI"
+                  columnKey="name"
+                  sort={sort}
+                  setSort={setSort}
+                  className="px-2"
+                />
+                <SortHeader
+                  label="Avg. Baseline"
+                  columnKey="baseline"
+                  sort={sort}
+                  setSort={setSort}
+                />
+                <SortHeader
+                  label="Benchmark Target"
+                  columnKey="target"
+                  sort={sort}
+                  setSort={setSort}
+                />
+                <th className="font-medium pb-3">Baseline → Target</th>
+                <SortHeader
+                  label="Avg. % Increase"
+                  columnKey="increase"
+                  sort={sort}
+                  setSort={setSort}
+                />
+                <SortHeader
+                  label="Financial Benefit"
+                  columnKey="benefit"
+                  sort={sort}
+                  setSort={setSort}
+                />
+                <th className="font-medium pb-3"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {sortedKpis.map((kpi) => (
+                <KpiRow
+                  key={kpi.name}
+                  kpi={kpi}
+                  filters={filters}
+                  hideNonMatching={hideNonMatching}
+                />
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </Collapsible>
     </div>
   );
 }
 
-function KpiRow({ kpi, filters }) {
+function KpiRow({ kpi, filters, hideNonMatching }) {
   const [showProjects, setShowProjects] = useState(false);
 
   return (
     <>
-      <tr className="border-t border-slate-50">
-        <td className="py-2 text-slate-700">{kpi.name}</td>
-        <td className="py-2 text-slate-500">{kpi.baseline}</td>
-        <td className="py-2 text-slate-500">{kpi.target}</td>
-        <td className="py-2 text-slate-500">{kpi.increase}</td>
-        <td className="py-2 text-slate-700">{kpi.benefit}</td>
-        <td className="py-2 text-right">
+      <tr
+        className={`border-t border-slate-100 transition-colors ${
+          showProjects ? "bg-emerald-50/40" : "hover:bg-slate-900/[0.02]"
+        }`}
+      >
+        <td className="px-2 py-3 font-medium text-slate-800">{kpi.name}</td>
+        <td className="py-3 tabular-nums text-slate-500">{kpi.baseline}</td>
+        <td className="py-3 tabular-nums text-slate-500">{kpi.target}</td>
+        <td className="py-3 pr-4">
+          <BulletBar kpi={kpi} />
+        </td>
+        <td className="py-3 tabular-nums text-slate-500">{kpi.increase}</td>
+        <td className="py-3 tabular-nums font-medium text-emerald-600">
+          {kpi.benefit}
+        </td>
+        <td className="py-3 pr-2 text-right">
           <button
             onClick={() => setShowProjects((v) => !v)}
-            className="text-xs text-slate-500 underline underline-offset-2 hover:text-slate-700"
+            className={`whitespace-nowrap rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors ${
+              showProjects
+                ? "bg-emerald-500/10 text-emerald-700 hover:bg-emerald-500/20"
+                : "bg-slate-900/5 text-slate-600 hover:bg-slate-900/10 hover:text-slate-800"
+            }`}
           >
             {showProjects ? "Hide projects" : "Related projects"}
           </button>
         </td>
       </tr>
-      {showProjects && (
-        <tr>
-          <td colSpan={6} className="pb-4">
-            <RelatedProjects kpiName={kpi.name} filters={filters} />
-          </td>
-        </tr>
-      )}
+      <tr>
+        <td colSpan={7} className="p-0">
+          <Collapsible open={showProjects}>
+            <div className="pb-4">
+              <RelatedProjects
+                kpiName={kpi.name}
+                filters={filters}
+                hideNonMatching={hideNonMatching}
+              />
+            </div>
+          </Collapsible>
+        </td>
+      </tr>
     </>
   );
 }
 
-function RelatedProjects({ kpiName, filters }) {
+function RelatedProjects({ kpiName, filters, hideNonMatching }) {
   const [openCode, setOpenCode] = useState(null);
+  const [sort, setSort] = useState({ key: null, dir: "asc" });
 
-  const rows = mockProjects
+  const allRows = mockProjects
     .filter((project) => project.kpis.some((k) => k.name === kpiName))
     .map((project) => ({
       ...project,
@@ -471,76 +491,138 @@ function RelatedProjects({ kpiName, filters }) {
     }))
     .sort((a, b) => b.match - a.match);
 
+  const baseRows = hideNonMatching
+    ? allRows.filter((r) => r.match > 0)
+    : allRows;
+  const hiddenCount = allRows.length - baseRows.length;
+
+  const rows = sortRows(baseRows, sort, {
+    codigo: (p) => p.codigo,
+    baseline: (p) => parseMetric(p.kpiData.baseline) ?? 0,
+    target: (p) => parseMetric(p.kpiData.target) ?? 0,
+    increase: (p) => parseMetric(p.kpiData.increase) ?? 0,
+    benefit: (p) => parseBenefit(p.kpiData.benefit),
+    match: (p) => p.match,
+  });
+
   if (rows.length === 0) {
     return (
-      <p className="mt-1 rounded-2xl bg-slate-50/80 px-4 py-3 text-xs text-slate-400">
-        No projects linked to this KPI yet.
+      <p className="rounded-2xl border border-dashed border-slate-200 bg-white/60 px-4 py-5 text-center text-xs text-slate-400">
+        {hiddenCount > 0
+          ? `No project matches the current filters (${hiddenCount} hidden).`
+          : "No projects linked to this KPI yet."}
       </p>
     );
   }
 
   return (
-    <table className="mt-1 w-full rounded-2xl bg-slate-50/80 text-sm">
-      <thead>
-        <tr className="text-left text-xs text-slate-400">
-          <th className="font-normal px-4 pt-3 pb-2">Project Code / Client</th>
-          <th className="font-normal pt-3 pb-2">KPI</th>
-          <th className="font-normal pt-3 pb-2">Baseline</th>
-          <th className="font-normal pt-3 pb-2">Benchmark Target</th>
-          <th className="font-normal pt-3 pb-2">% Increase</th>
-          <th className="font-normal pt-3 pb-2">Financial Benefit</th>
-          <th className="font-normal pt-3 pb-2">Match</th>
-          <th className="font-normal pt-3 pb-2"></th>
-        </tr>
-      </thead>
-      <tbody>
-        {rows.map((project) => (
-          <Fragment key={project.codigo}>
-            <tr className="border-t border-white">
-              <td className="px-4 py-2 text-slate-700">
-                {project.codigo}
-                <span className="block text-xs text-slate-400">
-                  {project.cliente}
-                  {!project.ativo && " — Deactivated"}
-                </span>
-              </td>
-              <td className="py-2 text-slate-500">{project.kpiData.name}</td>
-              <td className="py-2 text-slate-500">{project.kpiData.baseline}</td>
-              <td className="py-2 text-slate-500">{project.kpiData.target}</td>
-              <td className="py-2 text-slate-500">{project.kpiData.increase}</td>
-              <td className="py-2 text-slate-700">{project.kpiData.benefit}</td>
-              <td className="py-2">
-                <MatchBar value={project.match} />
-              </td>
-              <td className="py-2 text-right pr-4">
-                <button
-                  onClick={() =>
-                    setOpenCode((current) => (current === project.codigo ? null : project.codigo))
-                  }
-                  className="text-xs text-slate-500 underline underline-offset-2 hover:text-slate-700"
+    <div className="overflow-hidden rounded-2xl bg-white/70 ring-1 ring-black/5">
+      <table className="w-full text-sm">
+        <thead>
+          <tr className="bg-slate-900/[0.03] text-left text-[11px] uppercase tracking-wider text-slate-400 [&_th]:py-2.5">
+            <SortHeader
+              label="Project / Client"
+              columnKey="codigo"
+              sort={sort}
+              setSort={setSort}
+              className="px-4"
+            />
+            <th className="font-medium">KPI</th>
+            <SortHeader label="Baseline" columnKey="baseline" sort={sort} setSort={setSort} />
+            <SortHeader label="Target" columnKey="target" sort={sort} setSort={setSort} />
+            <SortHeader label="% Increase" columnKey="increase" sort={sort} setSort={setSort} />
+            <SortHeader label="Benefit" columnKey="benefit" sort={sort} setSort={setSort} />
+            <SortHeader label="Match" columnKey="match" sort={sort} setSort={setSort} />
+            <th className="font-medium"></th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((project) => {
+            const isOpen = openCode === project.codigo;
+            return (
+              <Fragment key={project.codigo}>
+                <tr
+                  className={`border-t border-slate-100 transition-colors ${
+                    isOpen ? "bg-slate-900/[0.02]" : "hover:bg-slate-900/[0.02]"
+                  }`}
                 >
-                  {openCode === project.codigo ? "Hide" : "Details"}
-                </button>
-              </td>
-            </tr>
-            {openCode === project.codigo && <ProjectDetail project={project} />}
-          </Fragment>
-        ))}
-      </tbody>
-    </table>
+                  <td className="px-4 py-3">
+                    <span className="block font-medium text-slate-800">
+                      {project.codigo}
+                    </span>
+                    <span className="block text-xs text-slate-400">
+                      {project.cliente}
+                      {!project.ativo && (
+                        <span className="ml-1.5 rounded-full bg-slate-900/5 px-1.5 py-0.5 text-[10px] font-medium text-slate-500">
+                          Deactivated
+                        </span>
+                      )}
+                    </span>
+                  </td>
+                  <td className="py-3 text-slate-500">{project.kpiData.name}</td>
+                  <td className="py-3 tabular-nums text-slate-500">
+                    {project.kpiData.baseline}
+                  </td>
+                  <td className="py-3 tabular-nums text-slate-500">
+                    {project.kpiData.target}
+                  </td>
+                  <td className="py-3 tabular-nums text-slate-500">
+                    {project.kpiData.increase}
+                  </td>
+                  <td className="py-3 tabular-nums font-medium text-emerald-600">
+                    {project.kpiData.benefit}
+                  </td>
+                  <td className="py-3">
+                    <MatchBar value={project.match} />
+                  </td>
+                  <td className="py-3 pr-4 text-right">
+                    <button
+                      onClick={() =>
+                        setOpenCode((current) =>
+                          current === project.codigo ? null : project.codigo
+                        )
+                      }
+                      className="whitespace-nowrap rounded-full bg-slate-900/5 px-3 py-1.5 text-xs font-medium text-slate-600 transition-colors hover:bg-slate-900/10 hover:text-slate-800"
+                    >
+                      {isOpen ? "Hide" : "Details"}
+                    </button>
+                  </td>
+                </tr>
+                {isOpen && <ProjectDetail project={project} />}
+              </Fragment>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
   );
 }
 
 function MatchBar({ value }) {
+  const strong = value >= 67;
+  const mid = value >= 34 && value < 67;
+
   return (
-    <div className="flex items-center gap-2 min-w-[104px]">
-      <div className="h-1.5 flex-1 rounded-full bg-slate-100 overflow-hidden">
+    <div className="flex min-w-[112px] items-center gap-2.5">
+      <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-slate-900/[0.07]">
         <div
-          className="h-full rounded-full bg-slate-700"
+          className={`h-full rounded-full transition-all duration-500 ${
+            strong
+              ? "bg-gradient-to-r from-emerald-400 to-teal-500"
+              : mid
+              ? "bg-slate-400"
+              : "bg-slate-300"
+          }`}
           style={{ width: `${value}%` }}
         />
       </div>
-      <span className="text-xs text-slate-500 w-9 text-right">{value}%</span>
+      <span
+        className={`w-9 text-right text-xs tabular-nums ${
+          strong ? "font-medium text-emerald-700" : "text-slate-400"
+        }`}
+      >
+        {value}%
+      </span>
     </div>
   );
 }
@@ -564,16 +646,20 @@ function ProjectDetail({ project }) {
   ];
 
   return (
-    <tr className="bg-slate-50/60">
-      <td colSpan={8} className="px-4 py-4">
-        <dl className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-3">
-          {fields.map(([label, value]) => (
-            <div key={label}>
-              <dt className="text-xs text-slate-400">{label}</dt>
-              <dd className="text-sm text-slate-700">{value}</dd>
-            </div>
-          ))}
-        </dl>
+    <tr>
+      <td colSpan={8} className="px-4 pb-5">
+        <div className="rounded-2xl bg-slate-900/[0.03] p-5">
+          <dl className="grid grid-cols-2 gap-x-6 gap-y-4 sm:grid-cols-3 lg:grid-cols-4">
+            {fields.map(([label, value]) => (
+              <div key={label}>
+                <dt className="text-[11px] font-medium uppercase tracking-wider text-slate-400">
+                  {label}
+                </dt>
+                <dd className="mt-0.5 text-sm text-slate-700">{value}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
       </td>
     </tr>
   );
@@ -582,6 +668,7 @@ function ProjectDetail({ project }) {
 export default function BenchmarkingPage() {
   const [filters, setFilters] = useState(emptyFilters);
   const [expanded, setExpanded] = useState(new Set());
+  const [hideNonMatching, setHideNonMatching] = useState(false);
 
   const toggleCategory = (key) => {
     setExpanded((prev) => {
@@ -595,24 +682,54 @@ export default function BenchmarkingPage() {
     });
   };
 
+  const allExpanded = expanded.size === mockGqcdm.length;
+
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-semibold tracking-tight text-slate-800">
-          Benchmarking
-        </h1>
-        <p className="mt-2 text-slate-500 text-sm">
-          UI preview with mock data — not yet connected to real project data.
-        </p>
-      </div>
-
-      <FilterBar filters={filters} setFilters={setFilters} />
-
-      <div className="rounded-3xl bg-white/70 backdrop-blur-xl shadow-[0_8px_30px_rgb(0,0,0,0.06)] ring-1 ring-black/5 p-8">
-        <h2 className="text-sm font-medium uppercase tracking-wide text-slate-500">
-          Benchmark KPIs (GQCDM)
-        </h2>
+      <header className="flex flex-wrap items-end justify-between gap-4 pt-2">
         <div>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-600">
+            KI BT&amp;B
+          </p>
+          <h1 className="mt-2 text-4xl font-semibold tracking-tight text-slate-900">
+            Benchmarking
+          </h1>
+          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-500">
+            Filter the project portfolio, then open a GQCDM category to compare KPI
+            baselines, benchmark targets and the financial benefit achieved.
+          </p>
+        </div>
+        <PresentationGenerator filters={filters} />
+      </header>
+
+      <SummaryStrip filters={filters} />
+
+      <FilterBar
+        filters={filters}
+        setFilters={setFilters}
+        hideNonMatching={hideNonMatching}
+        setHideNonMatching={setHideNonMatching}
+      />
+
+      <SectionCard className="px-8 py-7">
+        <SectionLabel
+          trailing={
+            <button
+              onClick={() =>
+                setExpanded(
+                  allExpanded ? new Set() : new Set(mockGqcdm.map((c) => c.key))
+                )
+              }
+              className="rounded-full bg-slate-900/5 px-3 py-1.5 text-xs font-medium text-slate-600 transition-colors hover:bg-slate-900/10 hover:text-slate-800"
+            >
+              {allExpanded ? "Collapse all" : "Expand all"}
+            </button>
+          }
+        >
+          Benchmark KPIs · GQCDM
+        </SectionLabel>
+
+        <div className="mt-3">
           {mockGqcdm.map((category) => (
             <KpiTable
               key={category.key}
@@ -620,10 +737,39 @@ export default function BenchmarkingPage() {
               expanded={expanded}
               onToggle={toggleCategory}
               filters={filters}
+              hideNonMatching={hideNonMatching}
             />
           ))}
         </div>
-      </div>
+
+        {/* Legenda da barra — sem isto, quem vê a página pela primeira
+            vez não sabe o que são os pontos. */}
+        <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-slate-200/70 pt-4 text-[11px] text-slate-400">
+          <span className="font-medium uppercase tracking-wider">
+            Baseline → Target
+          </span>
+          <span className="inline-flex items-center gap-2">
+            <span className="h-1.5 w-8 rounded-full bg-gradient-to-r from-emerald-200 to-teal-400" />
+            Baseline to benchmark target
+          </span>
+          <span className="inline-flex items-center gap-2">
+            <span className="h-3.5 w-[2px] rounded-full bg-teal-700" />
+            Benchmark target
+          </span>
+          <span className="inline-flex items-center gap-2">
+            <span className="h-2.5 w-2.5 rounded-full bg-teal-700 ring-2 ring-white" />
+            Project met or beat it
+          </span>
+          <span className="inline-flex items-center gap-2">
+            <span className="h-2.5 w-2.5 rounded-full bg-slate-400 ring-2 ring-white" />
+            Project fell short
+          </span>
+        </div>
+      </SectionCard>
+
+      <p className="pb-4 text-center text-xs text-slate-400">
+        UI preview with mock data — not yet connected to real project data.
+      </p>
     </div>
   );
 }
