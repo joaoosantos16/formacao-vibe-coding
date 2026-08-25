@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { getVariablesRows } from '@/lib/benefitTracking';
+import { getVariablesRows, getNextAutoUpdateDate } from '@/lib/benefitTracking';
 
 const COLUMNS = [
   { key: 'client', label: 'Client', type: 'text' },
@@ -13,8 +13,8 @@ const COLUMNS = [
   { key: 'potentialK', label: 'Potential', type: 'number' },
   { key: 'invoicedK', label: 'Invoiced', type: 'number' },
   { key: 'status', label: 'Status', type: 'text' },
-  { key: 'quarter', label: 'Quarter Potential', type: 'text' },
-  { key: 'quarterInvoiced', label: 'Quarter Invoiced', type: 'text' },
+  { key: 'quarterPotentialK', label: 'Quarter Potential', type: 'number' },
+  { key: 'quarterInvoicedK', label: 'Quarter Invoiced', type: 'number' },
   { key: 'lastUpdate', label: 'Last Update', type: 'date' },
 ];
 
@@ -32,9 +32,10 @@ const FILTERS = [
 
 export default function VariablesTable() {
   const rows = getVariablesRows();
-  const [sort, setSort] = useState({ key: 'quarter', direction: 'asc' });
+  const [sort, setSort] = useState({ key: 'quarterPotentialK', direction: 'asc' });
   const [filter, setFilter] = useState('all');
   const [requested, setRequested] = useState({});
+  const nextAutoUpdate = getNextAutoUpdateDate();
 
   function toggleSort(key) {
     setSort((current) =>
@@ -70,21 +71,26 @@ export default function VariablesTable() {
 
   return (
     <div className="space-y-3">
-      <div className="inline-flex gap-1 rounded-full bg-white/70 backdrop-blur-xl shadow-[0_4px_20px_rgb(0,0,0,0.06)] ring-1 ring-black/5 p-1.5">
-        {FILTERS.map((f) => (
-          <button
-            key={f.key}
-            type="button"
-            onClick={() => setFilter(f.key)}
-            className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all duration-300 ${
-              filter === f.key
-                ? 'bg-gradient-to-br from-indigo-500 to-violet-600 text-white shadow-md'
-                : 'text-slate-600 hover:bg-slate-900/5'
-            }`}
-          >
-            {f.label}
-          </button>
-        ))}
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="inline-flex gap-1 rounded-full bg-white/70 backdrop-blur-xl shadow-[0_4px_20px_rgb(0,0,0,0.06)] ring-1 ring-black/5 p-1.5">
+          {FILTERS.map((f) => (
+            <button
+              key={f.key}
+              type="button"
+              onClick={() => setFilter(f.key)}
+              className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all duration-300 ${
+                filter === f.key
+                  ? 'bg-gradient-to-br from-indigo-500 to-violet-600 text-white shadow-md'
+                  : 'text-slate-600 hover:bg-slate-900/5'
+              }`}
+            >
+              {f.label}
+            </button>
+          ))}
+        </div>
+        <p className="text-xs text-slate-500">
+          Update requests go out automatically every other Thursday — next: {formatDate(nextAutoUpdate)}
+        </p>
       </div>
 
       <div className="overflow-x-auto rounded-3xl bg-white/70 backdrop-blur-xl shadow-[0_8px_30px_rgb(0,0,0,0.06)] ring-1 ring-black/5">
@@ -128,8 +134,8 @@ export default function VariablesTable() {
                       {row.status}
                     </span>
                   </td>
-                  <td className="px-4 py-2 text-slate-600 whitespace-nowrap">{row.quarter}</td>
-                  <td className="px-4 py-2 text-slate-600 whitespace-nowrap">{row.quarterInvoiced ?? '—'}</td>
+                  <td className="px-4 py-2 text-right tabular-nums text-slate-600 whitespace-nowrap">{formatK(row.quarterPotentialK)}</td>
+                  <td className="px-4 py-2 text-right tabular-nums text-slate-600 whitespace-nowrap">{formatK(row.quarterInvoicedK)}</td>
                   <td className="px-4 py-2 text-slate-500 whitespace-nowrap">{formatDate(row.lastUpdate)}</td>
                   <td className="px-4 py-2 whitespace-nowrap">
                     <button
@@ -142,7 +148,7 @@ export default function VariablesTable() {
                           : 'bg-gradient-to-br from-indigo-500 to-violet-600 text-white hover:shadow-md'
                       }`}
                     >
-                      {alreadyRequested ? 'Update requested' : 'Send update request'}
+                      {alreadyRequested ? 'Sent' : 'Send now'}
                     </button>
                   </td>
                 </tr>
