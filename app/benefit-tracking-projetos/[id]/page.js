@@ -33,6 +33,7 @@ import {
   CHART_TYPES,
   SECTORS,
   SECTOR_SUBSECTORS,
+  BUSINESS_AREAS,
   PEOPLE,
   KPI_CATALOG,
   STATUS_LABELS,
@@ -320,7 +321,7 @@ function GeneralInfoTab({ project, onSaved }) {
                 <ComboSelect value={view.sector} onChange={updateSector} options={SECTORS} />
               </div>
               <div>
-                <p className="text-xs font-medium text-slate-400 mb-1.5">Subsector</p>
+                <p className="text-xs font-medium text-slate-400 mb-1.5">Subsector / Industry</p>
                 <ComboSelect
                   value={view.subsector}
                   onChange={(v) => field('subsector', v)}
@@ -328,6 +329,11 @@ function GeneralInfoTab({ project, onSaved }) {
                   disabled={!view.sector}
                 />
               </div>
+              <div>
+                <p className="text-xs font-medium text-slate-400 mb-1.5">Business Area</p>
+                <ComboSelect value={view.businessArea} onChange={(v) => field('businessArea', v)} options={BUSINESS_AREAS} />
+              </div>
+              <InfoField label="Country" value={view.country} editing={editing} onChange={(v) => field('country', v)} />
               <div>
                 <p className="text-xs font-medium text-slate-400 mb-1.5">SR</p>
                 <ComboSelect value={view.sr} onChange={(v) => field('sr', v)} options={PEOPLE} />
@@ -344,7 +350,9 @@ function GeneralInfoTab({ project, onSaved }) {
           ) : (
             <>
               <InfoField label="Sector" value={view.sector} editing={false} />
-              <InfoField label="Subsector" value={view.subsector} editing={false} />
+              <InfoField label="Subsector / Industry" value={view.subsector} editing={false} />
+              <InfoField label="Business Area" value={view.businessArea} editing={false} />
+              <InfoField label="Country" value={view.country} editing={false} />
               <InfoField label="SR" value={view.sr} editing={false} />
               <InfoField label="EM" value={view.em} editing={false} />
               <InfoField label="Consultants" value={(view.consultants ?? []).join(', ')} editing={false} />

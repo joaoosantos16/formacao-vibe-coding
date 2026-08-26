@@ -36,7 +36,6 @@
 
 import { useEffect, useMemo, useState } from "react";
 import {
-  mockProjects,
   mockGqcdm,
   filterFields,
   parseMetric,
@@ -96,8 +95,8 @@ function median(values) {
 // Fallback por níveis: tenta o match exato e vai alargando. Devolve
 // sempre qual o nível usado, para o slide poder dizê-lo em vez de
 // apresentar um match largo como se fosse exato.
-function findComparable(kpiName, filters) {
-  const withKpi = mockProjects.filter((p) =>
+function findComparable(kpiName, filters, projects) {
+  const withKpi = projects.filter((p) =>
     p.kpis.some((k) => k.name === kpiName)
   );
   const activeKeys = filterFields
@@ -137,8 +136,8 @@ function findComparable(kpiName, filters) {
   return { projects: [], tier: "All comparable projects", widened: true };
 }
 
-function buildInternal(kpiName, filters) {
-  const { projects, tier, widened } = findComparable(kpiName, filters);
+function buildInternal(kpiName, filters, allProjects) {
+  const { projects, tier, widened } = findComparable(kpiName, filters, allProjects);
   const records = projects
     .map((p) => p.kpis.find((k) => k.name === kpiName))
     .filter(Boolean);
@@ -167,24 +166,23 @@ function buildInternal(kpiName, filters) {
 }
 
 function BrandMark({ variant = "full" }) {
-  // PLACEHOLDER — não é o logótipo oficial. Pôr o ficheiro real em
-  // public/ e substituir este bloco.
   const light = variant === "light";
+  // Logótipo oficial (public/kaizen-logo.png) em fundo claro. Em fundo
+  // escuro (capa) o PNG a cores perde contraste, por isso mantém-se o
+  // wordmark em texto branco — trocar quando houver uma versão
+  // monocromática/branca do logótipo.
+  if (!light) {
+    return (
+      // eslint-disable-next-line @next/next/no-img-element -- slide impresso a PDF, next/image não ajuda aqui
+      <img src="/kaizen-logo.png" alt="Kaizen Institute" className="h-[1.6em] w-auto" />
+    );
+  }
   return (
-    <span
-      className="inline-flex items-baseline gap-1.5"
-      title="Placeholder wordmark — replace with the official Kaizen logo asset"
-    >
-      <span
-        className="text-[0.95em] font-bold tracking-tight"
-        style={{ color: light ? "#fff" : BRAND.blue }}
-      >
+    <span className="inline-flex items-baseline gap-1.5">
+      <span className="text-[0.95em] font-bold tracking-tight" style={{ color: "#fff" }}>
         KAIZEN
       </span>
-      <span
-        className="text-[0.8em] font-medium tracking-[0.2em]"
-        style={{ color: light ? "rgba(255,255,255,.75)" : BRAND.muted }}
-      >
+      <span className="text-[0.8em] font-medium tracking-[0.2em]" style={{ color: "rgba(255,255,255,.75)" }}>
         INSTITUTE
       </span>
     </span>
@@ -390,13 +388,13 @@ function KpiChart({ kpis }) {
   );
 }
 
-function buildSlides({ sections, kpiNames, clientName, filters }) {
+function buildSlides({ sections, kpiNames, clientName, filters, projects }) {
   const slides = [];
   const scope = filterFields
     .filter((f) => filters[f.key])
     .map((f) => `${f.label}: ${filters[f.key]}`);
   const chosen = allKpis.filter((k) => kpiNames.includes(k.name));
-  const internals = kpiNames.map((name) => buildInternal(name, filters));
+  const internals = kpiNames.map((name) => buildInternal(name, filters, projects));
 
   if (sections.intro) slides.push({ type: "intro", scope, clientName });
   if (sections.internal) slides.push({ type: "internal", internals });
@@ -608,7 +606,7 @@ function SlideBody({ slide, index, total }) {
   return null;
 }
 
-export default function PresentationGenerator({ filters }) {
+export default function PresentationGenerator({ filters, projects }) {
   const [modalOpen, setModalOpen] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [generating, setGenerating] = useState(false);
@@ -639,7 +637,7 @@ export default function PresentationGenerator({ filters }) {
     setGenerating(true);
     // Só calcula o que está selecionado.
     setTimeout(() => {
-      setSlides(buildSlides({ sections, kpiNames, clientName, filters }));
+      setSlides(buildSlides({ sections, kpiNames, clientName, filters, projects }));
       setGenerating(false);
       setModalOpen(false);
       setPreviewOpen(true);

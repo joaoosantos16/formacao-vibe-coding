@@ -5,23 +5,25 @@
 // (components/NavBar.jsx, app/layout.js) são partilhados — não mexer
 // nesses sem combinar com as outras equipas.
 //
-// Estado atual: apenas UI, com dados mock (mockProjects / mockGqcdm).
-// Sem ligação à base de dados — isso fica para uma fase seguinte.
+// LIGADO AO SUPABASE (26/08): os projetos e KPIs vêm de
+// fetchBenchmarkProjects() (./data.js), não de dados mock — cada barra
+// "bullet" e cada "Related projects" reflete a carteira real. mockGqcdm
+// continua estático: é o catálogo de referência (o que conta como "bom"
+// por KPI/GQCDM), não um resultado de projeto.
 //
 // Nomenclatura de campos (Código, EM, Setor, SubSetor, Consultores, KPI,
 // Revenue, #Colaboradores, EBITDA, Cliente, Ativo/Desativado) e as listas
 // de Industry / Macro Sector / Business Area / Workshop vêm dos ficheiros
 // partilhados pelo utilizador (Standard_Workshops(C).xlsx e
-// "Industry Macro Sector Business Area.xlsx"). Isto é usado aqui, na
-// minha página, livremente — mas como é suposto ser a mesma linguagem
-// usada por todas as equipas, a versão definitiva partilhada só deve ir
-// para docs/modelo-de-dados.md e lib/constants.js depois de confirmado
-// com o formador (ver regras-claude-code.md, secção 1).
+// "Industry Macro Sector Business Area.xlsx"), alinhadas aos valores reais
+// de projetos.setor/.subsetor/.area_negocio (mesmos que a Equipa B usa em
+// Benefit Tracking Projetos) — ver STANDARD_INDUSTRIES/STANDARD_MACRO_SECTORS
+// em ./data.js.
 
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 
 import {
-  mockProjects,
+  fetchBenchmarkProjects,
   mockGqcdm,
   filterFields,
   emptyFilters,
@@ -48,13 +50,13 @@ import PresentationGenerator from "./PresentationGenerator";
 // benchmark, em cima ou à direita atingiram-no ou superaram-no.
 const BAR_SCALE = 1.25; // 25% de folga à direita do target
 
-function BulletBar({ kpi }) {
+function BulletBar({ kpi, projects }) {
   const baseline = parseMetric(kpi.baseline);
   const target = parseMetric(kpi.target);
   if (baseline === null || target === null || baseline === target) return null;
 
   const span = target - baseline;
-  const ratios = projectKpisFor(kpi.name)
+  const ratios = projectKpisFor(kpi.name, projects)
     .map((k) => parseMetric(k.target))
     .filter((v) => v !== null)
     .map((v) => (v - baseline) / span);
@@ -182,11 +184,11 @@ function SectionLabel({ children, trailing }) {
   );
 }
 
-function SummaryStrip({ filters }) {
+function SummaryStrip({ filters, projects }) {
   // Os números do topo têm de descrever o conjunto FILTRADO, não a
   // carteira toda — senão filtrar por "Logistics" continua a mostrar o
   // benefício de todos os projetos, que é o número que alguém citaria.
-  const scored = mockProjects.map((p) => ({
+  const scored = projects.map((p) => ({
     project: p,
     match: computeMatch(p, filters),
   }));
@@ -205,8 +207,8 @@ function SummaryStrip({ filters }) {
     scored.reduce((sum, s) => sum + s.match, 0) / (scored.length || 1)
   );
 
-  const isFiltered = matched.length !== mockProjects.length;
-  const outOf = isFiltered ? `of ${mockProjects.length}` : null;
+  const isFiltered = matched.length !== projects.length;
+  const outOf = isFiltered ? `of ${projects.length}` : null;
 
   const stats = [
     { label: "Projects", value: matched.length, sub: outOf },
@@ -325,7 +327,7 @@ function FilterBar({ filters, setFilters, hideNonMatching, setHideNonMatching })
   );
 }
 
-function KpiTable({ category, expanded, onToggle, filters, hideNonMatching }) {
+function KpiTable({ category, expanded, onToggle, filters, hideNonMatching, projects }) {
   const isExpanded = expanded.has(category.key);
   const [sort, setSort] = useState({ key: null, dir: "asc" });
   const categoryBenefit = category.kpis.reduce(
@@ -418,6 +420,7 @@ function KpiTable({ category, expanded, onToggle, filters, hideNonMatching }) {
                   kpi={kpi}
                   filters={filters}
                   hideNonMatching={hideNonMatching}
+                  projects={projects}
                 />
               ))}
             </tbody>
@@ -428,7 +431,7 @@ function KpiTable({ category, expanded, onToggle, filters, hideNonMatching }) {
   );
 }
 
-function KpiRow({ kpi, filters, hideNonMatching }) {
+function KpiRow({ kpi, filters, hideNonMatching, projects }) {
   const [showProjects, setShowProjects] = useState(false);
 
   return (
@@ -442,7 +445,7 @@ function KpiRow({ kpi, filters, hideNonMatching }) {
         <td className="py-3 tabular-nums text-slate-500">{kpi.baseline}</td>
         <td className="py-3 tabular-nums text-slate-500">{kpi.target}</td>
         <td className="py-3 pr-4">
-          <BulletBar kpi={kpi} />
+          <BulletBar kpi={kpi} projects={projects} />
         </td>
         <td className="py-3 tabular-nums text-slate-500">{kpi.increase}</td>
         <td className="py-3 tabular-nums font-medium text-blue-600">
@@ -469,6 +472,7 @@ function KpiRow({ kpi, filters, hideNonMatching }) {
                 kpiName={kpi.name}
                 filters={filters}
                 hideNonMatching={hideNonMatching}
+                projects={projects}
               />
             </div>
           </Collapsible>
@@ -478,11 +482,11 @@ function KpiRow({ kpi, filters, hideNonMatching }) {
   );
 }
 
-function RelatedProjects({ kpiName, filters, hideNonMatching }) {
+function RelatedProjects({ kpiName, filters, hideNonMatching, projects }) {
   const [openCode, setOpenCode] = useState(null);
   const [sort, setSort] = useState({ key: null, dir: "asc" });
 
-  const allRows = mockProjects
+  const allRows = projects
     .filter((project) => project.kpis.some((k) => k.name === kpiName))
     .map((project) => ({
       ...project,
@@ -669,6 +673,21 @@ export default function BenchmarkingPage() {
   const [filters, setFilters] = useState(emptyFilters);
   const [expanded, setExpanded] = useState(new Set());
   const [hideNonMatching, setHideNonMatching] = useState(false);
+  const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetchBenchmarkProjects().then((rows) => {
+      if (!cancelled) {
+        setProjects(rows);
+        setLoading(false);
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const toggleCategory = (key) => {
     setExpanded((prev) => {
@@ -699,10 +718,16 @@ export default function BenchmarkingPage() {
             baselines, benchmark targets and the financial benefit achieved.
           </p>
         </div>
-        <PresentationGenerator filters={filters} />
+        <PresentationGenerator filters={filters} projects={projects} />
       </header>
 
-      <SummaryStrip filters={filters} />
+      {loading ? (
+        <SectionCard className="px-8 py-10 text-center text-sm text-slate-400">
+          Loading projects…
+        </SectionCard>
+      ) : (
+        <SummaryStrip filters={filters} projects={projects} />
+      )}
 
       <FilterBar
         filters={filters}
@@ -738,6 +763,7 @@ export default function BenchmarkingPage() {
               onToggle={toggleCategory}
               filters={filters}
               hideNonMatching={hideNonMatching}
+              projects={projects}
             />
           ))}
         </div>
@@ -768,7 +794,7 @@ export default function BenchmarkingPage() {
       </SectionCard>
 
       <p className="pb-4 text-center text-xs text-slate-400">
-        UI preview with mock data — not yet connected to real project data.
+        {projects.length} real project{projects.length === 1 ? "" : "s"} with KPI data · GQCDM targets are the company benchmark norm.
       </p>
     </div>
   );

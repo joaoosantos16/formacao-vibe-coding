@@ -10,6 +10,7 @@ import {
   KPI_CATALOG,
   SECTORS,
   SECTOR_SUBSECTORS,
+  BUSINESS_AREAS,
   PEOPLE,
 } from '@/lib/benefitTrackingStore';
 
@@ -17,6 +18,8 @@ const EMPTY_FORM = {
   client: '',
   sector: '',
   subsector: '',
+  businessArea: '',
+  country: '',
   code: '',
   sr: '',
   em: '',
@@ -143,7 +146,7 @@ export default function NovoProjetoPage() {
           <Field label="Sector" required>
             <ComboSelect value={form.sector} onChange={updateSector} options={SECTORS} placeholder="Select sector" />
           </Field>
-          <Field label="Subsector" required>
+          <Field label="Subsector / Industry" required>
             <ComboSelect
               value={form.subsector}
               onChange={(v) => updateField('subsector', v)}
@@ -151,6 +154,17 @@ export default function NovoProjetoPage() {
               disabled={!form.sector}
               placeholder="Select subsector"
             />
+          </Field>
+          <Field label="Business Area">
+            <ComboSelect
+              value={form.businessArea}
+              onChange={(v) => updateField('businessArea', v)}
+              options={BUSINESS_AREAS}
+              placeholder="Select business area"
+            />
+          </Field>
+          <Field label="Country">
+            <input className={inputClass} value={form.country} onChange={(e) => updateField('country', e.target.value)} />
           </Field>
           <Field label="SR" required>
             <ComboSelect value={form.sr} onChange={(v) => updateField('sr', v)} options={PEOPLE} placeholder="Select SR" />

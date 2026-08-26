@@ -102,14 +102,18 @@ isso antes de assumir.
     (logrado vs plano) e de reparto por KPI, e histórico de alterações.
     Motor em `lib/benefitCalc.js` (puro, sem I/O — ver
     `docs/modelo-de-dados.md`).
-  - **Benchmarking** (Equipa A): drill-down de KPIs por GQCDM com
-    matching de projetos relacionados, barras "bullet" comparativas,
-    ordenação, gerador de apresentação
-    (`app/benchmarking/PresentationGenerator.jsx`). Dados em
-    `app/benchmarking/data.js` — **ainda mock**; ligar exigiria também
-    reconciliar a taxonomia de setores (a lista da Equipa A não bate
-    certo com a da Equipa B) e reconstruir o GQCDM a partir de
-    `projeto_kpis.categoria` em vez de estático.
+  - **Benchmarking** (Equipa A) — **ligado ao Supabase a sério (26/08)**:
+    `app/benchmarking/data.js` exporta `fetchBenchmarkProjects()`, que lê
+    `projetos` + `projeto_kpis` reais em vez de `mockProjects` (removido).
+    Industry/Sector/Business Area usam agora exatamente os mesmos valores
+    que `projetos.subsetor`/`.setor`/`.area_negocio` (Equipa B) — as
+    listas `STANDARD_INDUSTRIES`/`STANDARD_MACRO_SECTORS` (Equipa A) e
+    `INDUSTRIES`/`SECTORS` (`lib/benefitTrackingStore.js`, Equipa B) foram
+    alinhadas às mesmas 36/8 opções reais, e o formulário "General
+    Information" (Equipa B) ganhou os campos Business Area/Country. O
+    catálogo GQCDM (`mockGqcdm`) continua estático — representa a norma
+    de benchmark da empresa, não um resultado de projeto — mas foi
+    alargado com OEE/Scrap Rate/Inventory Days para cobrir os KPIs reais.
   - **Benefit Tracking Kaizen** (Equipa C): Hoshin Overview,
     Productivity, Variables (`components/benefit-tracking/`). Dados em
     `lib/benefitTracking.js` — **ainda mock**. Hoshin fica sempre mock
@@ -118,10 +122,18 @@ isso antes de assumir.
     prontas (`projeto_honorarios_variaveis`,
     `projeto_ocupacao_semanal`) mas sem formulário de criação — ligar
     mostraria só estados vazios até haver como lá meter dados.
-- **Gap conhecido**: `pais` não foi preenchido nos 75 projetos
-  importados (só existia como código de 2 letras no ficheiro de
-  origem, não foi transformado) — o filtro "Country" da Equipa A fica
-  vazio para dados reais.
+- **Dados decoy (26/08)**: os 75 projetos importados só tinham
+  codigo/cliente/setor/subsetor/em/sr — sem KPIs, medições, datas ou
+  financeiro. Populado via script gerado localmente (não commitado —
+  um-uso só, ver histórico do chat): `pais`, `area_negocio` (nova
+  coluna), `data_inicio`/`data_fim`, `client_revenue`, `colaboradores`,
+  `project_cost`, `variable_fee` em todos os 75; 216 `projeto_kpis`
+  (3 por projeto, GQCDM quality/cost/delivery: OEE, Cost per Unit, Lead
+  Time, First Pass Yield, Scrap Rate, Inventory Days, On-Time Delivery)
+  e 1293 `projeto_kpi_medicoes` mensais nos 72 projetos que ainda não
+  tinham KPI (os 3 que já tinham — FPLA-203-POR, ALES-901-SPA,
+  OSCA-201-POR — não foram tocados, para não duplicar/estragar dados
+  reais de teste).
 - Projeto Vercel ligado ao repositório: deploy automático por branch.
   Produção (`main`): https://formacao-vibe-coding.vercel.app
 - Projeto Supabase dedicado (org Kaizen Institute, região eu-west-1,
@@ -164,19 +176,16 @@ acrescentadas aqui por quem as tomar, com uma frase do porquê)_
 
 ## Próximo Passo Imediato
 
-1. **Ligar Benchmarking (Equipa A) e Benefit Tracking Kaizen (Equipa C)
-   ao Supabase** — só a Equipa B está ligada a sério até agora. A
-   Equipa A precisa também de reconciliar a sua taxonomia de setores
-   com a da Equipa B (não batem certo) e de o GQCDM passar a ser
-   calculado a partir de `projeto_kpis.categoria` em vez de estático.
-   A Equipa C (Variables/Productivity) precisa primeiro de formulários
-   de criação — sem isso, ligar às tabelas reais só mostra vazio.
-2. Preencher `pais` nos 75 projetos importados (só existia como código
-   de 2 letras no ficheiro de origem — ver "Gap conhecido" acima).
-3. Decidir se as políticas de RLS abertas da tabela `projetos` ficam
+1. **Ligar Benefit Tracking Kaizen (Equipa C) ao Supabase** — Benchmarking
+   (Equipa A) e Benefit Tracking Projetos (Equipa B) já estão ligados a
+   sério; só falta a Equipa C. Variables/Productivity precisam primeiro
+   de formulários de criação — sem isso, ligar às tabelas reais só
+   mostra vazio. Hoshin fica sempre mock (dashboard agregado, fora de
+   alcance).
+2. Decidir se as políticas de RLS abertas da tabela `projetos` ficam
    assim (é uma formação, sem dados sensíveis a sério) ou se vale a
    pena apertar antes de mostrar a alguém de fora.
-4. Rever visualmente as 3 páginas em conjunto — foram construídas em
+3. Rever visualmente as 3 páginas em conjunto — foram construídas em
    paralelo, vale a pena confirmar que a linguagem visual (cores,
    ícones/emojis, cartões) ficou mesmo consistente entre elas.
 
