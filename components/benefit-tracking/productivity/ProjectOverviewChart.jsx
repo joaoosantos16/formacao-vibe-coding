@@ -73,7 +73,7 @@ export default function ProjectOverviewChart() {
 
       {/* max-width no wrapper, não preserveAspectRatio="none" no svg —
           "none" escala X/Y de forma independente e distorce o texto. */}
-      <div className="max-w-2xl">
+      <div className="max-w-4xl mx-auto">
       <svg
         viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
         className="w-full"

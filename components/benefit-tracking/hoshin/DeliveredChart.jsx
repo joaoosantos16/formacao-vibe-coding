@@ -77,7 +77,7 @@ export default function DeliveredChart() {
           "none" escala X/Y de forma independente e distorce o texto.
           Limitar a largura mantém a proporção e o gráfico não cresce
           além do razoável, mesmo num cartão a toda a largura. */}
-      <div className="max-w-4xl">
+      <div className="max-w-5xl mx-auto">
         <svg
           viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
           className="w-full"

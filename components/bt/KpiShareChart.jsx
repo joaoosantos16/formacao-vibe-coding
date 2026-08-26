@@ -57,7 +57,7 @@ export default function KpiShareChart({ kpisWithCalc }) {
   // muito largo (className="w-full" sozinho estica o SVG até encher o
   // cartão inteiro, ficando enorme).
   return (
-    <div className="max-w-lg">
+    <div className="max-w-2xl mx-auto">
       <svg viewBox={`0 0 ${W} ${H}`} className="w-full">
         {arcs}
         <text x={cx} y={cy - 3} fontSize="19" fontWeight="700" fill="#16221F" textAnchor="middle">{formatEur(total)}</text>

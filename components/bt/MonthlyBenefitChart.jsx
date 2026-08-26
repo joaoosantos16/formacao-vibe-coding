@@ -90,7 +90,7 @@ export default function MonthlyBenefitChart({ months, byMonth, byMonthPlan }) {
           largo. Limitar a largura mantém a escala uniforme (proporção
           preservada) e o gráfico simplesmente não cresce além do
           razoável, mesmo que o cartão à volta seja maior. */}
-      <div className="max-w-3xl">
+      <div className="max-w-5xl mx-auto">
         <svg viewBox={`0 0 ${W} ${H}`} className="w-full" style={{ minWidth: Math.min(W, 420) }}>
           {gridLines}
           {yearSeps}
