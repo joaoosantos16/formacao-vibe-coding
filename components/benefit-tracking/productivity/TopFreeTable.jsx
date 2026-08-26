@@ -45,13 +45,13 @@ export default function TopFreeTable() {
   return (
     <div className="overflow-x-auto rounded-3xl bg-white/70 backdrop-blur-xl shadow-[0_8px_30px_rgb(0,0,0,0.06)] ring-1 ring-black/5">
       <div className="px-4 pt-3 text-xs font-medium text-slate-500">Top Free</div>
-      <table className="min-w-full text-sm">
+      <table className="min-w-full text-xs">
         <thead className="text-left text-slate-500">
           <tr>
             {COLUMNS.map((col) => {
               const active = sort.key === col.key;
               return (
-                <th key={col.key} className="px-4 py-3 font-medium whitespace-nowrap">
+                <th key={col.key} className="px-1.5 py-2 font-medium whitespace-nowrap">
                   <button
                     type="button"
                     onClick={() => toggleSort(col.key)}
@@ -68,22 +68,22 @@ export default function TopFreeTable() {
         <tbody className="divide-y divide-slate-100">
           {sorted.map((row) => (
             <tr key={row.project}>
-              <td className="px-4 py-2 font-medium text-slate-800 whitespace-nowrap">{row.project}</td>
-              <td className="px-4 py-2 text-slate-600 whitespace-nowrap">{row.em}</td>
-              <td className="px-4 py-2 text-right tabular-nums text-slate-600 whitespace-nowrap">{row.occPct}%</td>
-              <td className="px-4 py-2 text-right tabular-nums text-slate-600 whitespace-nowrap">€{row.varK.toFixed(1)}K</td>
-              <td className="px-4 py-2 whitespace-nowrap">
+              <td className="px-1.5 py-1.5 font-medium text-slate-800 whitespace-nowrap">{row.project}</td>
+              <td className="px-1.5 py-1.5 text-slate-600 whitespace-nowrap">{row.em}</td>
+              <td className="px-1.5 py-1.5 text-right tabular-nums text-slate-600 whitespace-nowrap">{row.occPct}%</td>
+              <td className="px-1.5 py-1.5 text-right tabular-nums text-slate-600 whitespace-nowrap">€{row.varK.toFixed(1)}K</td>
+              <td className="px-1.5 py-1.5 whitespace-nowrap">
                 <span className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-medium ${VAR_STATUS_STYLES[row.varStatus]}`}>
                   {row.varStatus}
                 </span>
               </td>
-              <td className="px-4 py-2 text-right tabular-nums text-slate-600 whitespace-nowrap">{row.greenDays}</td>
-              <td className="px-4 py-2 whitespace-nowrap">
+              <td className="px-1.5 py-1.5 text-right tabular-nums text-slate-600 whitespace-nowrap">{row.greenDays}</td>
+              <td className="px-1.5 py-1.5 whitespace-nowrap">
                 <span className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-medium ${row.critical ? 'bg-red-50 text-red-700' : 'bg-slate-50 text-slate-500'}`}>
                   {row.critical ? 'Yes' : 'No'}
                 </span>
               </td>
-              <td className="px-4 py-2 text-slate-600 whitespace-nowrap">{row.continuidade ?? '—'}</td>
+              <td className="px-1.5 py-1.5 text-slate-600 whitespace-nowrap">{row.continuidade ?? '—'}</td>
             </tr>
           ))}
         </tbody>
