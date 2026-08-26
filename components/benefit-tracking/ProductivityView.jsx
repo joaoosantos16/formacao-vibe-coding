@@ -4,6 +4,7 @@ import { useState } from 'react';
 import TopFreeTable from '@/components/benefit-tracking/productivity/TopFreeTable';
 import OccupationRanking from '@/components/benefit-tracking/productivity/OccupationRanking';
 import ProjectOverviewChart from '@/components/benefit-tracking/productivity/ProjectOverviewChart';
+import ConsultantView from '@/components/benefit-tracking/productivity/ConsultantView';
 
 const VIEWS = [
   { key: 'project', label: 'Project' },
@@ -41,9 +42,7 @@ export default function ProductivityView() {
           <ProjectOverviewChart />
         </div>
       ) : (
-        <div className="rounded-3xl bg-white/70 backdrop-blur-xl shadow-[0_8px_30px_rgb(0,0,0,0.06)] ring-1 ring-black/5 p-10">
-          <p className="text-slate-500">Consultant view — to be defined.</p>
-        </div>
+        <ConsultantView />
       )}
     </div>
   );
