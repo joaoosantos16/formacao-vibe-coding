@@ -9,6 +9,11 @@ const STATUS_STYLES = {
   closed: 'bg-slate-100 text-slate-500 ring-slate-200',
 };
 
+const STATUS_BAR = {
+  active: 'from-blue-400 to-sky-400',
+  closed: 'from-slate-300 to-slate-200',
+};
+
 function formatDate(value) {
   if (!value) return '—';
   return new Date(value).toLocaleDateString('en-GB');
@@ -95,12 +100,12 @@ export default function BenefitTrackingProjetosPage() {
       </div>
 
       <div className="grid grid-cols-3 gap-4">
-        <SummaryCard label="Total Projects" value={summary.total} />
+        <SummaryCard label="Total Projects" value={summary.total} accent="sky" />
         <SummaryCard label="Active Projects" value={summary.active} accent="blue" />
         <SummaryCard label="Closed Projects" value={summary.closed} accent="slate" />
       </div>
 
-      <div className="rounded-3xl bg-white/70 backdrop-blur-xl shadow-[0_8px_30px_rgb(0,0,0,0.06)] ring-1 ring-black/5 p-6 space-y-4">
+      <div className="rounded-3xl bg-gradient-to-br from-white/90 to-blue-50/50 backdrop-blur-xl shadow-[0_8px_30px_rgb(0,0,0,0.06)] ring-1 ring-blue-100/70 p-6 space-y-4">
         <input
           type="text"
           placeholder="Search projects (code, client, sector)"
@@ -129,8 +134,9 @@ export default function BenefitTrackingProjetosPage() {
           <Link
             key={project.id}
             href={`/benefit-tracking-projetos/${project.id}`}
-            className="group relative rounded-3xl bg-white/70 backdrop-blur-xl shadow-[0_8px_30px_rgb(0,0,0,0.06)] ring-1 ring-black/5 p-6 flex flex-col gap-2 transition-all hover:-translate-y-1 hover:shadow-[0_16px_40px_rgb(0,0,0,0.10)]"
+            className="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-white/90 to-blue-50/40 backdrop-blur-xl shadow-[0_8px_30px_rgb(0,0,0,0.06)] ring-1 ring-blue-100/70 p-6 flex flex-col gap-2 transition-all hover:-translate-y-1 hover:shadow-[0_16px_40px_rgb(0,0,0,0.10)]"
           >
+            <span className={`absolute inset-x-0 top-0 h-1 bg-gradient-to-r ${STATUS_BAR[project.status]}`} />
             <div className="flex items-start justify-between gap-2">
               <h2 className="font-semibold text-slate-800 leading-snug">{project.code}</h2>
               <span
@@ -161,17 +167,21 @@ export default function BenefitTrackingProjetosPage() {
   );
 }
 
-function SummaryCard({ label, value, accent }) {
-  const accentText =
-    accent === 'blue'
-      ? 'text-blue-600'
-      : accent === 'slate'
-      ? 'text-slate-500'
-      : 'text-slate-800';
+const SUMMARY_STYLES = {
+  blue: { text: 'text-blue-600', dot: 'bg-blue-500', wash: 'from-white/90 to-blue-50/70' },
+  sky: { text: 'text-sky-600', dot: 'bg-sky-400', wash: 'from-white/90 to-sky-50/70' },
+  slate: { text: 'text-slate-500', dot: 'bg-slate-400', wash: 'from-white/90 to-slate-50/70' },
+};
+
+function SummaryCard({ label, value, accent = 'slate' }) {
+  const s = SUMMARY_STYLES[accent] ?? SUMMARY_STYLES.slate;
   return (
-    <div className="rounded-3xl bg-white/70 backdrop-blur-xl shadow-[0_8px_30px_rgb(0,0,0,0.06)] ring-1 ring-black/5 p-5">
-      <p className="text-xs uppercase tracking-wide text-slate-400">{label}</p>
-      <p className={`mt-1 text-3xl font-semibold ${accentText}`}>{value}</p>
+    <div className={`rounded-3xl bg-gradient-to-br ${s.wash} backdrop-blur-xl shadow-[0_8px_30px_rgb(0,0,0,0.06)] ring-1 ring-blue-100/70 p-5`}>
+      <p className="flex items-center gap-1.5 text-xs uppercase tracking-wide text-slate-400">
+        <span className={`h-1.5 w-1.5 rounded-full ${s.dot}`} />
+        {label}
+      </p>
+      <p className={`mt-1 text-3xl font-semibold ${s.text}`}>{value}</p>
     </div>
   );
 }

@@ -22,7 +22,7 @@ export default function IndicatorTrackingPanel({ kpisWithCalc, months, onAtualCh
   return (
     <div className="grid grid-cols-1 gap-4 lg:grid-cols-[240px_1fr]">
       {/* Lista de indicadores */}
-      <div className="rounded-2xl bg-white/70 backdrop-blur-xl ring-1 ring-black/5 p-2 lg:max-h-[560px] lg:overflow-y-auto">
+      <div className="rounded-2xl bg-gradient-to-b from-white/90 to-blue-50/50 backdrop-blur-xl ring-1 ring-blue-100/70 p-2 lg:max-h-[560px] lg:overflow-y-auto">
         {kpisWithCalc.map(({ kpi: k, calc: c, color: col }) => (
           <button
             key={k.id}
@@ -45,7 +45,7 @@ export default function IndicatorTrackingPanel({ kpisWithCalc, months, onAtualCh
       </div>
 
       {/* Detalhe do indicador selecionado */}
-      <div className="rounded-2xl bg-white/70 backdrop-blur-xl ring-1 ring-black/5 p-5 space-y-5">
+      <div className="rounded-2xl bg-gradient-to-br from-white/90 to-blue-50/50 backdrop-blur-xl ring-1 ring-blue-100/70 p-5 space-y-5">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
             <p className="font-semibold text-slate-800">{kpi.name}</p>

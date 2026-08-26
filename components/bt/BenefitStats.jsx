@@ -16,8 +16,10 @@ const RAG_BAR = { G: '#10B981', A: '#F59E0B', R: '#F43F5E', N: '#CBD5E1' };
 function Card({ children, accent = false, className = '' }) {
   return (
     <div
-      className={`rounded-3xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.06)] ring-1 ring-black/5 ${
-        accent ? 'bg-slate-900 text-white' : 'bg-white/70 backdrop-blur-xl'
+      className={`rounded-3xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.06)] ring-1 ${
+        accent
+          ? 'bg-slate-900 text-white ring-black/5'
+          : 'bg-gradient-to-br from-white/90 to-blue-50/50 backdrop-blur-xl ring-blue-100/70'
       } ${className}`}
     >
       {children}

@@ -136,7 +136,7 @@ export default function ProjectPage() {
 
 function Card({ children, className = '' }) {
   return (
-    <div className={`rounded-3xl bg-white/70 backdrop-blur-xl shadow-[0_8px_30px_rgb(0,0,0,0.06)] ring-1 ring-black/5 p-6 ${className}`}>
+    <div className={`rounded-3xl bg-gradient-to-br from-white/90 to-blue-50/50 backdrop-blur-xl shadow-[0_8px_30px_rgb(0,0,0,0.06)] ring-1 ring-blue-100/70 p-6 ${className}`}>
       {children}
     </div>
   );

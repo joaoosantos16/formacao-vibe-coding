@@ -17,7 +17,7 @@ export default function BenefitMatrix({ kpisWithCalc, months, onPlanChange, onVo
   const W2 = 210;
 
   return (
-    <div className="rounded-2xl ring-1 ring-black/5 overflow-hidden">
+    <div className="rounded-2xl ring-1 ring-blue-100/70 overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full border-separate border-spacing-0 text-xs" style={{ minWidth: 760 + months.length * 68 }}>
           <thead>
