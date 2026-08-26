@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { getProductivityTopFree } from '@/lib/benefitTracking';
+import { getProductivityTopFree, getGreenDaysAvailable } from '@/lib/benefitTracking';
 
 const COLUMNS = [
   { key: 'project', label: 'Project', type: 'text' },
@@ -9,7 +9,7 @@ const COLUMNS = [
   { key: 'occPct', label: 'Occ %', type: 'number' },
   { key: 'varK', label: 'Vari', type: 'number' },
   { key: 'varStatus', label: 'Var. Status', type: 'text' },
-  { key: 'greenDays', label: '# Green Days', type: 'number' },
+  { key: 'greenDaysAvailable', label: 'Green Days Available', type: 'number' },
   { key: 'critical', label: 'Critical', type: 'text' },
   { key: 'continuidade', label: 'Continuity', type: 'text' },
 ];
@@ -20,7 +20,10 @@ const VAR_STATUS_STYLES = {
 };
 
 export default function TopFreeTable() {
-  const rows = getProductivityTopFree();
+  const rows = getProductivityTopFree().map((row) => ({
+    ...row,
+    greenDaysAvailable: getGreenDaysAvailable(row.greenDays),
+  }));
   const [sort, setSort] = useState({ key: 'occPct', direction: 'asc' });
 
   function toggleSort(key) {
@@ -77,7 +80,7 @@ export default function TopFreeTable() {
                   {row.varStatus}
                 </span>
               </td>
-              <td className="px-1.5 py-1.5 text-right tabular-nums text-slate-600 whitespace-nowrap">{row.greenDays}</td>
+              <td className="px-1.5 py-1.5 text-right tabular-nums text-slate-600 whitespace-nowrap">{row.greenDaysAvailable}</td>
               <td className="px-1.5 py-1.5 whitespace-nowrap">
                 <span className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-medium ${row.critical ? 'bg-red-50 text-red-700' : 'bg-slate-50 text-slate-500'}`}>
                   {row.critical ? 'Yes' : 'No'}
