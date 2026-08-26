@@ -16,7 +16,7 @@ export default function TeamTable() {
       <table className="min-w-full text-sm">
         <thead className="text-left text-slate-500">
           <tr>
-            <th className="px-4 py-3 font-medium">Team</th>
+            <th className="px-4 py-3 font-medium">Consultant</th>
             <th className="px-4 py-3 font-medium text-right">Days</th>
             <th className="px-4 py-3 font-medium text-right">Value</th>
             <th className="px-4 py-3 font-medium text-right">Variables</th>
@@ -24,8 +24,8 @@ export default function TeamTable() {
         </thead>
         <tbody className="divide-y divide-slate-100">
           {rows.map((row) => (
-            <tr key={row.team}>
-              <td className="px-4 py-2 font-medium text-slate-800">{row.team}</td>
+            <tr key={row.consultant}>
+              <td className="px-4 py-2 font-medium text-slate-800">{row.consultant}</td>
               <td className="px-4 py-2 text-right tabular-nums text-slate-600">{row.days.toFixed(1)}</td>
               <td className="px-4 py-2 text-right tabular-nums text-slate-600">{formatK(row.valueK)}</td>
               <td className="px-4 py-2 text-right tabular-nums text-slate-600">{formatK(row.variablesK)}</td>

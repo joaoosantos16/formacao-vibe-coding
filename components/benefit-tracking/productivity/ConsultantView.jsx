@@ -4,12 +4,11 @@ import { useState } from 'react';
 import ConsultantTable from '@/components/benefit-tracking/productivity/ConsultantTable';
 import SimpleTrendChart from '@/components/benefit-tracking/productivity/SimpleTrendChart';
 import ProjectsOccupationDetailTable from '@/components/benefit-tracking/productivity/ProjectsOccupationDetailTable';
-import { getConsultants, getGlobalOccupationSeries, getGreenDaysEvolution } from '@/lib/benefitTracking';
+import { CONSULTANT_LEVELS, getGlobalOccupationSeries, getGreenDaysEvolution } from '@/lib/benefitTracking';
 
 const DATE_RANGES = ['Last 12 weeks', 'This quarter', 'Year to date'];
 
 export default function ConsultantView() {
-  const levels = [...new Set(getConsultants().map((c) => c.level))];
   const [level, setLevel] = useState('all');
   const [dateRange, setDateRange] = useState(DATE_RANGES[0]);
 
@@ -27,7 +26,7 @@ export default function ConsultantView() {
             className="text-sm rounded-full border border-slate-200 bg-white px-3 py-1.5 text-slate-700"
           >
             <option value="all">All levels</option>
-            {levels.map((l) => (
+            {CONSULTANT_LEVELS.map((l) => (
               <option key={l} value={l}>{l}</option>
             ))}
           </select>
