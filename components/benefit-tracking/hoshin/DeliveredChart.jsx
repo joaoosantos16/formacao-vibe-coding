@@ -50,7 +50,7 @@ export default function DeliveredChart() {
 
   return (
     <div className="rounded-3xl bg-white/70 backdrop-blur-xl shadow-[0_8px_30px_rgb(0,0,0,0.06)] ring-1 ring-black/5 p-5">
-      <div className="flex items-center gap-4 text-xs text-slate-500 mb-2">
+      <div className="flex items-center gap-4 text-sm text-slate-500 mb-2">
         <span className="flex items-center gap-1.5">
           <span className="inline-block w-3 h-0.5 bg-slate-400" /> Hoshin Lisboa
         </span>
@@ -67,7 +67,7 @@ export default function DeliveredChart() {
         {yTicks.map((tick) => (
           <g key={tick}>
             <line x1={PAD.left} x2={WIDTH - PAD.right} y1={yFor(tick)} y2={yFor(tick)} stroke="#e1e0d9" strokeWidth={1} />
-            <text x={PAD.left - 6} y={yFor(tick) + 3} textAnchor="end" className="fill-slate-400" style={{ fontSize: 10 }}>
+            <text x={PAD.left - 6} y={yFor(tick) + 3} textAnchor="end" className="fill-slate-400" style={{ fontSize: 14 }}>
               {tick}M
             </text>
           </g>
@@ -88,7 +88,7 @@ export default function DeliveredChart() {
         <path d={deliveredPath} fill="none" stroke="#059669" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
 
         <circle cx={xFor(data.length - 1)} cy={yFor(lastHoshin.hoshin)} r={4} fill="#9ca3af" stroke="#fff" strokeWidth={2} />
-        <text x={xFor(data.length - 1) + 8} y={yFor(lastHoshin.hoshin) + 4} className="fill-slate-500" style={{ fontSize: 11 }}>
+        <text x={xFor(data.length - 1) + 8} y={yFor(lastHoshin.hoshin) + 4} className="fill-slate-500" style={{ fontSize: 15 }}>
           {lastHoshin.hoshin.toFixed(2)}M
         </text>
 
@@ -106,7 +106,7 @@ export default function DeliveredChart() {
               x={xFor(data.indexOf(lastDelivered)) + 8}
               y={yFor(lastDelivered.delivered) + 4}
               className="fill-emerald-700"
-              style={{ fontSize: 11, fontWeight: 600 }}
+              style={{ fontSize: 15, fontWeight: 600 }}
             >
               {lastDelivered.delivered.toFixed(2)}M
             </text>
@@ -120,23 +120,23 @@ export default function DeliveredChart() {
             y={HEIGHT - PAD.bottom + 16}
             textAnchor="middle"
             className="fill-slate-400"
-            style={{ fontSize: 10 }}
+            style={{ fontSize: 14 }}
           >
             {d.month}
           </text>
         ))}
 
         {hovered && (
-          <g transform={`translate(${Math.min(xFor(hoverIndex) + 10, WIDTH - 130)}, ${PAD.top + 4})`}>
-            <rect width={120} height={hovered.delivered != null ? 48 : 30} rx={6} fill="white" stroke="#e1e0d9" />
-            <text x={8} y={14} className="fill-slate-500" style={{ fontSize: 10 }}>
+          <g transform={`translate(${Math.min(xFor(hoverIndex) + 10, WIDTH - 160)}, ${PAD.top + 4})`}>
+            <rect width={150} height={hovered.delivered != null ? 58 : 36} rx={6} fill="white" stroke="#e1e0d9" />
+            <text x={8} y={16} className="fill-slate-500" style={{ fontSize: 14 }}>
               {hovered.month} 2026
             </text>
-            <text x={8} y={hovered.delivered != null ? 28 : 24} className="fill-slate-600" style={{ fontSize: 11 }}>
+            <text x={8} y={hovered.delivered != null ? 33 : 28} className="fill-slate-600" style={{ fontSize: 15 }}>
               Hoshin: €{hovered.hoshin.toFixed(2)}M
             </text>
             {hovered.delivered != null && (
-              <text x={8} y={42} className="fill-emerald-700" style={{ fontSize: 11, fontWeight: 600 }}>
+              <text x={8} y={50} className="fill-emerald-700" style={{ fontSize: 15, fontWeight: 600 }}>
                 Delivered: €{hovered.delivered.toFixed(2)}M
               </text>
             )}
