@@ -25,8 +25,8 @@ export default function BenefitTrackingProjetosPage() {
   const [srFiltro, setSrFiltro] = useState('');
   const [consultantFiltro, setConsultantFiltro] = useState('');
 
-  function reload() {
-    setProjects(getProjects());
+  async function reload() {
+    setProjects(await getProjects());
   }
 
   useEffect(() => {
@@ -69,11 +69,11 @@ export default function BenefitTrackingProjetosPage() {
     closed: projects.filter((p) => p.status === 'closed').length,
   };
 
-  function handleDelete(e, id) {
+  async function handleDelete(e, id) {
     e.preventDefault();
     e.stopPropagation();
     if (!window.confirm('Delete this project? This cannot be undone.')) return;
-    deleteProject(id);
+    await deleteProject(id);
     reload();
   }
 
