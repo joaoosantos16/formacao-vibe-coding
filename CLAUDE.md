@@ -90,6 +90,18 @@ isso antes de assumir.
     projeto, configuração e medição de KPIs — tudo lê/escreve nas
     tabelas reais (`lib/benefitTrackingStore.js`). Build de produção
     validado.
+  - **Motor de Benefit Tracking completo (26/08)**, portado de um
+    protótipo mais rico trazido de outra equipa
+    (`Benefit_Tracking_Final_...html`, não commitado — dados/lógica de
+    referência, não código a copiar literalmente): separador "Benefit"
+    (antes "Dashboard & Reports", fraco) reescrito com Matriz Benefit
+    editável (Plano/Atual/Volume/Poupança € por mês, com override
+    célula-a-célula), RAG (verde/amber/vermelho comparando Atual vs
+    rampa de Plano), estatísticas (potencial/anualizado/%/acumulado/
+    horas), tooltips de metodologia em cada €, gráfico mensal
+    (logrado vs plano) e de reparto por KPI, e histórico de alterações.
+    Motor em `lib/benefitCalc.js` (puro, sem I/O — ver
+    `docs/modelo-de-dados.md`).
   - **Benchmarking** (Equipa A): drill-down de KPIs por GQCDM com
     matching de projetos relacionados, barras "bullet" comparativas,
     ordenação, gerador de apresentação
@@ -170,10 +182,21 @@ acrescentadas aqui por quem as tomar, com uma frase do porquê)_
 
 ## Problemas Conhecidos / Por Resolver
 
-- Confirmar no Vercel que as variáveis `NEXT_PUBLIC_SUPABASE_URL` e
-  `NEXT_PUBLIC_SUPABASE_ANON_KEY` estão marcadas também para
-  **Preview**, não só Production — os links de preview de cada equipa
-  estavam a mostrar "variáveis em falta".
+- **BLOQUEADOR (26/08, em stand-by):** as variáveis de ambiente
+  (`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`) **nunca
+  foram configuradas no Vercel** — nem Production nem Preview. Isto
+  causa **falha real de build** (`supabaseUrl is required`) desde que
+  a Equipa B ligou ao Supabase. `main` está com deploys de produção a
+  falhar (o site continua a servir a última versão antiga que
+  funcionou). Não há ferramenta disponível para configurar isto por
+  API — só o utilizador consegue, no dashboard do Vercel
+  (Settings → Environments → Production/Preview → Add Environment
+  Variable). Depois de configurado, avisar para redisparar os deploys.
+- Confirmar que os overrides de plano/volume (`projeto_kpi_plano_
+  overrides`, `projeto_kpi_volume_overrides`) e a auditoria
+  (`projeto_kpi_auditoria`) do motor de Benefit Tracking novo
+  funcionam em produção assim que o bloqueador acima for resolvido —
+  só foram validados com `npm run build` local.
 
 ## Como Correr o Projeto Localmente
 
