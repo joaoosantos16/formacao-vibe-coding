@@ -7,7 +7,7 @@ const COLUMNS = [
   { key: 'project', label: 'Project', type: 'text' },
   { key: 'em', label: 'EM', type: 'text' },
   { key: 'occPct', label: 'Occ %', type: 'number' },
-  { key: 'varK', label: 'Vari', type: 'number' },
+  { key: 'varK', label: 'Variable', type: 'number' },
   { key: 'varStatus', label: 'Var. Status', type: 'text' },
   { key: 'greenDaysAvailable', label: 'Green Days Available', type: 'number' },
   { key: 'critical', label: 'Critical', type: 'text' },
