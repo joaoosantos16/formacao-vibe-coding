@@ -5,7 +5,6 @@ import { getVariablesRows, getNextAutoUpdateDate } from '@/lib/benefitTracking';
 
 const COLUMNS = [
   { key: 'client', label: 'Client', type: 'text' },
-  { key: 'project', label: 'Project', type: 'text' },
   { key: 'projectCode', label: 'Project Code', type: 'text' },
   { key: 'em', label: 'EM', type: 'text' },
   { key: 'start', label: 'Start', type: 'date' },
@@ -122,7 +121,6 @@ export default function VariablesTable() {
               return (
                 <tr key={rowKey}>
                   <td className="px-1.5 py-1.5 font-medium text-slate-800 max-w-[110px]">{row.client}</td>
-                  <td className="px-1.5 py-1.5 text-slate-600 max-w-[130px]">{row.project}</td>
                   <td className="px-1.5 py-1.5 text-slate-600 whitespace-nowrap">{row.projectCode}</td>
                   <td className="px-1.5 py-1.5 text-slate-600 whitespace-nowrap">{row.em}</td>
                   <td className="px-1.5 py-1.5 text-slate-600 whitespace-nowrap">{formatDate(row.start)}</td>
