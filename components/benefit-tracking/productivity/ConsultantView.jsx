@@ -4,7 +4,13 @@ import { useState } from 'react';
 import ConsultantTable from '@/components/benefit-tracking/productivity/ConsultantTable';
 import SimpleTrendChart from '@/components/benefit-tracking/productivity/SimpleTrendChart';
 import ProjectsOccupationDetailTable from '@/components/benefit-tracking/productivity/ProjectsOccupationDetailTable';
-import { CONSULTANT_LEVELS, getConsultants, getGlobalOccupationSeries, getGreenDaysEvolution } from '@/lib/benefitTracking';
+import {
+  CONSULTANT_LEVELS,
+  getConsultants,
+  getOccupationSeries,
+  getGreenDaysEvolution,
+  getProductivityTopFree,
+} from '@/lib/benefitTracking';
 
 const DATE_RANGES = ['Last 12 weeks', 'This quarter', 'Year to date'];
 
@@ -22,8 +28,21 @@ export default function ConsultantView() {
     if (!stillValid) setConsultant('all');
   }
 
-  const occupationSeries = getGlobalOccupationSeries().map((d) => ({ week: d.week, value: d.occPct }));
-  const greenDaysSeries = getGreenDaysEvolution().map((d) => ({ week: d.week, value: d.greenDays }));
+  // The two charts below sync to whichever Level/Consultant filter is
+  // active — same subset the table and Projects detail table use — rather
+  // than always showing the whole-team average.
+  const levelByConsultant = Object.fromEntries(consultants.map((c) => [c.consultant, c.level]));
+  const filteredConsultants = consultants
+    .filter((c) => level === 'all' || c.level === level)
+    .filter((c) => consultant === 'all' || c.consultant === consultant);
+  const filteredProjects = getProductivityTopFree()
+    .filter((p) => consultant === 'all' || p.em === consultant)
+    .filter((p) => level === 'all' || levelByConsultant[p.em] === level);
+
+  const occupationSeries = getOccupationSeries(filteredConsultants).map((d) => ({ week: d.week, value: d.occPct }));
+  const greenDaysSeries = getGreenDaysEvolution(filteredProjects).map((d) => ({ week: d.week, value: d.greenDays }));
+
+  const scopeLabel = consultant !== 'all' ? consultant : level !== 'all' ? level : 'global (average)';
 
   return (
     <div className="space-y-4">
@@ -71,8 +90,8 @@ export default function ConsultantView() {
       <ConsultantTable level={level} consultant={consultant} />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <SimpleTrendChart title="% Occupation global (average) over time" data={occupationSeries} unit="%" color="#6366f1" />
-        <SimpleTrendChart title="# Green days evolution over time" data={greenDaysSeries} unit="" color="#059669" />
+        <SimpleTrendChart title={`% Occupation — ${scopeLabel} — over time`} data={occupationSeries} unit="%" color="#6366f1" />
+        <SimpleTrendChart title={`# Green days evolution — ${scopeLabel} — over time`} data={greenDaysSeries} unit="" color="#059669" />
       </div>
 
       <ProjectsOccupationDetailTable level={level} consultant={consultant} />
