@@ -10,12 +10,10 @@ export default function HoshinOverview() {
       <div className="lg:col-span-2 space-y-4">
         <KpiRow />
         <DeliveredChart />
-        <div className="grid grid-cols-1 sm:grid-cols-[200px_1fr] gap-4 items-start">
-          <HoshinMeter />
-          <TeamTable />
-        </div>
+        <TeamTable />
       </div>
-      <div>
+      <div className="space-y-4">
+        <HoshinMeter />
         <SecondaryKpis />
       </div>
     </div>
