@@ -15,7 +15,7 @@ export default function RootLayout({ children }) {
     <html lang="pt">
       <body className="min-h-screen overflow-x-hidden bg-gradient-to-br from-slate-50 via-sky-50 to-violet-50 text-slate-800">
         <NavBar />
-        <main className="pt-28 px-4 sm:px-8 pb-16 max-w-6xl mx-auto">
+        <main className="pt-28 px-3 sm:px-6 lg:px-10 pb-16 w-full">
           {children}
         </main>
       </body>

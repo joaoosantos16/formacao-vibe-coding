@@ -238,16 +238,15 @@ function BenefitTab({ project, onSaved }) {
         </div>
       </Card>
 
-      <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
-        <Card>
-          <h2 className="mb-3 font-semibold text-slate-700">Benefício mensal · logrado vs plano</h2>
-          <MonthlyBenefitChart months={months} byMonth={totals.byMonth} byMonthPlan={totals.byMonthPlan} />
-        </Card>
-        <Card>
-          <h2 className="mb-3 font-semibold text-slate-700">Reparto do benefício por KPI</h2>
-          <KpiShareChart kpisWithCalc={kpisWithCalc} />
-        </Card>
-      </div>
+      <Card className="overflow-x-auto">
+        <h2 className="mb-3 font-semibold text-slate-700">Benefício mensal · logrado vs plano</h2>
+        <MonthlyBenefitChart months={months} byMonth={totals.byMonth} byMonthPlan={totals.byMonthPlan} />
+      </Card>
+
+      <Card>
+        <h2 className="mb-3 font-semibold text-slate-700">Reparto do benefício por KPI</h2>
+        <KpiShareChart kpisWithCalc={kpisWithCalc} />
+      </Card>
 
       {showAudit && <AuditHistoryModal entries={auditEntries} onClose={() => setShowAudit(false)} />}
     </div>

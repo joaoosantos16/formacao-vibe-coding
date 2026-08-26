@@ -3,7 +3,7 @@
 import { isPlanOverridden, formatEur } from '@/lib/benefitCalc';
 import { formatNumber } from '@/lib/format';
 import MethodologyTooltip from './MethodologyTooltip';
-import { RAG_DOT } from './BenefitStats';
+import { RAG_LABEL, RAG_BADGE } from './BenefitStats';
 
 // Grelha "Matriz Benefit" — Plano / Atual / Volume / Poupança € por
 // KPI e por mês, agrupada por ano. Plano e Volume são editáveis célula
@@ -17,49 +17,51 @@ export default function BenefitMatrix({ kpisWithCalc, months, onPlanChange, onVo
   const W2 = 210;
 
   return (
-    <div className="overflow-x-auto rounded-2xl ring-1 ring-black/5">
-      <table className="w-full border-separate border-spacing-0 text-xs" style={{ minWidth: 720 + months.length * 68 }}>
-        <thead>
-          <tr className="bg-slate-900 text-left text-[10px] uppercase tracking-wide text-slate-300">
-            <th className="sticky left-0 z-10 bg-slate-900 px-1.5 py-2" style={{ minWidth: W1, width: W1 }}>#</th>
-            <th className="sticky z-10 bg-slate-900 px-2 py-2" style={{ left: W1, minWidth: W2, width: W2 }}>
-              KPI
-            </th>
-            <th className="px-2 py-2">Baseline</th>
-            <th className="px-2 py-2">Objetivo</th>
-            <th className="px-2 py-2">Atual</th>
-            <th className="px-2 py-2">RAG</th>
-            <th className="px-2 py-2">Série</th>
-            {months.map((m) => (
-              <th key={m.key} className="px-2 py-2 text-right font-medium">
-                {m.label}<br /><span className="text-[9px] text-slate-400">{String(m.y).slice(2)}</span>
+    <div className="rounded-2xl ring-1 ring-black/5 overflow-hidden">
+      <div className="overflow-x-auto">
+        <table className="w-full border-separate border-spacing-0 text-xs" style={{ minWidth: 760 + months.length * 68 }}>
+          <thead>
+            <tr className="bg-slate-900 text-left text-[10px] uppercase tracking-wide text-slate-300">
+              <th className="sticky left-0 z-10 bg-slate-900 px-1.5 py-2" style={{ minWidth: W1, width: W1 }}>#</th>
+              <th className="sticky z-10 bg-slate-900 px-2 py-2" style={{ left: W1, minWidth: W2, width: W2 }}>
+                KPI
               </th>
+              <th className="px-2 py-2">Baseline</th>
+              <th className="px-2 py-2">Objetivo</th>
+              <th className="px-2 py-2">Atual</th>
+              <th className="px-2 py-2">RAG</th>
+              <th className="px-2 py-2">Série</th>
+              {months.map((m) => (
+                <th key={m.key} className="px-2 py-2 text-right font-medium">
+                  {m.label}<br /><span className="text-[9px] text-slate-400">{String(m.y).slice(2)}</span>
+                </th>
+              ))}
+              <th className="px-2 py-2 text-right">Anualizado €</th>
+            </tr>
+          </thead>
+          <tbody>
+            {kpisWithCalc.map(({ kpi, calc, color }, idx) => (
+              <KpiRows
+                key={kpi.id}
+                n={idx + 1}
+                kpi={kpi}
+                calc={calc}
+                color={color}
+                months={months}
+                w1={W1}
+                w2={W2}
+                onPlanChange={onPlanChange}
+                onVolumeChange={onVolumeChange}
+              />
             ))}
-            <th className="px-2 py-2 text-right">Anualizado €</th>
-          </tr>
-        </thead>
-        <tbody>
-          {kpisWithCalc.map(({ kpi, calc, color }, idx) => (
-            <KpiRows
-              key={kpi.id}
-              n={idx + 1}
-              kpi={kpi}
-              calc={calc}
-              color={color}
-              months={months}
-              w1={W1}
-              w2={W2}
-              onPlanChange={onPlanChange}
-              onVolumeChange={onVolumeChange}
-            />
-          ))}
-        </tbody>
-      </table>
-      <div className="flex flex-wrap gap-x-4 gap-y-1 border-t border-slate-100 bg-white/70 px-3 py-2 text-[11px] text-slate-500">
+          </tbody>
+        </table>
+      </div>
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 border-t border-slate-100 bg-slate-50 px-3 py-2.5 text-[11px] text-slate-500">
         <span className="inline-flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-full bg-emerald-500" /> Igual ou melhor que o plano</span>
         <span className="inline-flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-full bg-amber-500" /> Pior que o plano, melhor que o baseline</span>
         <span className="inline-flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-full bg-rose-500" /> Pior que o baseline</span>
-        <span className="text-emerald-700">Passa o rato por cima de qualquer € para ver a metodologia</span>
+        <span className="ml-auto font-medium text-emerald-700">Passa o rato por cima de qualquer € para ver a metodologia</span>
       </div>
     </div>
   );
@@ -89,7 +91,12 @@ function KpiRows({ n, kpi, calc, color, months, w1, w2, onPlanChange, onVolumeCh
         <td rowSpan={4} className="px-2 text-slate-500">{kpi.target ?? '—'}</td>
         <td rowSpan={4} className="px-2 text-slate-500">{calc.current ?? '—'}</td>
         <td rowSpan={4} className="px-2">
-          <span className={`inline-block h-2.5 w-2.5 rounded-full ${RAG_DOT[calc.rag]}`} title={calc.rag} />
+          <span
+            className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold ${RAG_BADGE[calc.rag]}`}
+            title={RAG_LABEL[calc.rag]}
+          >
+            {RAG_LABEL[calc.rag]}
+          </span>
         </td>
         <td className="px-2 py-1 font-medium text-slate-400">Plano</td>
         {months.map((m) => (

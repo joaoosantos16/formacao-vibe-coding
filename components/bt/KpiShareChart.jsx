@@ -22,12 +22,12 @@ export default function KpiShareChart({ kpisWithCalc }) {
     );
   }
 
-  const W = 360;
-  const H = 220;
-  const cx = 104;
-  const cy = 108;
-  const r = 78;
-  const ri = 46;
+  const W = 520;
+  const H = 260;
+  const cx = 130;
+  const cy = 128;
+  const r = 96;
+  const ri = 56;
   let a0 = -Math.PI / 2;
   const arcs = items.map((it) => {
     const a1 = a0 + 2 * Math.PI * (it.value / total);
@@ -42,27 +42,29 @@ export default function KpiShareChart({ kpisWithCalc }) {
     return el;
   });
 
+  const legendX = cx + r + 30;
+
   return (
     <svg viewBox={`0 0 ${W} ${H}`} className="w-full">
       {arcs}
-      <text x={cx} y={cy - 2} fontSize="15" fontWeight="700" fill="#16221F" textAnchor="middle">{formatEur(total)}</text>
-      <text x={cx} y={cy + 13} fontSize="9" fill="#6B6B7A" textAnchor="middle">anualizado</text>
+      <text x={cx} y={cy - 3} fontSize="19" fontWeight="700" fill="#16221F" textAnchor="middle">{formatEur(total)}</text>
+      <text x={cx} y={cy + 16} fontSize="11" fill="#6B6B7A" textAnchor="middle">anualizado</text>
       {items.slice(0, 8).map((it, i) => {
-        const y = 26 + i * 22;
+        const y = 30 + i * 27;
         return (
           <g key={it.name}>
-            <rect x={204} y={y - 8} width={10} height={10} rx={2} fill={it.color} />
-            <text x={220} y={y} fontSize="9.5" fill="#333">
-              {it.name.length > 20 ? `${it.name.slice(0, 19)}…` : it.name}
+            <rect x={legendX} y={y - 9} width={12} height={12} rx={3} fill={it.color} />
+            <text x={legendX + 18} y={y} fontSize="12" fill="#333">
+              {it.name.length > 26 ? `${it.name.slice(0, 25)}…` : it.name}
             </text>
-            <text x={W - 8} y={y} fontSize="9.5" fill="#0E7A68" fontWeight="700" textAnchor="end">
+            <text x={W - 10} y={y} fontSize="12" fill="#0E7A68" fontWeight="700" textAnchor="end">
               {Math.round((it.value / total) * 100)}%
             </text>
           </g>
         );
       })}
       {items.length > 8 && (
-        <text x={220} y={26 + 8 * 22} fontSize="9" fill="#6B6B7A">+{items.length - 8} indicadores</text>
+        <text x={legendX} y={30 + 8 * 27} fontSize="11" fill="#6B6B7A">+{items.length - 8} indicadores</text>
       )}
     </svg>
   );
