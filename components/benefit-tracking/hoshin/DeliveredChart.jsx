@@ -64,7 +64,7 @@ export default function DeliveredChart() {
     <div className="rounded-3xl bg-white/70 backdrop-blur-xl shadow-[0_8px_30px_rgb(0,0,0,0.06)] ring-1 ring-black/5 p-6">
       <div className="flex items-center gap-6 text-base text-slate-600 mb-5">
         <span className="flex items-center gap-2">
-          <span className="inline-block w-4 h-1 rounded-full bg-slate-400" /> Hoshin Lisboa
+          <span className="inline-block w-4 h-1 rounded-full bg-slate-400" /> Hoshin Lisbon
         </span>
         <span className="flex items-center gap-2">
           <span className="inline-block w-4 h-1 rounded-full bg-emerald-600" /> Delivered (above Hoshin)

@@ -17,7 +17,7 @@ export default function KpiShareChart({ kpisWithCalc }) {
   if (!total) {
     return (
       <p className="p-8 text-center text-sm text-slate-400">
-        Sem benefício anualizado ainda — introduz dados reais no separador de captura para aparecer aqui.
+        No annualized benefit yet — enter actual data in the capture tab for it to appear here.
       </p>
     );
   }
@@ -48,7 +48,7 @@ export default function KpiShareChart({ kpisWithCalc }) {
     <svg viewBox={`0 0 ${W} ${H}`} className="w-full">
       {arcs}
       <text x={cx} y={cy - 3} fontSize="19" fontWeight="700" fill="#16221F" textAnchor="middle">{formatEur(total)}</text>
-      <text x={cx} y={cy + 16} fontSize="11" fill="#6B6B7A" textAnchor="middle">anualizado</text>
+      <text x={cx} y={cy + 16} fontSize="11" fill="#6B6B7A" textAnchor="middle">annualized</text>
       {items.slice(0, 8).map((it, i) => {
         const y = 30 + i * 27;
         return (
@@ -64,7 +64,7 @@ export default function KpiShareChart({ kpisWithCalc }) {
         );
       })}
       {items.length > 8 && (
-        <text x={legendX} y={30 + 8 * 27} fontSize="11" fill="#6B6B7A">+{items.length - 8} indicadores</text>
+        <text x={legendX} y={30 + 8 * 27} fontSize="11" fill="#6B6B7A">+{items.length - 8} KPIs</text>
       )}
     </svg>
   );

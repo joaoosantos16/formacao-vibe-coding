@@ -17,7 +17,7 @@ function axisEur(v, mx) {
 
 export default function MonthlyBenefitChart({ months, byMonth, byMonthPlan }) {
   const N = months.length;
-  if (!N) return <p className="p-6 text-sm text-slate-400">Sem meses para mostrar.</p>;
+  if (!N) return <p className="p-6 text-sm text-slate-400">No months to show.</p>;
 
   const W = Math.max(900, N * 52);
   const H = 320;
@@ -80,9 +80,9 @@ export default function MonthlyBenefitChart({ months, byMonth, byMonthPlan }) {
   return (
     <div>
       <div className="mb-3 flex flex-wrap items-center gap-x-5 gap-y-1 text-xs font-medium text-slate-500">
-        <span className="inline-flex items-center gap-1.5"><span className="h-2.5 w-3.5 rounded-sm bg-emerald-500" /> Logrado ≥ plano</span>
-        <span className="inline-flex items-center gap-1.5"><span className="h-2.5 w-3.5 rounded-sm bg-amber-500" /> Logrado &lt; plano</span>
-        <span className="inline-flex items-center gap-1.5"><span className="h-0.5 w-4 bg-[#00A3C2]" style={{ borderTop: '2px dashed #00A3C2' }} /> Plano</span>
+        <span className="inline-flex items-center gap-1.5"><span className="h-2.5 w-3.5 rounded-sm bg-emerald-500" /> Actual ≥ plan</span>
+        <span className="inline-flex items-center gap-1.5"><span className="h-2.5 w-3.5 rounded-sm bg-amber-500" /> Actual &lt; plan</span>
+        <span className="inline-flex items-center gap-1.5"><span className="h-0.5 w-4 bg-[#00A3C2]" style={{ borderTop: '2px dashed #00A3C2' }} /> Plan</span>
       </div>
       <svg viewBox={`0 0 ${W} ${H}`} className="w-full" style={{ minWidth: W }}>
         {gridLines}

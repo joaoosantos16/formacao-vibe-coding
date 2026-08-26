@@ -15,7 +15,7 @@ const inter = Inter({ subsets: ['latin'], weight: ['500', '700'] });
 
 const SECTIONS = [
   { label: 'Benefit Tracking Kaizen', href: '/benefit-tracking-kaizen' },
-  { label: 'Benefit Tracking Projetos', href: '/benefit-tracking-projetos' },
+  { label: 'Benefit Tracking Projects', href: '/benefit-tracking-projetos' },
   { label: 'Benchmarking', href: '/benchmarking' },
 ];
 
@@ -42,7 +42,7 @@ export default function Home() {
             KI BT&amp;B
           </h1>
           <p className="text-lg text-slate-400">
-            Benefit tracking e benchmarking Kaizen, num único sítio.
+            Kaizen benefit tracking and benchmarking, in one place.
           </p>
         </div>
 

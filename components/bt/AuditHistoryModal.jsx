@@ -3,7 +3,7 @@
 function formatWhen(iso) {
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return '—';
-  return d.toLocaleString('pt-PT', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' });
+  return d.toLocaleString('en-GB', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' });
 }
 
 // Histórico de alterações — quem mudou o quê, quando. Sem
@@ -17,20 +17,20 @@ export default function AuditHistoryModal({ entries, onClose }) {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="mb-4 flex items-center justify-between">
-          <h3 className="font-semibold text-slate-700">Histórico de alterações</h3>
+          <h3 className="font-semibold text-slate-700">Change History</h3>
           <button type="button" onClick={onClose} className="text-sm text-slate-400 hover:text-slate-700">
-            Fechar
+            Close
           </button>
         </div>
         {entries.length === 0 ? (
-          <p className="text-sm text-slate-400">Sem alterações registadas ainda.</p>
+          <p className="text-sm text-slate-400">No changes recorded yet.</p>
         ) : (
           <ul className="space-y-2">
             {entries.map((e) => (
               <li key={e.id} className="rounded-xl bg-slate-50 px-3 py-2 text-sm">
                 <span className="text-xs text-slate-400">{formatWhen(e.created_at)}</span>
                 <p className="text-slate-700">
-                  <span className="font-medium">{e.autor || 'Alguém'}</span> · {e.campo}
+                  <span className="font-medium">{e.autor || 'Someone'}</span> · {e.campo}
                   {e.valor_novo ? <span className="text-slate-500"> → {e.valor_novo}</span> : null}
                 </p>
               </li>

@@ -3,7 +3,7 @@
 import { formatEur } from '@/lib/benefitCalc';
 import MethodologyTooltip from './MethodologyTooltip';
 
-const RAG_LABEL = { G: 'Verde', A: 'Amber', R: 'Vermelho', N: 'Sem dado' };
+const RAG_LABEL = { G: 'Green', A: 'Amber', R: 'Red', N: 'No data' };
 const RAG_DOT = { G: 'bg-emerald-500', A: 'bg-amber-500', R: 'bg-rose-500', N: 'bg-slate-300' };
 const RAG_BADGE = {
   G: 'bg-emerald-100 text-emerald-700',
@@ -48,48 +48,48 @@ export default function BenefitStats({ totals }) {
   return (
     <div className="grid grid-cols-2 gap-4 lg:grid-cols-5">
       <Card>
-        <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Poupança potencial ao objetivo</p>
+        <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Potential savings at target</p>
         <MethodologyTooltip
-          title="Poupança potencial"
-          rows={[{ label: 'KPIs visíveis', value: String(ragTotal) }]}
-          footnote="Soma do impacto € ao objetivo — é o teto do business case, não o que já foi alcançado."
+          title="Potential savings"
+          rows={[{ label: 'Visible KPIs', value: String(ragTotal) }]}
+          footnote="Sum of the € impact at target — this is the business case ceiling, not what has already been achieved."
         >
           <p className="mt-2 text-3xl font-bold text-slate-800">{formatEur(totals.potential)}</p>
         </MethodologyTooltip>
       </Card>
 
       <Card accent>
-        <p className="text-xs font-semibold uppercase tracking-wide text-sky-300">Benefício anualizado logrado</p>
+        <p className="text-xs font-semibold uppercase tracking-wide text-sky-300">Annualized benefit achieved</p>
         <MethodologyTooltip
-          title="Benefício anualizado"
+          title="Annualized benefit"
           rows={[
-            { label: 'Método', value: 'Média dos 3 últimos meses × 12' },
-            { label: 'Depois', value: 'Soma por KPI' },
+            { label: 'Method', value: 'Average of the last 3 months × 12' },
+            { label: 'Then', value: 'Sum per KPI' },
           ]}
         >
           <p className="mt-2 text-3xl font-bold">{formatEur(totals.annual)}</p>
         </MethodologyTooltip>
         <ProgressBar pct={potentialPct} dark />
         <p className="mt-1.5 text-xs font-medium text-sky-300">
-          {potentialPct !== null ? `${potentialPct}% do potencial` : 'sem potencial definido'}
+          {potentialPct !== null ? `${potentialPct}% of potential` : 'no potential defined'}
         </p>
       </Card>
 
       <Card>
-        <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Poupança acumulada no período</p>
+        <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Accumulated savings for the period</p>
         <p className="mt-2 text-3xl font-bold text-slate-800">{formatEur(totals.accumulated)}</p>
-        <p className="mt-1 text-xs text-slate-400">só meses com dado real</p>
+        <p className="mt-1 text-xs text-slate-400">only months with actual data</p>
       </Card>
 
       <Card>
-        <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Horas poupadas</p>
+        <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Hours saved</p>
         <p className="mt-2 text-3xl font-bold text-slate-800">
-          {Math.round(totals.hours || 0).toLocaleString('pt-PT')} <span className="text-base font-normal text-slate-400">h</span>
+          {Math.round(totals.hours || 0).toLocaleString('en-GB')} <span className="text-base font-normal text-slate-400">h</span>
         </p>
       </Card>
 
       <Card>
-        <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Semáforo Atual vs Plano</p>
+        <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Actual vs Plan RAG status</p>
         <div className="mt-3 flex h-3 w-full overflow-hidden rounded-full bg-slate-100">
           {(['G', 'A', 'R', 'N']).map((key) => {
             const n = totals.rag[key] || 0;

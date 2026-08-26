@@ -10,6 +10,7 @@ import BenefitMatrix from '@/components/bt/BenefitMatrix';
 import MonthlyBenefitChart from '@/components/bt/MonthlyBenefitChart';
 import KpiShareChart from '@/components/bt/KpiShareChart';
 import AuditHistoryModal from '@/components/bt/AuditHistoryModal';
+import IndicatorTrackingPanel from '@/components/bt/IndicatorTrackingPanel';
 import { formatNumber, formatWithUnit } from '@/lib/format';
 import { projectMonthRange, monthsBetween, calcKpi, projectTotals, kpiColor } from '@/lib/benefitCalc';
 import {
@@ -157,7 +158,7 @@ function BenefitTab({ project, onSaved }) {
     return (
       <Card>
         <p className="text-slate-500">
-          Este projeto ainda não tem indicadores. Vai a <strong>KPI Configuration</strong> e escolhe do catálogo.
+          This project has no KPIs yet. Go to <strong>KPI Configuration</strong> and pick some from the catalog.
         </p>
       </Card>
     );
@@ -202,7 +203,7 @@ function BenefitTab({ project, onSaved }) {
       {alerts.length > 0 && (
         <Card>
           <div className="mb-2 flex items-center gap-2">
-            <h2 className="font-semibold text-slate-700">Avisos</h2>
+            <h2 className="font-semibold text-slate-700">Warnings</h2>
             <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700">
               {alerts.length}
             </span>
@@ -210,8 +211,8 @@ function BenefitTab({ project, onSaved }) {
           <ul className="space-y-1.5 text-sm text-slate-600">
             {alerts.map(({ kpi }) => (
               <li key={kpi.id}>
-                <strong>{kpi.name}</strong> não é possível converter a € — falta baseline, objetivo, volume ou
-                benefício ao objetivo (ver <em>KPI Configuration</em>).
+                <strong>{kpi.name}</strong> cannot be converted to € — missing baseline, target, volume or
+                impact at target (see <em>KPI Configuration</em>).
               </li>
             ))}
           </ul>
@@ -221,9 +222,9 @@ function BenefitTab({ project, onSaved }) {
       <Card className="p-0">
         <div className="flex flex-wrap items-center justify-between gap-3 px-6 pt-6">
           <div>
-            <h2 className="font-semibold text-slate-700">Matriz Benefit</h2>
+            <h2 className="font-semibold text-slate-700">Benefit Matrix</h2>
             <p className="text-xs text-slate-400">
-              {kpisWithCalc.length} KPI · Plano e Volume editáveis célula a célula · Atual vem das capturas
+              {kpisWithCalc.length} KPI · Plan and Volume editable cell by cell · Actual comes from captures
             </p>
           </div>
           <button
@@ -231,7 +232,7 @@ function BenefitTab({ project, onSaved }) {
             onClick={openAudit}
             className="rounded-full px-4 py-2 text-xs font-medium text-slate-600 ring-1 ring-slate-200 hover:bg-slate-900/5"
           >
-            {auditLoading ? 'A carregar…' : 'Histórico'}
+            {auditLoading ? 'Loading…' : 'History'}
           </button>
         </div>
         <div className="mt-4 px-2 pb-2">
@@ -246,12 +247,12 @@ function BenefitTab({ project, onSaved }) {
       </Card>
 
       <Card className="overflow-x-auto">
-        <h2 className="mb-3 font-semibold text-slate-700">Benefício mensal · logrado vs plano</h2>
+        <h2 className="mb-3 font-semibold text-slate-700">Monthly benefit · actual vs plan</h2>
         <MonthlyBenefitChart months={months} byMonth={totals.byMonth} byMonthPlan={totals.byMonthPlan} />
       </Card>
 
       <Card>
-        <h2 className="mb-3 font-semibold text-slate-700">Reparto do benefício por KPI</h2>
+        <h2 className="mb-3 font-semibold text-slate-700">Benefit breakdown by KPI</h2>
         <KpiShareChart kpisWithCalc={kpisWithCalc} />
       </Card>
 
@@ -460,8 +461,8 @@ function KpiConfigTab({ project, onSaved }) {
                 <th className="py-2 pr-4">Target</th>
                 <th className="py-2 pr-4">Frequency</th>
                 <th className="py-2 pr-4">Aggregation</th>
-                <th className="py-2 pr-4" title="Impacto económico ao objetivo (€) — junto com Volume, define a tarifa unitária usada na Matriz Benefit">Impact at target (€)</th>
-                <th className="py-2 pr-4" title="Volume anual (ex: unidades produzidas/ano) — usado para calcular a tarifa unitária">Annual volume</th>
+                <th className="py-2 pr-4" title="Economic impact at target (€) — together with Volume, defines the unit rate used in the Benefit Matrix">Impact at target (€)</th>
+                <th className="py-2 pr-4" title="Annual volume (e.g. units produced/year) — used to calculate the unit rate">Annual volume</th>
                 <th className="py-2 pr-4">Start month</th>
                 <th className="py-2 pr-4">Target month</th>
                 <th className="py-2 pr-4">Actions</th>
@@ -674,31 +675,61 @@ function LabeledInput({ label, value, onChange }) {
 }
 
 // ---------- Benefit Tracking Update ----------
-// Uma tabela por frequência (semanal / mensal), períodos em linhas,
-// um KPI por coluna — mais fácil de ler do que uma tabela por KPI.
+// Clone do conceito da vista "Indicador" do protótipo de referência
+// (Benefit_Tracking_Final_...html): escolher um indicador, ver todos
+// os meses do projeto e editar o Atual ali mesmo — usa o mesmo
+// override (setAtualOverride) que a linha "Atual" da Matriz Benefit,
+// por isso atualiza-a automaticamente. Por baixo, mantém as tabelas de
+// captura por período (semanal/mensal) já existentes, para quem
+// prefere registar por período em vez de por mês.
 
 function TrackingTab({ project, onSaved }) {
-  const configured = project.kpis.filter((k) => k.frequency);
-
-  if (configured.length === 0) {
+  if (project.kpis.length === 0) {
     return (
       <Card>
         <p className="text-slate-500">
-          No KPI has a Measurement Frequency set yet. Go to <strong>KPI Configuration</strong> and set a frequency (Weekly or Monthly) to generate update periods here.
+          This project has no KPIs yet. Go to <strong>KPI Configuration</strong> and pick some from the catalog.
         </p>
       </Card>
     );
   }
 
+  const { start, end } = projectMonthRange(project);
+  const months = monthsBetween(start, end);
+  const kpisWithCalc = project.kpis.map((kpi, i) => ({
+    kpi,
+    calc: calcKpi(project, kpi, months),
+    color: kpiColor(i),
+  }));
+
+  async function handleAtualChange(kpiId, mk, value) {
+    await setAtualOverride(project.id, kpiId, mk, value === '' ? null : Number(value));
+    onSaved();
+  }
+
+  const configured = project.kpis.filter((k) => k.frequency);
   const groups = Object.values(KPI_FREQUENCY)
     .map((freq) => ({ freq, kpis: configured.filter((k) => k.frequency === freq) }))
     .filter((g) => g.kpis.length > 0);
 
   return (
     <div className="space-y-6">
-      {groups.map((group) => (
-        <TrackingGroup key={group.freq} project={project} freq={group.freq} kpis={group.kpis} onSaved={onSaved} />
-      ))}
+      <Card>
+        <h2 className="mb-1 font-semibold text-slate-700">Indicator</h2>
+        <p className="mb-4 text-xs text-slate-400">
+          Pick an indicator, update any month's Actual, and see its detail — changes here update the Benefit Matrix bowling chart automatically.
+        </p>
+        <IndicatorTrackingPanel kpisWithCalc={kpisWithCalc} months={months} onAtualChange={handleAtualChange} />
+      </Card>
+
+      {groups.length > 0 && (
+        <div className="space-y-6">
+          <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Raw captures by period</p>
+          {groups.map((group) => (
+            <TrackingGroup key={group.freq} project={project} freq={group.freq} kpis={group.kpis} onSaved={onSaved} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

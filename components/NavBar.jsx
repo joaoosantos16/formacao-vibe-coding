@@ -10,7 +10,7 @@ import { usePathname } from 'next/navigation';
 // adicionar a sua página; mudanças aqui são combinadas entre todas.
 const PAGES = [
   { label: 'Benefit Tracking Kaizen', href: '/benefit-tracking-kaizen' },
-  { label: 'Benefit Tracking Projetos', href: '/benefit-tracking-projetos' },
+  { label: 'Benefit Tracking Projects', href: '/benefit-tracking-projetos' },
   { label: 'Benchmarking', href: '/benchmarking' },
 ];
 
