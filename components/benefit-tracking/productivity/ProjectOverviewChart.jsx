@@ -12,11 +12,11 @@ const OCC_MAX = 100;
 
 export default function ProjectOverviewChart() {
   const projects = getProductivityTopFree();
-  const [projectName, setProjectName] = useState(projects[0].project);
+  const [projectCode, setProjectCode] = useState(projects[0].project);
   const [hoverIndex, setHoverIndex] = useState(null);
 
-  const data = getProjectWeeklySeries(projectName);
-  const daysMax = Math.max(...data.map((d) => d.billingDaysBalance)) || 1;
+  const data = getProjectWeeklySeries(projectCode);
+  const daysMax = Math.max(...data.map((d) => d.theoreticalGreenDays)) || 1;
   const niceDaysMax = Math.ceil(daysMax / 10) * 10;
 
   const xFor = (i) => PAD.left + (i / (data.length - 1)) * PLOT_W;
@@ -25,14 +25,14 @@ export default function ProjectOverviewChart() {
 
   const pathFor = (key, yFn) =>
     data
-      .map((d, i) => (d[key] == null ? null : `${d[key] != null && data[i - 1]?.[key] == null && i > 0 ? 'M' : i === 0 ? 'M' : 'L'} ${xFor(i)} ${yFn(d[key])}`))
+      .map((d, i) => (d[key] == null ? null : `${data[i - 1]?.[key] == null && i > 0 ? 'M' : i === 0 ? 'M' : 'L'} ${xFor(i)} ${yFn(d[key])}`))
       .filter(Boolean)
       .join(' ');
 
-  const objectivePath = data.map((d, i) => `${i === 0 ? 'M' : 'L'} ${xFor(i)} ${yForOcc(d.objective)}`).join(' ');
   const realPath = pathFor('real', yForOcc);
-  const forecastPath = pathFor('forecast', yForOcc);
-  const daysPath = data.map((d, i) => `${i === 0 ? 'M' : 'L'} ${xFor(i)} ${yForDays(d.billingDaysBalance)}`).join(' ');
+  const theoreticalPath = data.map((d, i) => `${i === 0 ? 'M' : 'L'} ${xFor(i)} ${yForDays(d.theoreticalGreenDays)}`).join(' ');
+  const realGreenPath = pathFor('realGreenDays', yForDays);
+  const forecastGreenPath = pathFor('forecastGreenDays', yForDays);
 
   const occTicks = [0, 25, 50, 75, 100];
   const daysTicks = Array.from({ length: 5 }, (_, i) => Math.round((niceDaysMax / 4) * i));
@@ -52,8 +52,8 @@ export default function ProjectOverviewChart() {
       <div className="flex flex-wrap items-center justify-between gap-3 mb-2">
         <p className="text-xs font-medium text-slate-500">Project Overview</p>
         <select
-          value={projectName}
-          onChange={(e) => setProjectName(e.target.value)}
+          value={projectCode}
+          onChange={(e) => setProjectCode(e.target.value)}
           className="text-sm rounded-full border border-slate-200 bg-white px-3 py-1.5 text-slate-700"
         >
           {projects.map((p) => (
@@ -65,10 +65,10 @@ export default function ProjectOverviewChart() {
       </div>
 
       <div className="flex items-center gap-4 text-xs text-slate-500 mb-2 flex-wrap">
-        <span className="flex items-center gap-1.5"><span className="inline-block w-3 h-0.5 border-t-2 border-dashed border-red-400" /> Objective (occupation, left axis)</span>
-        <span className="flex items-center gap-1.5"><span className="inline-block w-3 h-0.5 bg-slate-700" /> Real (occupation, left axis)</span>
-        <span className="flex items-center gap-1.5"><span className="inline-block w-3 h-0.5 bg-emerald-600" /> Forecast (occupation, left axis)</span>
-        <span className="flex items-center gap-1.5"><span className="inline-block w-3 h-0.5 bg-indigo-500" /> Billing days balance (right axis)</span>
+        <span className="flex items-center gap-1.5"><span className="inline-block w-3 h-0.5 bg-red-500" /> Real occupation (left axis)</span>
+        <span className="flex items-center gap-1.5"><span className="inline-block w-3 h-0.5 border-t-2 border-dashed border-indigo-400" /> Theoretical green days available (right axis)</span>
+        <span className="flex items-center gap-1.5"><span className="inline-block w-3 h-0.5 bg-indigo-600" /> Real green days available (right axis)</span>
+        <span className="flex items-center gap-1.5"><span className="inline-block w-3 h-0.5 bg-emerald-600" /> Forecast green days available (right axis)</span>
       </div>
 
       <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} className="w-full" onMouseMove={handleMove} onMouseLeave={() => setHoverIndex(null)}>
@@ -102,10 +102,10 @@ export default function ProjectOverviewChart() {
           <line x1={xFor(hoverIndex)} x2={xFor(hoverIndex)} y1={PAD.top} y2={HEIGHT - PAD.bottom} stroke="#cbd5e1" strokeWidth={1} />
         )}
 
-        <path d={objectivePath} fill="none" stroke="#f87171" strokeWidth={2} strokeDasharray="4 3" strokeLinecap="round" />
-        <path d={realPath} fill="none" stroke="#334155" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
-        <path d={forecastPath} fill="none" stroke="#059669" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
-        <path d={daysPath} fill="none" stroke="#6366f1" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+        <path d={theoreticalPath} fill="none" stroke="#a5b4fc" strokeWidth={2} strokeDasharray="4 3" strokeLinecap="round" />
+        <path d={realGreenPath} fill="none" stroke="#4f46e5" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+        <path d={forecastGreenPath} fill="none" stroke="#059669" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+        <path d={realPath} fill="none" stroke="#ef4444" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
 
         {data.map((d, i) => (
           <text key={d.week} x={xFor(i)} y={HEIGHT - PAD.bottom + 16} textAnchor="middle" className="fill-slate-400" style={{ fontSize: 10 }}>
@@ -114,17 +114,19 @@ export default function ProjectOverviewChart() {
         ))}
 
         {hovered && (
-          <g transform={`translate(${Math.min(xFor(hoverIndex) + 10, WIDTH - 160)}, ${PAD.top + 4})`}>
-            <rect width={150} height={78} rx={6} fill="white" stroke="#e2e8f0" />
+          <g transform={`translate(${Math.min(xFor(hoverIndex) + 10, WIDTH - 170)}, ${PAD.top + 4})`}>
+            <rect width={160} height={100} rx={6} fill="white" stroke="#e2e8f0" />
             <text x={8} y={14} className="fill-slate-500" style={{ fontSize: 10 }}>{hovered.week}</text>
-            <text x={8} y={30} className="fill-red-500" style={{ fontSize: 11 }}>Objective: {hovered.objective}%</text>
             {hovered.real != null && (
-              <text x={8} y={44} className="fill-slate-700" style={{ fontSize: 11 }}>Real: {hovered.real}%</text>
+              <text x={8} y={30} className="fill-red-600" style={{ fontSize: 11 }}>Real occupation: {hovered.real}%</text>
             )}
-            {hovered.forecast != null && (
-              <text x={8} y={44} className="fill-emerald-700" style={{ fontSize: 11, fontWeight: 600 }}>Forecast: {hovered.forecast}%</text>
+            <text x={8} y={48} className="fill-indigo-400" style={{ fontSize: 11 }}>Theoretical available: {hovered.theoreticalGreenDays}d</text>
+            {hovered.realGreenDays != null && (
+              <text x={8} y={64} className="fill-indigo-700" style={{ fontSize: 11, fontWeight: 600 }}>Real available: {hovered.realGreenDays}d</text>
             )}
-            <text x={8} y={62} className="fill-indigo-600" style={{ fontSize: 11 }}>Days balance: {hovered.billingDaysBalance}d</text>
+            {hovered.forecastGreenDays != null && (
+              <text x={8} y={80} className="fill-emerald-700" style={{ fontSize: 11, fontWeight: 600 }}>Forecast available: {hovered.forecastGreenDays}d</text>
+            )}
           </g>
         )}
       </svg>
