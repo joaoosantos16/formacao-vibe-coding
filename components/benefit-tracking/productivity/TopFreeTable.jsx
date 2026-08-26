@@ -11,7 +11,7 @@ const COLUMNS = [
   { key: 'varStatus', label: 'Var. Status', type: 'text' },
   { key: 'greenDays', label: '# Green Days', type: 'number' },
   { key: 'critical', label: 'Critical', type: 'text' },
-  { key: 'continuidade', label: 'Continuidade', type: 'text' },
+  { key: 'continuidade', label: 'Continuity', type: 'text' },
 ];
 
 const VAR_STATUS_STYLES = {
