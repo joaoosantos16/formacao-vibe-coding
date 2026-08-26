@@ -110,6 +110,41 @@ globais do escritório, ranking de consultores) é um dashboard agregado
 a partir de `days.xlsx`/`invoices.xlsx` da Spark Week, não dados por
 projeto — não faz parte destas tabelas, continua mock.
 
+### Motor de Benefit Tracking (26/08 — trazido de outra equipa)
+
+Portado de um motor de referência mais completo (`Benefit_Tracking_
+Final_...html`, outra equipa da formação). Ver `lib/benefitCalc.js`
+para as fórmulas exatas (rampa de plano, tarifa unitária, RAG,
+anualização pelos últimos 3 meses válidos).
+
+Campos extra em `projeto_kpis`:
+
+| Campo | Tipo | Notas |
+|---|---|---|
+| `volume` | numeric | volume anual (junto com `beneficio`, define a tarifa unitária: `beneficio / (volume × |baseline-target|)`) |
+| `mes_inicio` / `mes_objetivo` | text (`YYYY-MM`) | início/fim da rampa de plano deste KPI — sem valor, usa as datas do projeto |
+| `agregacao_mensal` | text | `avg` / `sum` / `last` — como agregar capturas não-mensais a mês |
+
+### `projeto_kpi_plano_overrides` / `projeto_kpi_volume_overrides` (partilhadas)
+
+| Campo | Tipo | Notas |
+|---|---|---|
+| `id` | uuid | |
+| `kpi_id` | uuid | FK → `projeto_kpis.id` |
+| `mes` | text (`YYYY-MM`) | |
+| `valor` | numeric | sobrepõe sempre o cálculo automático (rampa / volume anual÷12) |
+
+### `projeto_kpi_auditoria` (partilhada) — histórico de alterações
+
+| Campo | Tipo | Notas |
+|---|---|---|
+| `id` | uuid | |
+| `projeto_codigo` | text | FK → `projetos.codigo` |
+| `kpi_id` | uuid, opcional | FK → `projeto_kpis.id` |
+| `autor` | text, opcional | em branco por agora — sem autenticação implementada |
+| `campo` / `valor_antigo` / `valor_novo` | text | o que mudou |
+| `created_at` | timestamptz | |
+
 ## Vocabulário / estados
 
 Qualquer campo do tipo "estado" ou "categoria" (ex: o estado de um
