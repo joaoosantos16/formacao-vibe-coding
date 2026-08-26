@@ -24,7 +24,7 @@ export default function ProductivityView() {
             onClick={() => setView(v.key)}
             className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all duration-300 ${
               view === v.key
-                ? 'bg-gradient-to-br from-indigo-500 to-violet-600 text-white shadow-md'
+                ? 'bg-gradient-to-br from-blue-500 to-blue-700 text-white shadow-md'
                 : 'text-slate-600 hover:bg-slate-900/5'
             }`}
           >

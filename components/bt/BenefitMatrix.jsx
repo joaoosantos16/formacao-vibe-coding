@@ -1,6 +1,6 @@
 'use client';
 
-import { isPlanOverridden, formatEur } from '@/lib/benefitCalc';
+import { isPlanOverridden, isAtualOverridden, formatEur } from '@/lib/benefitCalc';
 import { formatNumber } from '@/lib/format';
 import MethodologyTooltip from './MethodologyTooltip';
 import { RAG_LABEL, RAG_BADGE } from './BenefitStats';
@@ -9,7 +9,7 @@ import { RAG_LABEL, RAG_BADGE } from './BenefitStats';
 // KPI e por mês, agrupada por ano. Plano e Volume são editáveis célula
 // a célula (sobrepõem o cálculo automático); Atual vem sempre das
 // capturas (separador "Benefit Tracking Update"). Ver lib/benefitCalc.js.
-export default function BenefitMatrix({ kpisWithCalc, months, onPlanChange, onVolumeChange }) {
+export default function BenefitMatrix({ kpisWithCalc, months, onPlanChange, onVolumeChange, onAtualChange }) {
   if (!kpisWithCalc.length) return null;
 
   const years = Array.from(new Set(months.map((m) => m.y))).sort((a, b) => a - b);
@@ -52,6 +52,7 @@ export default function BenefitMatrix({ kpisWithCalc, months, onPlanChange, onVo
                 w2={W2}
                 onPlanChange={onPlanChange}
                 onVolumeChange={onVolumeChange}
+                onAtualChange={onAtualChange}
               />
             ))}
           </tbody>
@@ -61,13 +62,14 @@ export default function BenefitMatrix({ kpisWithCalc, months, onPlanChange, onVo
         <span className="inline-flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-full bg-emerald-500" /> Igual ou melhor que o plano</span>
         <span className="inline-flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-full bg-amber-500" /> Pior que o plano, melhor que o baseline</span>
         <span className="inline-flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-full bg-rose-500" /> Pior que o baseline</span>
-        <span className="ml-auto font-medium text-emerald-700">Passa o rato por cima de qualquer € para ver a metodologia</span>
+        <span className="inline-flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-full ring-2 ring-inset ring-violet-400 bg-white" /> Editado à mão (sobrepõe o cálculo automático)</span>
+        <span className="ml-auto font-medium text-blue-700">Passa o rato por cima de qualquer € para ver a metodologia</span>
       </div>
     </div>
   );
 }
 
-function KpiRows({ n, kpi, calc, color, months, w1, w2, onPlanChange, onVolumeChange }) {
+function KpiRows({ n, kpi, calc, color, months, w1, w2, onPlanChange, onVolumeChange, onAtualChange }) {
   const b = Number(kpi.baseline);
 
   return (
@@ -107,28 +109,42 @@ function KpiRows({ n, kpi, calc, color, months, w1, w2, onPlanChange, onVolumeCh
               defaultValue={calc.plan[m.key] ?? ''}
               placeholder="—"
               onBlur={(e) => onPlanChange(kpi.id, m.key, e.target.value)}
-              className="w-16 rounded border border-transparent bg-transparent px-1 py-0.5 text-right text-slate-500 hover:border-slate-200 focus:border-emerald-400 focus:bg-white focus:outline-none"
+              className="w-16 rounded border border-transparent bg-transparent px-1 py-0.5 text-right text-slate-500 hover:border-slate-200 focus:border-blue-400 focus:bg-white focus:outline-none"
             />
           </td>
         ))}
         <td className="px-2" />
       </tr>
 
-      {/* Atual */}
+      {/* Atual — editável célula a célula; sobrepõe o valor agregado das capturas quando definido */}
       <tr>
         <td className="px-2 py-1 font-medium text-slate-500">Atual</td>
         {months.map((m) => {
           const a = calc.act[m.key];
           const pl = calc.plan[m.key];
-          let cls = 'text-slate-400';
-          if (a !== null && pl !== null && !Number.isNaN(b)) {
+          let cellCls = '';
+          let textCls = 'text-slate-500';
+          if (a !== null && a !== undefined && pl !== null && !Number.isNaN(b)) {
             const better = kpi.direction === 'lower' ? a <= pl : a >= pl;
             const overBase = kpi.direction === 'lower' ? a < b : a > b;
-            cls = better ? 'text-emerald-700 font-medium' : overBase ? 'text-amber-700' : 'text-rose-700';
+            if (better) { cellCls = 'bg-emerald-50'; textCls = 'text-emerald-700 font-semibold'; }
+            else if (overBase) { cellCls = 'bg-amber-50'; textCls = 'text-amber-700 font-semibold'; }
+            else { cellCls = 'bg-rose-50'; textCls = 'text-rose-700 font-semibold'; }
           }
+          const overridden = isAtualOverridden(kpi, m.key);
           return (
-            <td key={m.key} className={`px-1 py-1 text-right ${cls}`}>
-              {a === null || a === undefined ? '—' : formatNumber(a)}
+            <td
+              key={m.key}
+              className={`px-1 py-1 text-right ${cellCls} ${overridden ? 'ring-1 ring-inset ring-violet-300' : ''}`}
+            >
+              <input
+                type="number"
+                step="any"
+                defaultValue={a ?? ''}
+                placeholder="—"
+                onBlur={(e) => onAtualChange(kpi.id, m.key, e.target.value)}
+                className={`w-16 rounded border border-transparent bg-transparent px-1 py-0.5 text-right ${textCls} hover:border-slate-200 focus:border-blue-400 focus:bg-white focus:outline-none`}
+              />
             </td>
           );
         })}
@@ -146,7 +162,7 @@ function KpiRows({ n, kpi, calc, color, months, w1, w2, onPlanChange, onVolumeCh
               defaultValue={kpi.volumeOverrides?.[m.key] ?? ''}
               placeholder={kpi.volume ? String(Math.round(Number(kpi.volume) / 12)) : '—'}
               onBlur={(e) => onVolumeChange(kpi.id, m.key, e.target.value)}
-              className="w-16 rounded border border-transparent bg-transparent px-1 py-0.5 text-right text-slate-400 hover:border-slate-200 focus:border-emerald-400 focus:bg-white focus:outline-none"
+              className="w-16 rounded border border-transparent bg-transparent px-1 py-0.5 text-right text-slate-400 hover:border-slate-200 focus:border-blue-400 focus:bg-white focus:outline-none"
             />
           </td>
         ))}
@@ -162,7 +178,7 @@ function KpiRows({ n, kpi, calc, color, months, w1, w2, onPlanChange, onVolumeCh
           const a = calc.act[m.key];
           const vm = kpi.volumeOverrides?.[m.key] ?? (kpi.volume ? Number(kpi.volume) / 12 : null);
           return (
-            <td key={m.key} className="px-1 py-1.5 text-right">
+            <td key={m.key} className={`px-1 py-1.5 text-right ${s >= 0 ? 'bg-emerald-50/70' : 'bg-rose-50/70'}`}>
               <MethodologyTooltip
                 title={`${kpi.name} · ${m.label} ${m.y}`}
                 rows={[

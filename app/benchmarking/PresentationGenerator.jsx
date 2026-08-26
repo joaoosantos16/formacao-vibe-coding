@@ -664,7 +664,7 @@ export default function PresentationGenerator({ filters }) {
     <>
       <button
         onClick={() => setModalOpen(true)}
-        className="rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 px-5 py-2.5 text-sm font-medium text-white shadow-lg shadow-emerald-500/25 transition-transform hover:-translate-y-0.5 motion-reduce:transition-none"
+        className="rounded-full bg-gradient-to-br from-blue-400 to-sky-500 px-5 py-2.5 text-sm font-medium text-white shadow-lg shadow-blue-500/25 transition-transform hover:-translate-y-0.5 motion-reduce:transition-none"
       >
         Generate benchmark presentation
       </button>
@@ -697,7 +697,7 @@ export default function PresentationGenerator({ filters }) {
                 value={clientName}
                 onChange={(e) => setClientName(e.target.value)}
                 placeholder="e.g. Empresa A"
-                className="mt-1.5 w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-sm text-slate-800 focus:border-emerald-300 focus:outline-none focus:ring-2 focus:ring-emerald-400/40"
+                className="mt-1.5 w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-sm text-slate-800 focus:border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-400/40"
               />
             </label>
 
@@ -720,7 +720,7 @@ export default function PresentationGenerator({ filters }) {
                           [s.key]: e.target.checked,
                         }))
                       }
-                      className="mt-0.5 h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-400/40"
+                      className="mt-0.5 h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-400/40"
                     />
                     <span className="min-w-0">
                       <span className="block text-sm font-medium text-slate-800">
@@ -756,7 +756,7 @@ export default function PresentationGenerator({ filters }) {
                       }
                       className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
                         on
-                          ? "bg-emerald-500/15 text-emerald-800 ring-1 ring-emerald-300"
+                          ? "bg-blue-500/15 text-blue-800 ring-1 ring-blue-300"
                           : "bg-slate-900/5 text-slate-600 hover:bg-slate-900/10"
                       }`}
                     >
@@ -782,7 +782,7 @@ export default function PresentationGenerator({ filters }) {
               <button
                 onClick={handleGenerate}
                 disabled={!anySection || generating}
-                className="rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 px-5 py-2.5 text-sm font-medium text-white shadow-lg shadow-emerald-500/25 transition-opacity disabled:cursor-not-allowed disabled:opacity-40"
+                className="rounded-full bg-gradient-to-br from-blue-400 to-sky-500 px-5 py-2.5 text-sm font-medium text-white shadow-lg shadow-blue-500/25 transition-opacity disabled:cursor-not-allowed disabled:opacity-40"
               >
                 {generating ? "Generating…" : "Generate presentation"}
               </button>
@@ -811,7 +811,7 @@ export default function PresentationGenerator({ filters }) {
               </button>
               <button
                 onClick={handleDownload}
-                className="rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 px-5 py-2 text-sm font-medium text-white shadow-lg shadow-emerald-500/25"
+                className="rounded-full bg-gradient-to-br from-blue-400 to-sky-500 px-5 py-2 text-sm font-medium text-white shadow-lg shadow-blue-500/25"
               >
                 Download PDF
               </button>

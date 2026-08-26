@@ -38,11 +38,11 @@ export default function MultiComboSelect({ label, values, onChange, options }) {
   return (
     <div className="relative" ref={ref}>
       {label && <span className="block text-xs font-medium text-slate-500 mb-1.5">{label}</span>}
-      <div className="w-full rounded-xl border border-slate-200 px-2 py-2 flex flex-wrap gap-1.5 focus-within:ring-2 focus-within:ring-emerald-400">
+      <div className="w-full rounded-xl border border-slate-200 px-2 py-2 flex flex-wrap gap-1.5 focus-within:ring-2 focus-within:ring-blue-400">
         {selected.map((v) => (
-          <span key={v} className="flex items-center gap-1 rounded-full bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200 px-2.5 py-1 text-xs font-medium">
+          <span key={v} className="flex items-center gap-1 rounded-full bg-blue-50 text-blue-700 ring-1 ring-blue-200 px-2.5 py-1 text-xs font-medium">
             {v}
-            <button type="button" onClick={() => remove(v)} className="text-emerald-500 hover:text-emerald-800">
+            <button type="button" onClick={() => remove(v)} className="text-blue-500 hover:text-blue-800">
               ×
             </button>
           </span>
@@ -67,7 +67,7 @@ export default function MultiComboSelect({ label, values, onChange, options }) {
                 type="button"
                 onMouseDown={(e) => e.preventDefault()}
                 onClick={() => add(option)}
-                className="w-full text-left px-4 py-2 text-sm text-slate-600 hover:bg-emerald-50 hover:text-emerald-700"
+                className="w-full text-left px-4 py-2 text-sm text-slate-600 hover:bg-blue-50 hover:text-blue-700"
               >
                 {option}
               </button>

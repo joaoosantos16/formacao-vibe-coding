@@ -59,7 +59,7 @@ export default function BenefitStats({ totals }) {
       </Card>
 
       <Card accent>
-        <p className="text-xs font-semibold uppercase tracking-wide text-emerald-300">Benefício anualizado logrado</p>
+        <p className="text-xs font-semibold uppercase tracking-wide text-sky-300">Benefício anualizado logrado</p>
         <MethodologyTooltip
           title="Benefício anualizado"
           rows={[
@@ -70,7 +70,7 @@ export default function BenefitStats({ totals }) {
           <p className="mt-2 text-3xl font-bold">{formatEur(totals.annual)}</p>
         </MethodologyTooltip>
         <ProgressBar pct={potentialPct} dark />
-        <p className="mt-1.5 text-xs font-medium text-emerald-300">
+        <p className="mt-1.5 text-xs font-medium text-sky-300">
           {potentialPct !== null ? `${potentialPct}% do potencial` : 'sem potencial definido'}
         </p>
       </Card>

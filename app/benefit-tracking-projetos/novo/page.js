@@ -232,7 +232,7 @@ export default function NovoProjetoPage() {
         <button
           type="button"
           onClick={() => setShowAddKpi(true)}
-          className="mt-3 text-sm font-medium text-emerald-600 hover:text-emerald-700"
+          className="mt-3 text-sm font-medium text-blue-600 hover:text-blue-700"
         >
           + Add New KPI
         </button>
@@ -271,7 +271,7 @@ export default function NovoProjetoPage() {
         <button
           type="button"
           onClick={handleCreate}
-          className="rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 px-6 py-3 text-sm font-medium text-white shadow-lg shadow-emerald-500/30 hover:-translate-y-0.5 transition-transform"
+          className="rounded-full bg-gradient-to-br from-blue-400 to-sky-500 px-6 py-3 text-sm font-medium text-white shadow-lg shadow-blue-500/30 hover:-translate-y-0.5 transition-transform"
         >
           Create Project
         </button>
@@ -285,7 +285,7 @@ export default function NovoProjetoPage() {
 }
 
 const inputClass =
-  'w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400';
+  'w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400';
 
 function Section({ title, children }) {
   return (
@@ -312,14 +312,14 @@ function KpiRow({ kpi, selected, onToggle, relevance }) {
   return (
     <label className="flex items-center justify-between gap-4 rounded-xl border border-slate-100 px-4 py-3 text-sm hover:bg-slate-50 cursor-pointer">
       <div className="flex items-center gap-3">
-        <input type="checkbox" checked={!!selected} onChange={onToggle} className="h-4 w-4 accent-emerald-500" />
+        <input type="checkbox" checked={!!selected} onChange={onToggle} className="h-4 w-4 accent-blue-500" />
         <div>
           <p className="font-medium text-slate-700">{kpi.name}</p>
           <p className="text-xs text-slate-400">{kpi.formula} · {kpi.unit} · {kpi.chart}</p>
         </div>
       </div>
       {relevance != null && (
-        <span className="shrink-0 rounded-full bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200 px-3 py-1 text-xs font-medium">
+        <span className="shrink-0 rounded-full bg-blue-50 text-blue-700 ring-1 ring-blue-200 px-3 py-1 text-xs font-medium">
           {relevance}% match
         </span>
       )}
@@ -376,7 +376,7 @@ function AddKpiModal({ onClose, onAdd }) {
           <button type="button" onClick={onClose} className="rounded-full px-5 py-2.5 text-sm text-slate-500 hover:bg-slate-900/5">
             Cancel
           </button>
-          <button type="button" onClick={handleSubmit} className="rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 px-5 py-2.5 text-sm font-medium text-white">
+          <button type="button" onClick={handleSubmit} className="rounded-full bg-gradient-to-br from-blue-400 to-sky-500 px-5 py-2.5 text-sm font-medium text-white">
             Add KPI
           </button>
         </div>

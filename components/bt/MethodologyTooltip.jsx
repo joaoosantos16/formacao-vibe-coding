@@ -12,7 +12,7 @@ export default function MethodologyTooltip({ title, rows = [], footnote, childre
         role="tooltip"
         className="pointer-events-none absolute bottom-full left-1/2 z-30 mb-2 w-64 -translate-x-1/2 rounded-xl bg-slate-900 p-3 text-left opacity-0 shadow-xl transition-opacity duration-150 group-hover:opacity-100 group-focus-within:opacity-100"
       >
-        <span className="block text-[11px] font-semibold uppercase tracking-wide text-emerald-300">
+        <span className="block text-[11px] font-semibold uppercase tracking-wide text-sky-300">
           {title}
         </span>
         <span className="mt-1.5 block space-y-1">

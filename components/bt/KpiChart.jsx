@@ -107,9 +107,9 @@ export default function KpiChart({ periods = [], values = [], target, compact = 
       )}
 
       {/* linha de valores reais */}
-      <polyline points={linePoints} fill="none" stroke="currentColor" strokeWidth="2.5" className="text-emerald-500" />
+      <polyline points={linePoints} fill="none" stroke="currentColor" strokeWidth="2.5" className="text-blue-500" />
       {values.map((v, i) => (v == null ? null : (
-        <circle key={i} cx={xAt(i)} cy={yAt(v)} r={compact ? 1.5 : 3} className="fill-emerald-500" />
+        <circle key={i} cx={xAt(i)} cy={yAt(v)} r={compact ? 1.5 : 3} className="fill-blue-500" />
       )))}
     </svg>
   );

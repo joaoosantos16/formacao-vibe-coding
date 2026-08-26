@@ -22,6 +22,7 @@ import {
   setMeasurement,
   setPlanOverride,
   setVolumeOverride,
+  setAtualOverride,
   getAuditTrail,
   generatePeriods,
   KPI_FREQUENCY,
@@ -71,7 +72,7 @@ export default function ProjectPage() {
     return (
       <div className="space-y-4">
         <p className="text-slate-500">Project not found.</p>
-        <Link href="/benefit-tracking-projetos" className="text-emerald-600 font-medium">
+        <Link href="/benefit-tracking-projetos" className="text-blue-600 font-medium">
           ← Project Portfolio
         </Link>
       </div>
@@ -95,7 +96,7 @@ export default function ProjectPage() {
           <p className="text-sm text-slate-500">{project.client} · {project.sector}</p>
         </div>
         <div className="flex items-center gap-3">
-          <span className="rounded-full bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200 px-4 py-1.5 text-sm font-medium h-fit">
+          <span className="rounded-full bg-blue-50 text-blue-700 ring-1 ring-blue-200 px-4 py-1.5 text-sm font-medium h-fit">
             {STATUS_LABELS[project.status]}
           </span>
           <button
@@ -115,7 +116,7 @@ export default function ProjectPage() {
             onClick={() => setActiveTab(tab.key)}
             className={`rounded-full px-4 py-2 text-sm font-medium transition-all ${
               activeTab === tab.key
-                ? 'bg-gradient-to-br from-emerald-400 to-teal-500 text-white shadow'
+                ? 'bg-gradient-to-br from-blue-400 to-sky-500 text-white shadow'
                 : 'text-slate-600 hover:bg-slate-900/5'
             }`}
           >
@@ -182,6 +183,11 @@ function BenefitTab({ project, onSaved }) {
     onSaved();
   }
 
+  async function handleAtualChange(kpiId, mk, value) {
+    await setAtualOverride(project.id, kpiId, mk, value === '' ? null : Number(value));
+    onSaved();
+  }
+
   async function openAudit() {
     setAuditLoading(true);
     setAuditEntries(await getAuditTrail(project.id));
@@ -234,6 +240,7 @@ function BenefitTab({ project, onSaved }) {
             months={months}
             onPlanChange={handlePlanChange}
             onVolumeChange={handleVolumeChange}
+            onAtualChange={handleAtualChange}
           />
         </div>
       </Card>
@@ -289,7 +296,7 @@ function GeneralInfoTab({ project, onSaved }) {
             <button onClick={() => { setEditing(false); setForm(project); }} className="rounded-full px-5 py-2 text-sm text-slate-500 hover:bg-slate-900/5">
               Cancel
             </button>
-            <button onClick={save} className="rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 px-5 py-2 text-sm font-medium text-white">
+            <button onClick={save} className="rounded-full bg-gradient-to-br from-blue-400 to-sky-500 px-5 py-2 text-sm font-medium text-white">
               Save
             </button>
           </div>
@@ -388,7 +395,7 @@ function InfoField({ label, value, editing, onChange, type = 'text', raw }) {
           type={type}
           value={(type === 'number' ? raw : value) ?? ''}
           onChange={(e) => onChange(e.target.value)}
-          className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400"
+          className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
         />
       ) : (
         <p className="mt-1 text-sm text-slate-700">{type === 'date' ? formatDate(value) : (value ?? '—')}</p>
@@ -574,7 +581,7 @@ function KpiConfigTab({ project, onSaved }) {
       <Card>
         <div className="flex items-center justify-between mb-3">
           <h2 className="font-semibold text-slate-700">Add KPI</h2>
-          <button type="button" onClick={() => setShowAdd(true)} className="text-sm font-medium text-emerald-600 hover:text-emerald-700">
+          <button type="button" onClick={() => setShowAdd(true)} className="text-sm font-medium text-blue-600 hover:text-blue-700">
             + Add New KPI
           </button>
         </div>
@@ -583,7 +590,7 @@ function KpiConfigTab({ project, onSaved }) {
           placeholder="Search KPI Database..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400"
+          className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
         />
         {searchResults.length > 0 && (
           <div className="mt-3 space-y-2">
@@ -650,7 +657,7 @@ function AddKpiModal({ onClose, onAdd }) {
         </div>
         <div className="flex justify-end gap-3 pt-2">
           <button type="button" onClick={onClose} className="rounded-full px-5 py-2.5 text-sm text-slate-500 hover:bg-slate-900/5">Cancel</button>
-          <button type="button" onClick={handleSubmit} className="rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 px-5 py-2.5 text-sm font-medium text-white">Add KPI</button>
+          <button type="button" onClick={handleSubmit} className="rounded-full bg-gradient-to-br from-blue-400 to-sky-500 px-5 py-2.5 text-sm font-medium text-white">Add KPI</button>
         </div>
       </div>
     </div>
@@ -733,7 +740,7 @@ function TrackingGroup({ project, freq, kpis, onSaved }) {
                     type="number"
                     defaultValue={(project.measurements[k.id] ?? {})[period] ?? ''}
                     onBlur={(e) => handleChange(k.id, period, e.target.value)}
-                    className="w-24 rounded-lg border border-slate-200 px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400"
+                    className="w-24 rounded-lg border border-slate-200 px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
                   />
                 </td>
               ))}

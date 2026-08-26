@@ -66,8 +66,8 @@ export default function ProjectOverviewChart() {
 
       <div className="flex items-center gap-4 text-xs text-slate-500 mb-2 flex-wrap">
         <span className="flex items-center gap-1.5"><span className="inline-block w-3 h-0.5 bg-red-500" /> Real occupation (left axis)</span>
-        <span className="flex items-center gap-1.5"><span className="inline-block w-3 h-0.5 border-t-2 border-dashed border-indigo-400" /> Theoretical green days available (right axis)</span>
-        <span className="flex items-center gap-1.5"><span className="inline-block w-3 h-0.5 bg-indigo-600" /> Real green days available (right axis)</span>
+        <span className="flex items-center gap-1.5"><span className="inline-block w-3 h-0.5 border-t-2 border-dashed border-blue-400" /> Theoretical green days available (right axis)</span>
+        <span className="flex items-center gap-1.5"><span className="inline-block w-3 h-0.5 bg-blue-600" /> Real green days available (right axis)</span>
         <span className="flex items-center gap-1.5"><span className="inline-block w-3 h-0.5 bg-emerald-600" /> Forecast green days available (right axis)</span>
       </div>
 
@@ -81,7 +81,7 @@ export default function ProjectOverviewChart() {
           </g>
         ))}
         {daysTicks.map((tick) => (
-          <text key={`days-${tick}`} x={WIDTH - PAD.right + 8} y={yForDays(tick) + 3} className="fill-indigo-400" style={{ fontSize: 10 }}>
+          <text key={`days-${tick}`} x={WIDTH - PAD.right + 8} y={yForDays(tick) + 3} className="fill-blue-400" style={{ fontSize: 10 }}>
             {tick}d
           </text>
         ))}
@@ -120,9 +120,9 @@ export default function ProjectOverviewChart() {
             {hovered.real != null && (
               <text x={8} y={30} className="fill-red-600" style={{ fontSize: 11 }}>Real occupation: {hovered.real}%</text>
             )}
-            <text x={8} y={48} className="fill-indigo-400" style={{ fontSize: 11 }}>Theoretical available: {hovered.theoreticalGreenDays}d</text>
+            <text x={8} y={48} className="fill-blue-400" style={{ fontSize: 11 }}>Theoretical available: {hovered.theoreticalGreenDays}d</text>
             {hovered.realGreenDays != null && (
-              <text x={8} y={64} className="fill-indigo-700" style={{ fontSize: 11, fontWeight: 600 }}>Real available: {hovered.realGreenDays}d</text>
+              <text x={8} y={64} className="fill-blue-700" style={{ fontSize: 11, fontWeight: 600 }}>Real available: {hovered.realGreenDays}d</text>
             )}
             {hovered.forecastGreenDays != null && (
               <text x={8} y={80} className="fill-emerald-700" style={{ fontSize: 11, fontWeight: 600 }}>Forecast available: {hovered.forecastGreenDays}d</text>

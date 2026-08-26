@@ -49,7 +49,7 @@ export default function ComboSelect({ label, value, onChange, options, disabled,
           // se não corresponder a nenhuma opção válida, reverte
           if (!options.includes(query)) setQuery(value ?? '');
         }}
-        className={`w-full rounded-xl border px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 ${
+        className={`w-full rounded-xl border px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 ${
           disabled ? 'bg-slate-50 border-slate-100 text-slate-400' : 'border-slate-200'
         }`}
       />
@@ -61,7 +61,7 @@ export default function ComboSelect({ label, value, onChange, options, disabled,
                 type="button"
                 onMouseDown={(e) => e.preventDefault()}
                 onClick={() => select(option)}
-                className="w-full text-left px-4 py-2 text-sm text-slate-600 hover:bg-emerald-50 hover:text-emerald-700"
+                className="w-full text-left px-4 py-2 text-sm text-slate-600 hover:bg-blue-50 hover:text-blue-700"
               >
                 {option}
               </button>

@@ -79,7 +79,7 @@ export default function VariablesTable() {
               onClick={() => setFilter(f.key)}
               className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all duration-300 ${
                 filter === f.key
-                  ? 'bg-gradient-to-br from-indigo-500 to-violet-600 text-white shadow-md'
+                  ? 'bg-gradient-to-br from-blue-500 to-blue-700 text-white shadow-md'
                   : 'text-slate-600 hover:bg-slate-900/5'
               }`}
             >
@@ -143,7 +143,7 @@ export default function VariablesTable() {
                       className={`px-2.5 py-1 rounded-full text-xs font-medium transition-all duration-300 ${
                         alreadyRequested
                           ? 'bg-slate-100 text-slate-400 cursor-default'
-                          : 'bg-gradient-to-br from-indigo-500 to-violet-600 text-white hover:shadow-md'
+                          : 'bg-gradient-to-br from-blue-500 to-blue-700 text-white hover:shadow-md'
                       }`}
                     >
                       {alreadyRequested ? 'Sent' : 'Send now'}

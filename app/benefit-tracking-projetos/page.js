@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { getProjects, deleteProject, STATUS_LABELS } from '@/lib/benefitTrackingStore';
 
 const STATUS_STYLES = {
-  active: 'bg-emerald-50 text-emerald-700 ring-emerald-200',
+  active: 'bg-blue-50 text-blue-700 ring-blue-200',
   closed: 'bg-slate-100 text-slate-500 ring-slate-200',
 };
 
@@ -88,7 +88,7 @@ export default function BenefitTrackingProjetosPage() {
         </div>
         <Link
           href="/benefit-tracking-projetos/novo"
-          className="rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 px-6 py-3 text-sm font-medium text-white shadow-lg shadow-emerald-500/30 transition-transform hover:-translate-y-0.5"
+          className="rounded-full bg-gradient-to-br from-blue-400 to-sky-500 px-6 py-3 text-sm font-medium text-white shadow-lg shadow-blue-500/30 transition-transform hover:-translate-y-0.5"
         >
           + Add New Project
         </Link>
@@ -96,7 +96,7 @@ export default function BenefitTrackingProjetosPage() {
 
       <div className="grid grid-cols-3 gap-4">
         <SummaryCard label="Total Projects" value={summary.total} />
-        <SummaryCard label="Active Projects" value={summary.active} accent="emerald" />
+        <SummaryCard label="Active Projects" value={summary.active} accent="blue" />
         <SummaryCard label="Closed Projects" value={summary.closed} accent="slate" />
       </div>
 
@@ -106,7 +106,7 @@ export default function BenefitTrackingProjetosPage() {
           placeholder="Search projects (code, client, sector)"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400"
+          className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
         />
 
         <div className="flex flex-wrap gap-3">
@@ -163,8 +163,8 @@ export default function BenefitTrackingProjetosPage() {
 
 function SummaryCard({ label, value, accent }) {
   const accentText =
-    accent === 'emerald'
-      ? 'text-emerald-600'
+    accent === 'blue'
+      ? 'text-blue-600'
       : accent === 'slate'
       ? 'text-slate-500'
       : 'text-slate-800';
@@ -181,7 +181,7 @@ function FilterSelect({ label, value, onChange, options, labels }) {
     <select
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className="rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-600 focus:outline-none focus:ring-2 focus:ring-emerald-400"
+      className="rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
     >
       <option value="">{label}: all</option>
       {options.map((opt) => (

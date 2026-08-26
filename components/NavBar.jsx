@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
@@ -51,9 +52,11 @@ export default function NavBar() {
         onClick={() => setVisible(true)}
       >
         <nav className="flex items-center gap-1 rounded-full bg-white/70 backdrop-blur-xl shadow-[0_8px_30px_rgb(0,0,0,0.10)] ring-1 ring-black/5 px-2 py-2">
-          <span className="hidden sm:inline-flex items-center px-4 font-semibold text-slate-700 tracking-tight">
-            KI BT&amp;B
-          </span>
+          <Link href="/" className="hidden sm:flex items-center gap-2.5 pl-3 pr-4">
+            <Image src="/kaizen-logo.png" alt="Kaizen Institute" width={104} height={20} priority className="h-5 w-auto" />
+            <span className="h-4 w-px bg-slate-300" />
+            <span className="font-semibold text-slate-700 tracking-tight">BT&amp;B</span>
+          </Link>
           {PAGES.map((page) => {
             const active = pathname === page.href;
             return (
@@ -62,7 +65,7 @@ export default function NavBar() {
                 href={page.href}
                 className={`relative px-5 py-2.5 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-300 ${
                   active
-                    ? 'bg-gradient-to-br from-emerald-400 to-teal-500 text-white shadow-lg shadow-emerald-500/30 scale-105'
+                    ? 'bg-gradient-to-br from-blue-500 to-blue-700 text-white shadow-lg shadow-blue-600/30 scale-105'
                     : 'text-slate-600 hover:bg-slate-900/5 hover:-translate-y-0.5'
                 }`}
               >

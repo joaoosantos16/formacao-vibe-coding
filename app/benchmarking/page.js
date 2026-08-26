@@ -80,13 +80,13 @@ function BulletBar({ kpi }) {
 
       {/* percurso baseline -> target */}
       <div
-        className="absolute left-0 top-1/2 h-1.5 -translate-y-1/2 rounded-l-full bg-gradient-to-r from-emerald-200 to-teal-400"
+        className="absolute left-0 top-1/2 h-1.5 -translate-y-1/2 rounded-l-full bg-gradient-to-r from-blue-200 to-sky-400"
         style={{ width: `${targetPct}%` }}
       />
 
       {/* marca do target — é o ponto de referência da leitura */}
       <span
-        className="absolute top-1/2 h-3.5 w-[2px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-teal-700"
+        className="absolute top-1/2 h-3.5 w-[2px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-sky-700"
         style={{ left: `${targetPct}%` }}
       />
 
@@ -95,7 +95,7 @@ function BulletBar({ kpi }) {
         <span
           key={i}
           className={`absolute top-1/2 h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full ring-2 ring-white ${
-            ratio >= 0.999 ? "bg-teal-700" : "bg-slate-400"
+            ratio >= 0.999 ? "bg-sky-700" : "bg-slate-400"
           }`}
           style={{ left: `${toPct(ratio)}%` }}
         />
@@ -123,7 +123,7 @@ function SortHeader({ label, columnKey, sort, setSort, className = "" }) {
         }`}
       >
         {label}
-        <span className={active ? "text-emerald-600" : "text-transparent"}>
+        <span className={active ? "text-blue-600" : "text-transparent"}>
           {active && sort.dir === "desc" ? "↓" : "↑"}
         </span>
       </button>
@@ -224,7 +224,7 @@ function SummaryStrip({ filters }) {
           </p>
           <p
             className={`mt-2 text-2xl font-semibold tracking-tight tabular-nums ${
-              stat.accent ? "text-emerald-600" : "text-slate-800"
+              stat.accent ? "text-blue-600" : "text-slate-800"
             }`}
           >
             {stat.value}
@@ -254,7 +254,7 @@ function FilterBar({ filters, setFilters, hideNonMatching, setHideNonMatching })
                 aria-pressed={hideNonMatching}
                 className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
                   hideNonMatching
-                    ? "bg-emerald-500/15 text-emerald-800 ring-1 ring-emerald-300"
+                    ? "bg-blue-500/15 text-blue-800 ring-1 ring-blue-300"
                     : "bg-slate-900/5 text-slate-600 hover:bg-slate-900/10 hover:text-slate-800"
                 }`}
               >
@@ -280,13 +280,13 @@ function FilterBar({ filters, setFilters, hideNonMatching, setHideNonMatching })
               key={field.key}
               onClick={() => setFilters((prev) => ({ ...prev, [field.key]: "" }))}
               title={`Remove ${field.label} filter`}
-              className="group inline-flex max-w-full items-center gap-2 rounded-full bg-emerald-500/10 py-1.5 pl-3 pr-2.5 text-xs font-medium text-emerald-800 transition-colors hover:bg-emerald-500/20"
+              className="group inline-flex max-w-full items-center gap-2 rounded-full bg-blue-500/10 py-1.5 pl-3 pr-2.5 text-xs font-medium text-blue-800 transition-colors hover:bg-blue-500/20"
             >
               <span className="truncate">
-                <span className="text-emerald-600/70">{field.label}:</span>{" "}
+                <span className="text-blue-600/70">{field.label}:</span>{" "}
                 {filters[field.key]}
               </span>
-              <span className="text-emerald-600/60 transition-colors group-hover:text-emerald-800">
+              <span className="text-blue-600/60 transition-colors group-hover:text-blue-800">
                 ×
               </span>
             </button>
@@ -305,9 +305,9 @@ function FilterBar({ filters, setFilters, hideNonMatching, setHideNonMatching })
               onChange={(e) =>
                 setFilters((prev) => ({ ...prev, [field.key]: e.target.value }))
               }
-              className={`w-full truncate rounded-xl border px-3 py-2 text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-400/40 ${
+              className={`w-full truncate rounded-xl border px-3 py-2 text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-blue-400/40 ${
                 isActive
-                  ? "border-emerald-300 bg-emerald-50/60 font-medium text-slate-800"
+                  ? "border-blue-300 bg-blue-50/60 font-medium text-slate-800"
                   : "border-slate-200 bg-white/80 text-slate-500 hover:border-slate-300 hover:text-slate-700"
               }`}
             >
@@ -350,7 +350,7 @@ function KpiTable({ category, expanded, onToggle, filters, hideNonMatching }) {
         <span
           className={`grid h-9 w-9 shrink-0 place-items-center rounded-xl text-sm font-semibold transition-colors ${
             isExpanded
-              ? "bg-gradient-to-br from-emerald-400 to-teal-500 text-white shadow-sm shadow-emerald-500/30"
+              ? "bg-gradient-to-br from-blue-400 to-sky-500 text-white shadow-sm shadow-blue-500/30"
               : "bg-slate-900/5 text-slate-500 group-hover:bg-slate-900/10"
           }`}
         >
@@ -435,7 +435,7 @@ function KpiRow({ kpi, filters, hideNonMatching }) {
     <>
       <tr
         className={`border-t border-slate-100 transition-colors ${
-          showProjects ? "bg-emerald-50/40" : "hover:bg-slate-900/[0.02]"
+          showProjects ? "bg-blue-50/40" : "hover:bg-slate-900/[0.02]"
         }`}
       >
         <td className="px-2 py-3 font-medium text-slate-800">{kpi.name}</td>
@@ -445,7 +445,7 @@ function KpiRow({ kpi, filters, hideNonMatching }) {
           <BulletBar kpi={kpi} />
         </td>
         <td className="py-3 tabular-nums text-slate-500">{kpi.increase}</td>
-        <td className="py-3 tabular-nums font-medium text-emerald-600">
+        <td className="py-3 tabular-nums font-medium text-blue-600">
           {kpi.benefit}
         </td>
         <td className="py-3 pr-2 text-right">
@@ -453,7 +453,7 @@ function KpiRow({ kpi, filters, hideNonMatching }) {
             onClick={() => setShowProjects((v) => !v)}
             className={`whitespace-nowrap rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors ${
               showProjects
-                ? "bg-emerald-500/10 text-emerald-700 hover:bg-emerald-500/20"
+                ? "bg-blue-500/10 text-blue-700 hover:bg-blue-500/20"
                 : "bg-slate-900/5 text-slate-600 hover:bg-slate-900/10 hover:text-slate-800"
             }`}
           >
@@ -569,7 +569,7 @@ function RelatedProjects({ kpiName, filters, hideNonMatching }) {
                   <td className="py-3 tabular-nums text-slate-500">
                     {project.kpiData.increase}
                   </td>
-                  <td className="py-3 tabular-nums font-medium text-emerald-600">
+                  <td className="py-3 tabular-nums font-medium text-blue-600">
                     {project.kpiData.benefit}
                   </td>
                   <td className="py-3">
@@ -608,7 +608,7 @@ function MatchBar({ value }) {
         <div
           className={`h-full rounded-full transition-all duration-500 ${
             strong
-              ? "bg-gradient-to-r from-emerald-400 to-teal-500"
+              ? "bg-gradient-to-r from-blue-400 to-sky-500"
               : mid
               ? "bg-slate-400"
               : "bg-slate-300"
@@ -618,7 +618,7 @@ function MatchBar({ value }) {
       </div>
       <span
         className={`w-9 text-right text-xs tabular-nums ${
-          strong ? "font-medium text-emerald-700" : "text-slate-400"
+          strong ? "font-medium text-blue-700" : "text-slate-400"
         }`}
       >
         {value}%
@@ -688,7 +688,7 @@ export default function BenchmarkingPage() {
     <div className="space-y-6">
       <header className="flex flex-wrap items-end justify-between gap-4 pt-2">
         <div>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-600">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-blue-600">
             KI BT&amp;B
           </p>
           <h1 className="mt-2 text-4xl font-semibold tracking-tight text-slate-900">
@@ -749,15 +749,15 @@ export default function BenchmarkingPage() {
             Baseline → Target
           </span>
           <span className="inline-flex items-center gap-2">
-            <span className="h-1.5 w-8 rounded-full bg-gradient-to-r from-emerald-200 to-teal-400" />
+            <span className="h-1.5 w-8 rounded-full bg-gradient-to-r from-blue-200 to-sky-400" />
             Baseline to benchmark target
           </span>
           <span className="inline-flex items-center gap-2">
-            <span className="h-3.5 w-[2px] rounded-full bg-teal-700" />
+            <span className="h-3.5 w-[2px] rounded-full bg-sky-700" />
             Benchmark target
           </span>
           <span className="inline-flex items-center gap-2">
-            <span className="h-2.5 w-2.5 rounded-full bg-teal-700 ring-2 ring-white" />
+            <span className="h-2.5 w-2.5 rounded-full bg-sky-700 ring-2 ring-white" />
             Project met or beat it
           </span>
           <span className="inline-flex items-center gap-2">
