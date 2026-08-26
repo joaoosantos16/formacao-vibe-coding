@@ -14,6 +14,14 @@ export default function ConsultantView() {
   const [consultant, setConsultant] = useState('all');
   const [dateRange, setDateRange] = useState(DATE_RANGES[0]);
 
+  const consultantsForLevel = level === 'all' ? consultants : consultants.filter((c) => c.level === level);
+
+  function handleLevelChange(newLevel) {
+    setLevel(newLevel);
+    const stillValid = newLevel === 'all' || consultants.some((c) => c.level === newLevel && c.consultant === consultant);
+    if (!stillValid) setConsultant('all');
+  }
+
   const occupationSeries = getGlobalOccupationSeries().map((d) => ({ week: d.week, value: d.occPct }));
   const greenDaysSeries = getGreenDaysEvolution().map((d) => ({ week: d.week, value: d.greenDays }));
 
@@ -24,7 +32,7 @@ export default function ConsultantView() {
           Level
           <select
             value={level}
-            onChange={(e) => setLevel(e.target.value)}
+            onChange={(e) => handleLevelChange(e.target.value)}
             className="text-sm rounded-full border border-slate-200 bg-white px-3 py-1.5 text-slate-700"
           >
             <option value="all">All levels</option>
@@ -41,7 +49,7 @@ export default function ConsultantView() {
             className="text-sm rounded-full border border-slate-200 bg-white px-3 py-1.5 text-slate-700"
           >
             <option value="all">All consultants</option>
-            {consultants.map((c) => (
+            {consultantsForLevel.map((c) => (
               <option key={c.consultant} value={c.consultant}>{c.consultant}</option>
             ))}
           </select>
