@@ -9,11 +9,11 @@ export default function HoshinOverview() {
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <div className="lg:col-span-2 space-y-4">
         <KpiRow />
-        <div className="grid grid-cols-1 sm:grid-cols-[240px_1fr] gap-4">
+        <DeliveredChart />
+        <div className="grid grid-cols-1 sm:grid-cols-[200px_1fr] gap-4 items-start">
           <HoshinMeter />
-          <DeliveredChart />
+          <TeamTable />
         </div>
-        <TeamTable />
       </div>
       <div>
         <SecondaryKpis />

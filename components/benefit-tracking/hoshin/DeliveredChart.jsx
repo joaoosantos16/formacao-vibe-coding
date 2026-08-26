@@ -3,9 +3,9 @@
 import { useState } from 'react';
 import { getDeliveredSeries } from '@/lib/benefitTracking';
 
-const WIDTH = 640;
-const HEIGHT = 260;
-const PAD = { top: 20, right: 60, bottom: 28, left: 36 };
+const WIDTH = 900;
+const HEIGHT = 380;
+const PAD = { top: 24, right: 70, bottom: 32, left: 44 };
 const PLOT_W = WIDTH - PAD.left - PAD.right;
 const PLOT_H = HEIGHT - PAD.top - PAD.bottom;
 

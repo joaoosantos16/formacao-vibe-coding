@@ -94,13 +94,13 @@ export default function VariablesTable() {
       </div>
 
       <div className="overflow-x-auto rounded-3xl bg-white/70 backdrop-blur-xl shadow-[0_8px_30px_rgb(0,0,0,0.06)] ring-1 ring-black/5">
-        <table className="min-w-full text-sm">
+        <table className="min-w-full text-xs">
           <thead className="text-left text-slate-500">
             <tr>
               {COLUMNS.map((col) => {
                 const active = sort.key === col.key;
                 return (
-                  <th key={col.key} className="px-4 py-3 font-medium whitespace-nowrap">
+                  <th key={col.key} className="px-1.5 py-2 font-medium max-w-[80px]">
                     <button
                       type="button"
                       onClick={() => toggleSort(col.key)}
@@ -112,7 +112,7 @@ export default function VariablesTable() {
                   </th>
                 );
               })}
-              <th className="px-4 py-3 font-medium">Actions</th>
+              <th className="px-1.5 py-2 font-medium">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
@@ -121,28 +121,28 @@ export default function VariablesTable() {
               const alreadyRequested = requested[rowKey];
               return (
                 <tr key={rowKey}>
-                  <td className="px-4 py-2 font-medium text-slate-800 whitespace-nowrap">{row.client}</td>
-                  <td className="px-4 py-2 text-slate-600 whitespace-nowrap">{row.project}</td>
-                  <td className="px-4 py-2 text-slate-600 whitespace-nowrap">{row.projectCode}</td>
-                  <td className="px-4 py-2 text-slate-600 whitespace-nowrap">{row.em}</td>
-                  <td className="px-4 py-2 text-slate-600 whitespace-nowrap">{formatDate(row.start)}</td>
-                  <td className="px-4 py-2 text-slate-600 whitespace-nowrap">{formatDate(row.end)}</td>
-                  <td className="px-4 py-2 text-right tabular-nums text-slate-600 whitespace-nowrap">{formatK(row.potentialK)}</td>
-                  <td className="px-4 py-2 text-right tabular-nums text-slate-600 whitespace-nowrap">{formatK(row.invoicedK)}</td>
-                  <td className="px-4 py-2 whitespace-nowrap">
-                    <span className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-medium ${STATUS_STYLES[row.status]}`}>
+                  <td className="px-1.5 py-1.5 font-medium text-slate-800 max-w-[110px]">{row.client}</td>
+                  <td className="px-1.5 py-1.5 text-slate-600 max-w-[130px]">{row.project}</td>
+                  <td className="px-1.5 py-1.5 text-slate-600 whitespace-nowrap">{row.projectCode}</td>
+                  <td className="px-1.5 py-1.5 text-slate-600 whitespace-nowrap">{row.em}</td>
+                  <td className="px-1.5 py-1.5 text-slate-600 whitespace-nowrap">{formatDate(row.start)}</td>
+                  <td className="px-1.5 py-1.5 text-slate-600 whitespace-nowrap">{formatDate(row.end)}</td>
+                  <td className="px-1.5 py-1.5 text-right tabular-nums text-slate-600 whitespace-nowrap">{formatK(row.potentialK)}</td>
+                  <td className="px-1.5 py-1.5 text-right tabular-nums text-slate-600 whitespace-nowrap">{formatK(row.invoicedK)}</td>
+                  <td className="px-1.5 py-1.5 whitespace-nowrap">
+                    <span className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_STYLES[row.status]}`}>
                       {row.status}
                     </span>
                   </td>
-                  <td className="px-4 py-2 text-right tabular-nums text-slate-600 whitespace-nowrap">{formatK(row.quarterPotentialK)}</td>
-                  <td className="px-4 py-2 text-right tabular-nums text-slate-600 whitespace-nowrap">{formatK(row.quarterInvoicedK)}</td>
-                  <td className="px-4 py-2 text-slate-500 whitespace-nowrap">{formatDate(row.lastUpdate)}</td>
-                  <td className="px-4 py-2 whitespace-nowrap">
+                  <td className="px-1.5 py-1.5 text-right tabular-nums text-slate-600 whitespace-nowrap">{formatK(row.quarterPotentialK)}</td>
+                  <td className="px-1.5 py-1.5 text-right tabular-nums text-slate-600 whitespace-nowrap">{formatK(row.quarterInvoicedK)}</td>
+                  <td className="px-1.5 py-1.5 text-slate-500 whitespace-nowrap">{formatDate(row.lastUpdate)}</td>
+                  <td className="px-1.5 py-1.5 whitespace-nowrap">
                     <button
                       type="button"
                       disabled={alreadyRequested}
                       onClick={() => sendUpdateRequest(row.client, row.project)}
-                      className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-300 ${
+                      className={`px-2.5 py-1 rounded-full text-xs font-medium transition-all duration-300 ${
                         alreadyRequested
                           ? 'bg-slate-100 text-slate-400 cursor-default'
                           : 'bg-gradient-to-br from-indigo-500 to-violet-600 text-white hover:shadow-md'

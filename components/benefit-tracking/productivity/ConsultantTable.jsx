@@ -10,7 +10,7 @@ const COLUMNS = [
   { key: 'fridayUtilPct', label: '% Friday Utilization', type: 'number' },
 ];
 
-export default function ConsultantTable({ level }) {
+export default function ConsultantTable({ level, consultant }) {
   const rows = getConsultants();
   const [sort, setSort] = useState({ key: 'occPct', direction: 'desc' });
 
@@ -22,7 +22,13 @@ export default function ConsultantTable({ level }) {
     );
   }
 
-  const filtered = useMemo(() => (level === 'all' ? rows : rows.filter((r) => r.level === level)), [rows, level]);
+  const filtered = useMemo(
+    () =>
+      rows
+        .filter((r) => level === 'all' || r.level === level)
+        .filter((r) => consultant === 'all' || r.consultant === consultant),
+    [rows, level, consultant]
+  );
 
   const sorted = useMemo(() => {
     const column = COLUMNS.find((c) => c.key === sort.key);

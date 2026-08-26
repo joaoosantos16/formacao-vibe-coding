@@ -35,7 +35,7 @@ export default function ProductivityView() {
 
       {view === 'project' ? (
         <div className="space-y-4">
-          <div className="grid grid-cols-1 lg:grid-cols-[1.4fr_1fr] gap-4 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-[1.8fr_1fr] gap-4 items-start">
             <TopFreeTable />
             <OccupationRanking />
           </div>
