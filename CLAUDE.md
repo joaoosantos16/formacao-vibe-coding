@@ -140,8 +140,18 @@ acrescentadas aqui por quem as tomar, com uma frase do porquê)_
 
 1. **Ligar as 3 páginas à tabela `projetos` real no Supabase**, em vez
    dos dados mock/localStorage atuais — é o maior trabalho que falta.
-   Os campos já batem certo com `docs/modelo-de-dados.md`, por isso é
-   sobretudo troca de fonte de dados, não redesenho.
+   A tabela já tem **75 projetos reais** (dados da "Spark Week",
+   importados de `projects.xlsx`/`days.xlsx` — os 75 mais recentes com
+   contrato ativo ou concluído; `kpi`/`ebitda`/`colaboradores` ficam
+   vazios de propósito, são para a app recolher). Os campos já batem
+   certo com `docs/modelo-de-dados.md`, por isso é sobretudo troca de
+   fonte de dados, não redesenho.
+   ⚠️ **Estes são dados reais e identificáveis de clientes Kaizen**
+   (nomes de empresas, valores de projeto). O ficheiro de origem
+   (`Spark Week Data.zip`) está no `.gitignore` — nunca deve ir para o
+   git. O acesso à app continua sem login; foi uma decisão consciente
+   do formador (link só partilhado internamente), não esquecer se a
+   app for partilhada mais amplamente no futuro.
 2. Decidir se as políticas de RLS abertas da tabela `projetos` ficam
    assim (é uma formação, sem dados sensíveis a sério) ou se vale a
    pena apertar antes de mostrar a alguém de fora.
