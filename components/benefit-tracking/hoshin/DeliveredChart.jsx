@@ -8,6 +8,8 @@ const HEIGHT = 400;
 const PAD = { top: 32, right: 96, bottom: 44, left: 64 };
 const PLOT_W = WIDTH - PAD.left - PAD.right;
 const PLOT_H = HEIGHT - PAD.top - PAD.bottom;
+const RED = '#dc2626';
+const GREEN = '#059669';
 
 // Escala do eixo Y calculada a partir dos dados (nunca um número fixo) —
 // assim o gráfico continua correto se o Hoshin anual mudar.
@@ -31,12 +33,22 @@ export default function DeliveredChart() {
 
   const hoshinPath = data.map((d, i) => `${i === 0 ? 'M' : 'L'} ${xFor(i)} ${yFor(d.hoshin)}`).join(' ');
   const deliveredPoints = data.filter((d) => d.delivered != null);
-  const deliveredPath = deliveredPoints
-    .map((d, i) => `${i === 0 ? 'M' : 'L'} ${xFor(data.indexOf(d))} ${yFor(d.delivered)}`)
-    .join(' ');
+
+  // Delivered is drawn as one segment per pair of points, colored by
+  // whether it's below (red) or above (green) Hoshin at that point — not
+  // a single fixed color for the whole line.
+  const deliveredSegments = deliveredPoints.slice(1).map((point, idx) => {
+    const prev = deliveredPoints[idx];
+    return {
+      key: point.month,
+      d: `M ${xFor(data.indexOf(prev))} ${yFor(prev.delivered)} L ${xFor(data.indexOf(point))} ${yFor(point.delivered)}`,
+      color: point.delivered < point.hoshin ? RED : GREEN,
+    };
+  });
 
   const lastHoshin = data[data.length - 1];
   const lastDelivered = deliveredPoints[deliveredPoints.length - 1];
+  const lastDeliveredColor = lastDelivered && lastDelivered.delivered < lastDelivered.hoshin ? RED : GREEN;
 
   function handleMove(e) {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -55,7 +67,10 @@ export default function DeliveredChart() {
           <span className="inline-block w-4 h-1 rounded-full bg-slate-400" /> Hoshin Lisboa
         </span>
         <span className="flex items-center gap-2">
-          <span className="inline-block w-4 h-1 rounded-full bg-emerald-600" /> Delivered
+          <span className="inline-block w-4 h-1 rounded-full bg-emerald-600" /> Delivered (above Hoshin)
+        </span>
+        <span className="flex items-center gap-2">
+          <span className="inline-block w-4 h-1 rounded-full bg-red-600" /> Delivered (below Hoshin)
         </span>
       </div>
       <svg
@@ -85,7 +100,9 @@ export default function DeliveredChart() {
         )}
 
         <path d={hoshinPath} fill="none" stroke="#9ca3af" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" />
-        <path d={deliveredPath} fill="none" stroke="#059669" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" />
+        {deliveredSegments.map((seg) => (
+          <path key={seg.key} d={seg.d} fill="none" stroke={seg.color} strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" />
+        ))}
 
         <circle cx={xFor(data.length - 1)} cy={yFor(lastHoshin.hoshin)} r={5} fill="#9ca3af" stroke="#fff" strokeWidth={2.5} />
         <text x={xFor(data.length - 1) + 10} y={yFor(lastHoshin.hoshin) + 6} className="fill-slate-600" style={{ fontSize: 19, fontWeight: 600 }}>
@@ -98,14 +115,14 @@ export default function DeliveredChart() {
               cx={xFor(data.indexOf(lastDelivered))}
               cy={yFor(lastDelivered.delivered)}
               r={5}
-              fill="#059669"
+              fill={lastDeliveredColor}
               stroke="#fff"
               strokeWidth={2.5}
             />
             <text
               x={xFor(data.indexOf(lastDelivered)) + 10}
               y={yFor(lastDelivered.delivered) + 6}
-              className="fill-emerald-700"
+              fill={lastDeliveredColor}
               style={{ fontSize: 19, fontWeight: 700 }}
             >
               {lastDelivered.delivered.toFixed(2)}M
@@ -136,7 +153,7 @@ export default function DeliveredChart() {
               Hoshin: €{hovered.hoshin.toFixed(2)}M
             </text>
             {hovered.delivered != null && (
-              <text x={12} y={60} className="fill-emerald-700" style={{ fontSize: 16, fontWeight: 600 }}>
+              <text x={12} y={60} fill={hovered.delivered < hovered.hoshin ? RED : GREEN} style={{ fontSize: 16, fontWeight: 600 }}>
                 Delivered: €{hovered.delivered.toFixed(2)}M
               </text>
             )}
