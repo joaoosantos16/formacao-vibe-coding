@@ -28,3 +28,8 @@ Thumbs.db
 .vscode/*
 !.vscode/extensions.json
 .idea/
+
+# Dados reais/sensíveis — nunca vão para o repositório (já importados
+# para o Supabase; ficam só no computador de quem os recebeu)
+Spark Week Data*
+*.xlsx
