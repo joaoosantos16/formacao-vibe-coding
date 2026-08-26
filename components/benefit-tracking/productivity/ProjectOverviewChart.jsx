@@ -16,7 +16,7 @@ export default function ProjectOverviewChart() {
   const [hoverIndex, setHoverIndex] = useState(null);
 
   const data = getProjectWeeklySeries(projectCode);
-  const daysMax = Math.max(...data.map((d) => d.theoreticalBillingDays)) || 1;
+  const daysMax = Math.max(...data.map((d) => d.theoreticalGreenDays)) || 1;
   const niceDaysMax = Math.ceil(daysMax / 10) * 10;
 
   const xFor = (i) => PAD.left + (i / (data.length - 1)) * PLOT_W;
@@ -31,8 +31,8 @@ export default function ProjectOverviewChart() {
 
   const realPath = pathFor('real', yForOcc);
   const forecastPath = pathFor('forecast', yForOcc);
-  const theoreticalPath = data.map((d, i) => `${i === 0 ? 'M' : 'L'} ${xFor(i)} ${yForDays(d.theoreticalBillingDays)}`).join(' ');
-  const realBillingPath = pathFor('realBillingDays', yForDays);
+  const theoreticalPath = data.map((d, i) => `${i === 0 ? 'M' : 'L'} ${xFor(i)} ${yForDays(d.theoreticalGreenDays)}`).join(' ');
+  const realGreenPath = pathFor('realGreenDays', yForDays);
 
   const occTicks = [0, 25, 50, 75, 100];
   const daysTicks = Array.from({ length: 5 }, (_, i) => Math.round((niceDaysMax / 4) * i));
@@ -67,8 +67,8 @@ export default function ProjectOverviewChart() {
       <div className="flex items-center gap-4 text-xs text-slate-500 mb-2 flex-wrap">
         <span className="flex items-center gap-1.5"><span className="inline-block w-3 h-0.5 bg-red-500" /> Real occupation (left axis)</span>
         <span className="flex items-center gap-1.5"><span className="inline-block w-3 h-0.5 bg-emerald-600" /> Forecast occupation (left axis)</span>
-        <span className="flex items-center gap-1.5"><span className="inline-block w-3 h-0.5 border-t-2 border-dashed border-indigo-400" /> Theoretical billing days (right axis)</span>
-        <span className="flex items-center gap-1.5"><span className="inline-block w-3 h-0.5 bg-indigo-600" /> Real billing days (right axis)</span>
+        <span className="flex items-center gap-1.5"><span className="inline-block w-3 h-0.5 border-t-2 border-dashed border-indigo-400" /> Theoretical green days (right axis)</span>
+        <span className="flex items-center gap-1.5"><span className="inline-block w-3 h-0.5 bg-indigo-600" /> Real green days (right axis)</span>
       </div>
 
       <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} className="w-full" onMouseMove={handleMove} onMouseLeave={() => setHoverIndex(null)}>
@@ -103,7 +103,7 @@ export default function ProjectOverviewChart() {
         )}
 
         <path d={theoreticalPath} fill="none" stroke="#a5b4fc" strokeWidth={2} strokeDasharray="4 3" strokeLinecap="round" />
-        <path d={realBillingPath} fill="none" stroke="#4f46e5" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+        <path d={realGreenPath} fill="none" stroke="#4f46e5" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
         <path d={realPath} fill="none" stroke="#ef4444" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
         <path d={forecastPath} fill="none" stroke="#059669" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
 
@@ -123,9 +123,9 @@ export default function ProjectOverviewChart() {
             {hovered.forecast != null && (
               <text x={8} y={30} className="fill-emerald-700" style={{ fontSize: 11, fontWeight: 600 }}>Forecast: {hovered.forecast}%</text>
             )}
-            <text x={8} y={48} className="fill-indigo-400" style={{ fontSize: 11 }}>Theoretical: {hovered.theoreticalBillingDays}d</text>
-            {hovered.realBillingDays != null && (
-              <text x={8} y={64} className="fill-indigo-700" style={{ fontSize: 11, fontWeight: 600 }}>Real billing days: {hovered.realBillingDays}d</text>
+            <text x={8} y={48} className="fill-indigo-400" style={{ fontSize: 11 }}>Theoretical: {hovered.theoreticalGreenDays}d</text>
+            {hovered.realGreenDays != null && (
+              <text x={8} y={64} className="fill-indigo-700" style={{ fontSize: 11, fontWeight: 600 }}>Real green days: {hovered.realGreenDays}d</text>
             )}
           </g>
         )}
