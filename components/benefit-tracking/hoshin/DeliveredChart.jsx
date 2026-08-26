@@ -62,7 +62,7 @@ export default function DeliveredChart() {
 
   return (
     <div className="rounded-3xl bg-white/70 backdrop-blur-xl shadow-[0_8px_30px_rgb(0,0,0,0.06)] ring-1 ring-black/5 p-6">
-      <div className="flex items-center gap-6 text-base text-slate-600 mb-5">
+      <div className="flex flex-wrap items-center gap-4 text-sm text-slate-600 mb-4">
         <span className="flex items-center gap-2">
           <span className="inline-block w-4 h-1 rounded-full bg-slate-400" /> Hoshin Lisbon
         </span>
@@ -73,15 +73,20 @@ export default function DeliveredChart() {
           <span className="inline-block w-4 h-1 rounded-full bg-red-600" /> Delivered (below Hoshin)
         </span>
       </div>
+      {/* preserveAspectRatio="none" + altura fixa: sem isto, num cartão a
+          toda a largura (sem margens laterais) a altura do gráfico crescia
+          proporcionalmente e linhas/texto ficavam enormes. */}
       <svg
         viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
+        preserveAspectRatio="none"
         className="w-full"
+        style={{ height: HEIGHT * 0.7, maxHeight: 340 }}
         onMouseMove={handleMove}
         onMouseLeave={() => setHoverIndex(null)}
       >
         {yTicks.map((tick) => (
           <g key={tick}>
-            <line x1={PAD.left} x2={WIDTH - PAD.right} y1={yFor(tick)} y2={yFor(tick)} stroke="#e1e0d9" strokeWidth={1} />
+            <line x1={PAD.left} x2={WIDTH - PAD.right} y1={yFor(tick)} y2={yFor(tick)} stroke="#e1e0d9" strokeWidth={1} vectorEffect="non-scaling-stroke" />
             <text x={PAD.left - 12} y={yFor(tick) + 5} textAnchor="end" className="fill-slate-500" style={{ fontSize: 17 }}>
               {tick}M
             </text>
@@ -96,12 +101,13 @@ export default function DeliveredChart() {
             y2={HEIGHT - PAD.bottom}
             stroke="#c3c2b7"
             strokeWidth={1}
+            vectorEffect="non-scaling-stroke"
           />
         )}
 
-        <path d={hoshinPath} fill="none" stroke="#9ca3af" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" />
+        <path d={hoshinPath} fill="none" stroke="#9ca3af" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
         {deliveredSegments.map((seg) => (
-          <path key={seg.key} d={seg.d} fill="none" stroke={seg.color} strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" />
+          <path key={seg.key} d={seg.d} fill="none" stroke={seg.color} strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
         ))}
 
         <circle cx={xFor(data.length - 1)} cy={yFor(lastHoshin.hoshin)} r={5} fill="#9ca3af" stroke="#fff" strokeWidth={2.5} />

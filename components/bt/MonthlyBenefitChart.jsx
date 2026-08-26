@@ -19,17 +19,17 @@ export default function MonthlyBenefitChart({ months, byMonth, byMonthPlan }) {
   const N = months.length;
   if (!N) return <p className="p-6 text-sm text-slate-400">No months to show.</p>;
 
-  const W = Math.max(900, N * 52);
-  const H = 320;
-  const L = 60;
-  const R = 16;
-  const T = 20;
-  const B = 40;
+  const W = Math.max(720, N * 40);
+  const H = 240;
+  const L = 52;
+  const R = 12;
+  const T = 16;
+  const B = 32;
   const vals = months.map((m) => byMonth[m.key] || 0).concat(months.map((m) => byMonthPlan[m.key] || 0));
   const mx = niceMax(Math.max(1, ...vals.map(Math.abs)));
   const x = (i) => L + ((W - L - R) * (i + 0.5)) / N;
   const y = (v) => T + (H - T - B) * (1 - v / mx);
-  const barW = Math.min(34, ((W - L - R) / N) * 0.6);
+  const barW = Math.min(24, ((W - L - R) / N) * 0.55);
 
   const gridLines = Array.from({ length: 5 }, (_, i) => {
     const v = (mx * i) / 4;
@@ -37,7 +37,7 @@ export default function MonthlyBenefitChart({ months, byMonth, byMonthPlan }) {
     return (
       <g key={i}>
         <line x1={L} y1={yy} x2={W - R} y2={yy} stroke="#EEF1F0" />
-        <text x={L - 8} y={yy + 4} fontSize="11.5" fill="#6B6B7A" textAnchor="end">{axisEur(v, mx)}</text>
+        <text x={L - 8} y={yy + 3.5} fontSize="9.5" fill="#6B6B7A" textAnchor="end">{axisEur(v, mx)}</text>
       </g>
     );
   });
@@ -45,7 +45,7 @@ export default function MonthlyBenefitChart({ months, byMonth, byMonthPlan }) {
   const yearSeps = months.map((m, i) => (i > 0 && m.m === 1 ? (
     <g key={`sep-${m.key}`}>
       <line x1={x(i) - barW} y1={T} x2={x(i) - barW} y2={H - B} stroke="#D6E0DC" strokeDasharray="3 3" />
-      <text x={x(i) - barW + 5} y={T + 13} fontSize="11.5" fill="#0E7A68" fontWeight="700">{m.y}</text>
+      <text x={x(i) - barW + 4} y={T + 10} fontSize="9.5" fill="#0E7A68" fontWeight="700">{m.y}</text>
     </g>
   ) : null));
 
@@ -71,7 +71,7 @@ export default function MonthlyBenefitChart({ months, byMonth, byMonthPlan }) {
 
   const labels = months.map((m, i) => (
     (N <= 14 || i % 2 === 0) ? (
-      <text key={m.key} x={x(i)} y={H - 18} fontSize="11" fill={byMonth[m.key] ? '#334155' : '#BDBDBD'} textAnchor="middle">
+      <text key={m.key} x={x(i)} y={H - 16} fontSize="9" fill={byMonth[m.key] ? '#334155' : '#BDBDBD'} textAnchor="middle">
         {m.label}
       </text>
     ) : null
@@ -84,12 +84,16 @@ export default function MonthlyBenefitChart({ months, byMonth, byMonthPlan }) {
         <span className="inline-flex items-center gap-1.5"><span className="h-2.5 w-3.5 rounded-sm bg-amber-500" /> Actual &lt; plan</span>
         <span className="inline-flex items-center gap-1.5"><span className="h-0.5 w-4 bg-[#00A3C2]" style={{ borderTop: '2px dashed #00A3C2' }} /> Plan</span>
       </div>
-      <svg viewBox={`0 0 ${W} ${H}`} className="w-full" style={{ minWidth: W }}>
+      {/* preserveAspectRatio="none" + altura fixa: o gráfico enche a
+          largura do cartão (agora sem margens laterais) sem esticar
+          verticalmente — sem isto, num cartão muito largo a altura
+          crescia proporcionalmente e as barras/texto ficavam enormes. */}
+      <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" className="w-full" style={{ height: H, minWidth: Math.min(W, 480) }}>
         {gridLines}
         {yearSeps}
         {bars}
-        <polyline points={planPoints} fill="none" stroke="#00A3C2" strokeWidth="2.5" strokeDasharray="7 5" />
-        <line x1={L} y1={y(0)} x2={W - R} y2={y(0)} stroke="#94A3B8" />
+        <polyline points={planPoints} fill="none" stroke="#00A3C2" strokeWidth="2" strokeDasharray="6 4" vectorEffect="non-scaling-stroke" />
+        <line x1={L} y1={y(0)} x2={W - R} y2={y(0)} stroke="#94A3B8" vectorEffect="non-scaling-stroke" />
         {labels}
       </svg>
     </div>

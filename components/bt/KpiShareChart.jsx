@@ -28,8 +28,17 @@ export default function KpiShareChart({ kpisWithCalc }) {
   const cy = 128;
   const r = 96;
   const ri = 56;
+
+  // A single 100%-share KPI makes a full-circle slice (start angle ===
+  // end angle), which is a degenerate SVG arc that simply doesn't draw.
+  // Split it into two identical half-slices so two valid 180° arcs are
+  // drawn instead — same color, looks like one solid ring.
+  const arcItems = items.length === 1
+    ? [{ ...items[0], value: items[0].value / 2 }, { ...items[0], value: items[0].value / 2 }]
+    : items;
+
   let a0 = -Math.PI / 2;
-  const arcs = items.map((it) => {
+  const arcs = arcItems.map((it, i) => {
     const a1 = a0 + 2 * Math.PI * (it.value / total);
     const big = a1 - a0 > Math.PI ? 1 : 0;
     const p1 = [cx + r * Math.cos(a0), cy + r * Math.sin(a0)];
@@ -37,7 +46,7 @@ export default function KpiShareChart({ kpisWithCalc }) {
     const q1 = [cx + ri * Math.cos(a1), cy + ri * Math.sin(a1)];
     const q2 = [cx + ri * Math.cos(a0), cy + ri * Math.sin(a0)];
     const d = `M${p1} A${r},${r} 0 ${big} 1 ${p2} L${q1} A${ri},${ri} 0 ${big} 0 ${q2} Z`;
-    const el = <path key={it.name} d={d} fill={it.color} stroke="#FFFFFF" strokeWidth="1.5" />;
+    const el = <path key={`${it.name}-${i}`} d={d} fill={it.color} stroke="#FFFFFF" strokeWidth="1.5" />;
     a0 = a1;
     return el;
   });

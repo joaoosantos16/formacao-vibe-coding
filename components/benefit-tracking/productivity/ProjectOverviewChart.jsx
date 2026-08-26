@@ -71,10 +71,20 @@ export default function ProjectOverviewChart() {
         <span className="flex items-center gap-1.5"><span className="inline-block w-3 h-0.5 bg-emerald-600" /> Forecast green days available (right axis)</span>
       </div>
 
-      <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} className="w-full" onMouseMove={handleMove} onMouseLeave={() => setHoverIndex(null)}>
+      {/* preserveAspectRatio="none" + altura fixa: sem isto, num cartão a
+          toda a largura (sem margens laterais) a altura do gráfico crescia
+          proporcionalmente e linhas/texto ficavam enormes. */}
+      <svg
+        viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
+        preserveAspectRatio="none"
+        className="w-full"
+        style={{ height: HEIGHT * 0.85, maxHeight: 260 }}
+        onMouseMove={handleMove}
+        onMouseLeave={() => setHoverIndex(null)}
+      >
         {occTicks.map((tick) => (
           <g key={`occ-${tick}`}>
-            <line x1={PAD.left} x2={WIDTH - PAD.right} y1={yForOcc(tick)} y2={yForOcc(tick)} stroke="#e2e8f0" strokeWidth={1} />
+            <line x1={PAD.left} x2={WIDTH - PAD.right} y1={yForOcc(tick)} y2={yForOcc(tick)} stroke="#e2e8f0" strokeWidth={1} vectorEffect="non-scaling-stroke" />
             <text x={PAD.left - 6} y={yForOcc(tick) + 3} textAnchor="end" className="fill-slate-400" style={{ fontSize: 10 }}>
               {tick}%
             </text>
@@ -93,6 +103,7 @@ export default function ProjectOverviewChart() {
           y2={HEIGHT - PAD.bottom}
           stroke="#94a3b8"
           strokeWidth={1}
+          vectorEffect="non-scaling-stroke"
         />
         <text x={xFor(PROJECT_OVERVIEW_NOW_WEEK_INDEX) + 4} y={PAD.top + 10} className="fill-slate-500" style={{ fontSize: 10 }}>
           Now
@@ -102,10 +113,10 @@ export default function ProjectOverviewChart() {
           <line x1={xFor(hoverIndex)} x2={xFor(hoverIndex)} y1={PAD.top} y2={HEIGHT - PAD.bottom} stroke="#cbd5e1" strokeWidth={1} />
         )}
 
-        <path d={theoreticalPath} fill="none" stroke="#a5b4fc" strokeWidth={2} strokeDasharray="4 3" strokeLinecap="round" />
-        <path d={realGreenPath} fill="none" stroke="#4f46e5" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
-        <path d={forecastGreenPath} fill="none" stroke="#059669" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
-        <path d={realPath} fill="none" stroke="#ef4444" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+        <path d={theoreticalPath} fill="none" stroke="#a5b4fc" strokeWidth={2} strokeDasharray="4 3" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
+        <path d={realGreenPath} fill="none" stroke="#4f46e5" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
+        <path d={forecastGreenPath} fill="none" stroke="#059669" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
+        <path d={realPath} fill="none" stroke="#ef4444" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
 
         {data.map((d, i) => (
           <text key={d.week} x={xFor(i)} y={HEIGHT - PAD.bottom + 16} textAnchor="middle" className="fill-slate-400" style={{ fontSize: 10 }}>
