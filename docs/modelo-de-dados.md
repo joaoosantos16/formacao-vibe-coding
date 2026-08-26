@@ -53,7 +53,62 @@ partilhado.
 | `ebitda` | numeric | |
 | `cliente` | text | |
 | `estado` | text | ver "Vocabulário / estados" abaixo |
+| `pais` | text | país do cliente (Equipa A) |
+| `sr` | text | Sales Responsible — distinto do `em` (Equipa B) |
+| `data_inicio` / `data_fim` | date | datas do projeto (Equipa B) |
+| `critico` | boolean | flag manual de produtividade (Equipa C) |
+| `continuidade` | text | flag manual de produtividade (Equipa C) |
 | `created_at` / `updated_at` | timestamptz | geridos automaticamente |
+
+### `projeto_kpis` (partilhada) — um KPI acompanhado num projeto
+
+| Campo | Tipo | Notas |
+|---|---|---|
+| `id` | uuid | |
+| `projeto_codigo` | text | FK → `projetos.codigo` |
+| `nome` | text | |
+| `categoria` | text | GQCDM: `growth`/`quality`/`cost`/`delivery`/`motivation` |
+| `formula` | text | opcional |
+| `unidade` | text | opcional |
+| `direcao` | text | `higher` / `lower` — ver vocabulário |
+| `baseline` | numeric | |
+| `target` | numeric | |
+| `beneficio` | numeric | € |
+| `frequencia` | text | `weekly` / `monthly`, opcional — só quando há medições (ver abaixo) |
+
+### `projeto_kpi_medicoes` (partilhada) — série temporal por KPI
+
+| Campo | Tipo | Notas |
+|---|---|---|
+| `id` | uuid | |
+| `kpi_id` | uuid | FK → `projeto_kpis.id` |
+| `periodo` | text | ex: `"W35"`, `"August 2025"` |
+| `valor` | numeric | |
+
+### `projeto_honorarios_variaveis` (partilhada) — Equipa C, secção Variables
+
+| Campo | Tipo | Notas |
+|---|---|---|
+| `id` | uuid | |
+| `projeto_codigo` | text | FK → `projetos.codigo` |
+| `potencial` / `faturado` | numeric | € totais |
+| `potencial_trimestre` / `faturado_trimestre` | numeric | € do trimestre atual |
+| `estado` | text | `pending` / `invoiced` / `overdue` |
+| `ultima_atualizacao` | date | |
+
+### `projeto_ocupacao_semanal` (partilhada) — Equipa C, secção Productivity
+
+| Campo | Tipo | Notas |
+|---|---|---|
+| `id` | uuid | |
+| `projeto_codigo` | text | FK → `projetos.codigo` |
+| `semana` | text | ex: `"W1"`..`"W12"` |
+| `ocupacao_pct` | numeric | |
+
+**Fora de alcance por agora**: o Hoshin Overview da Equipa C (metas
+globais do escritório, ranking de consultores) é um dashboard agregado
+a partir de `days.xlsx`/`invoices.xlsx` da Spark Week, não dados por
+projeto — não faz parte destas tabelas, continua mock.
 
 ## Vocabulário / estados
 
@@ -67,12 +122,21 @@ mão no código: todos importam de `lib/constants.js` (ver esse ficheiro).
 |---|---|
 | `ativo` | "Ativo" |
 | `desativado` | "Desativado" |
+| `higher` (`projeto_kpis.direcao`) | "Quanto maior, melhor" |
+| `lower` (`projeto_kpis.direcao`) | "Quanto menor, melhor" |
+| `weekly` (`projeto_kpis.frequencia`) | "Semanal" |
+| `monthly` (`projeto_kpis.frequencia`) | "Mensal" |
+| `pending` (`projeto_honorarios_variaveis.estado`) | "Pendente" |
+| `invoiced` (`projeto_honorarios_variaveis.estado`) | "Faturado" |
+| `overdue` (`projeto_honorarios_variaveis.estado`) | "Em atraso" |
 
 ## Quem constrói/lê o quê
 
 | Entidade | Equipa responsável (cria/edita) | Outras equipas que leem |
 |---|---|---|
 | `projetos` | Todas podem criar/editar registos (é a entidade central do benefit tracking) | Todas (Kaizen, Projetos, Benchmarking) |
+| `projeto_kpis`, `projeto_kpi_medicoes` | Equipas A e B | Benchmarking, Benefit Tracking Projetos |
+| `projeto_honorarios_variaveis`, `projeto_ocupacao_semanal` | Equipa C | Benefit Tracking Kaizen |
 
 ---
 

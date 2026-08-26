@@ -42,11 +42,12 @@ function formatDate(value) {
 
 export default function ProjectPage() {
   const params = useParams();
-  const [project, setProject] = useState(null);
+  // undefined = ainda a carregar; null = carregado, mas não encontrado.
+  const [project, setProject] = useState(undefined);
   const [activeTab, setActiveTab] = useState('dashboard');
 
-  function reload() {
-    setProject(getProject(params.id));
+  async function reload() {
+    setProject(await getProject(params.id));
   }
 
   useEffect(() => {
@@ -54,7 +55,7 @@ export default function ProjectPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params.id]);
 
-  if (project === null) {
+  if (project === undefined) {
     return <p className="text-slate-500">Loading project...</p>;
   }
 
@@ -69,9 +70,9 @@ export default function ProjectPage() {
     );
   }
 
-  function handleDeleteProject() {
+  async function handleDeleteProject() {
     if (!window.confirm(`Delete project ${project.code}? This cannot be undone.`)) return;
-    deleteProject(project.id);
+    await deleteProject(project.id);
     window.location.href = '/benefit-tracking-projetos';
   }
 
@@ -359,8 +360,8 @@ function GeneralInfoTab({ project, onSaved }) {
     }));
   }
 
-  function save() {
-    updateProject(project.id, form);
+  async function save() {
+    await updateProject(project.id, form);
     setEditing(false);
     onSaved();
   }
@@ -489,14 +490,14 @@ function KpiConfigTab({ project, onSaved }) {
   const [showAdd, setShowAdd] = useState(false);
   const [search, setSearch] = useState('');
 
-  function save(kpiId, patch) {
-    updateKpiConfig(project.id, kpiId, patch);
+  async function save(kpiId, patch) {
+    await updateKpiConfig(project.id, kpiId, patch);
     onSaved();
   }
 
-  function remove(kpiId) {
+  async function remove(kpiId) {
     if (!window.confirm('Remove this KPI from the project?')) return;
-    removeKpiFromProject(project.id, kpiId);
+    await removeKpiFromProject(project.id, kpiId);
     onSaved();
   }
 
@@ -505,8 +506,8 @@ function KpiConfigTab({ project, onSaved }) {
     ? KPI_CATALOG.filter((k) => !selectedIds.includes(k.id) && k.name.toLowerCase().includes(search.toLowerCase()))
     : [];
 
-  function addExisting(kpi) {
-    addKpiToProject(project.id, {
+  async function addExisting(kpi) {
+    await addKpiToProject(project.id, {
       id: kpi.id,
       name: kpi.name,
       formula: kpi.formula,
@@ -643,8 +644,8 @@ function KpiConfigTab({ project, onSaved }) {
       {showAdd && (
         <AddKpiModal
           onClose={() => setShowAdd(false)}
-          onAdd={(kpi) => {
-            addKpiToProject(project.id, { ...kpi, baseline: null, target: null, frequency: null });
+          onAdd={async (kpi) => {
+            await addKpiToProject(project.id, { ...kpi, baseline: null, target: null, frequency: null });
             setShowAdd(false);
             onSaved();
           }}
@@ -740,8 +741,8 @@ function TrackingGroup({ project, freq, kpis, onSaved }) {
     [project.startDate, project.endDate, freq]
   );
 
-  function handleChange(kpiId, period, value) {
-    setMeasurement(project.id, kpiId, period, value === '' ? null : Number(value));
+  async function handleChange(kpiId, period, value) {
+    await setMeasurement(project.id, kpiId, period, value === '' ? null : Number(value));
     onSaved();
   }
 

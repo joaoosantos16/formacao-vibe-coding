@@ -104,19 +104,19 @@ export default function NovoProjetoPage() {
     };
   }
 
-  function handleCreate() {
+  async function handleCreate() {
     setAttempted(true);
     if (!isValid) return;
-    const id = createProject(buildProjectData());
-    // navegação completa (não router.push) para garantir que o
-    // localStorage é relido de fresco na página seguinte.
+    const id = await createProject(buildProjectData());
+    // navegação completa (não router.push) para garantir que a página
+    // seguinte vai buscar os dados de fresco ao Supabase.
     window.location.href = `/benefit-tracking-projetos/${id}`;
   }
 
-  function handleSaveDraft() {
+  async function handleSaveDraft() {
     setAttempted(true);
     if (!isValid) return;
-    createProject(buildProjectData());
+    await createProject(buildProjectData());
     window.location.href = '/benefit-tracking-projetos';
   }
 
