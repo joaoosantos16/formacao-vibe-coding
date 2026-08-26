@@ -84,18 +84,22 @@ export default function MonthlyBenefitChart({ months, byMonth, byMonthPlan }) {
         <span className="inline-flex items-center gap-1.5"><span className="h-2.5 w-3.5 rounded-sm bg-amber-500" /> Actual &lt; plan</span>
         <span className="inline-flex items-center gap-1.5"><span className="h-0.5 w-4 bg-[#00A3C2]" style={{ borderTop: '2px dashed #00A3C2' }} /> Plan</span>
       </div>
-      {/* preserveAspectRatio="none" + altura fixa: o gráfico enche a
-          largura do cartão (agora sem margens laterais) sem esticar
-          verticalmente — sem isto, num cartão muito largo a altura
-          crescia proporcionalmente e as barras/texto ficavam enormes. */}
-      <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" className="w-full" style={{ height: H, minWidth: Math.min(W, 480) }}>
-        {gridLines}
-        {yearSeps}
-        {bars}
-        <polyline points={planPoints} fill="none" stroke="#00A3C2" strokeWidth="2" strokeDasharray="6 4" vectorEffect="non-scaling-stroke" />
-        <line x1={L} y1={y(0)} x2={W - R} y2={y(0)} stroke="#94A3B8" vectorEffect="non-scaling-stroke" />
-        {labels}
-      </svg>
+      {/* max-width no wrapper, não preserveAspectRatio="none" no svg —
+          "none" escala X e Y de forma independente, o que distorce o
+          texto e as barras (fica "esmagado"/esticado) num cartão muito
+          largo. Limitar a largura mantém a escala uniforme (proporção
+          preservada) e o gráfico simplesmente não cresce além do
+          razoável, mesmo que o cartão à volta seja maior. */}
+      <div className="max-w-3xl">
+        <svg viewBox={`0 0 ${W} ${H}`} className="w-full" style={{ minWidth: Math.min(W, 420) }}>
+          {gridLines}
+          {yearSeps}
+          {bars}
+          <polyline points={planPoints} fill="none" stroke="#00A3C2" strokeWidth="2" strokeDasharray="6 4" />
+          <line x1={L} y1={y(0)} x2={W - R} y2={y(0)} stroke="#94A3B8" />
+          {labels}
+        </svg>
+      </div>
     </div>
   );
 }

@@ -34,17 +34,16 @@ export default function SimpleTrendChart({ title, data, unit, color }) {
   return (
     <div className="rounded-3xl bg-white/70 backdrop-blur-xl shadow-[0_8px_30px_rgb(0,0,0,0.06)] ring-1 ring-black/5 p-5">
       <p className="text-xs font-medium text-slate-500 mb-2">{title}</p>
+      <div className="max-w-md">
       <svg
         viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
-        preserveAspectRatio="none"
         className="w-full"
-        style={{ height: HEIGHT, maxHeight: 200 }}
         onMouseMove={handleMove}
         onMouseLeave={() => setHoverIndex(null)}
       >
         {ticks.map((tick) => (
           <g key={tick}>
-            <line x1={PAD.left} x2={WIDTH - PAD.right} y1={yFor(tick)} y2={yFor(tick)} stroke="#e2e8f0" strokeWidth={1} vectorEffect="non-scaling-stroke" />
+            <line x1={PAD.left} x2={WIDTH - PAD.right} y1={yFor(tick)} y2={yFor(tick)} stroke="#e2e8f0" strokeWidth={1} />
             <text x={PAD.left - 6} y={yFor(tick) + 3} textAnchor="end" className="fill-slate-400" style={{ fontSize: 9 }}>
               {tick}{unit}
             </text>
@@ -75,6 +74,7 @@ export default function SimpleTrendChart({ title, data, unit, color }) {
           </text>
         )}
       </svg>
+      </div>
     </div>
   );
 }

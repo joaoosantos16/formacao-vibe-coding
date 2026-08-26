@@ -73,21 +73,21 @@ export default function DeliveredChart() {
           <span className="inline-block w-4 h-1 rounded-full bg-red-600" /> Delivered (below Hoshin)
         </span>
       </div>
-      {/* preserveAspectRatio="none" + altura fixa: sem isto, num cartão a
-          toda a largura (sem margens laterais) a altura do gráfico crescia
-          proporcionalmente e linhas/texto ficavam enormes. */}
-      <svg
-        viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
-        preserveAspectRatio="none"
-        className="w-full"
-        style={{ height: HEIGHT * 0.7, maxHeight: 340 }}
-        onMouseMove={handleMove}
-        onMouseLeave={() => setHoverIndex(null)}
-      >
+      {/* max-width no wrapper, não preserveAspectRatio="none" no svg —
+          "none" escala X/Y de forma independente e distorce o texto.
+          Limitar a largura mantém a proporção e o gráfico não cresce
+          além do razoável, mesmo num cartão a toda a largura. */}
+      <div className="max-w-4xl">
+        <svg
+          viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
+          className="w-full"
+          onMouseMove={handleMove}
+          onMouseLeave={() => setHoverIndex(null)}
+        >
         {yTicks.map((tick) => (
           <g key={tick}>
-            <line x1={PAD.left} x2={WIDTH - PAD.right} y1={yFor(tick)} y2={yFor(tick)} stroke="#e1e0d9" strokeWidth={1} vectorEffect="non-scaling-stroke" />
-            <text x={PAD.left - 12} y={yFor(tick) + 5} textAnchor="end" className="fill-slate-500" style={{ fontSize: 17 }}>
+            <line x1={PAD.left} x2={WIDTH - PAD.right} y1={yFor(tick)} y2={yFor(tick)} stroke="#e1e0d9" strokeWidth={1} />
+            <text x={PAD.left - 12} y={yFor(tick) + 5} textAnchor="end" className="fill-slate-500" style={{ fontSize: 12 }}>
               {tick}M
             </text>
           </g>
@@ -111,7 +111,7 @@ export default function DeliveredChart() {
         ))}
 
         <circle cx={xFor(data.length - 1)} cy={yFor(lastHoshin.hoshin)} r={5} fill="#9ca3af" stroke="#fff" strokeWidth={2.5} />
-        <text x={xFor(data.length - 1) + 10} y={yFor(lastHoshin.hoshin) + 6} className="fill-slate-600" style={{ fontSize: 19, fontWeight: 600 }}>
+        <text x={xFor(data.length - 1) + 10} y={yFor(lastHoshin.hoshin) + 6} className="fill-slate-600" style={{ fontSize: 14, fontWeight: 600 }}>
           {lastHoshin.hoshin.toFixed(2)}M
         </text>
 
@@ -129,7 +129,7 @@ export default function DeliveredChart() {
               x={xFor(data.indexOf(lastDelivered)) + 10}
               y={yFor(lastDelivered.delivered) + 6}
               fill={lastDeliveredColor}
-              style={{ fontSize: 19, fontWeight: 700 }}
+              style={{ fontSize: 14, fontWeight: 700 }}
             >
               {lastDelivered.delivered.toFixed(2)}M
             </text>
@@ -143,7 +143,7 @@ export default function DeliveredChart() {
             y={HEIGHT - PAD.bottom + 26}
             textAnchor="middle"
             className="fill-slate-500"
-            style={{ fontSize: 16 }}
+            style={{ fontSize: 12 }}
           >
             {d.month}
           </text>
@@ -152,20 +152,21 @@ export default function DeliveredChart() {
         {hovered && (
           <g transform={`translate(${Math.min(xFor(hoverIndex) + 14, WIDTH - 190)}, ${PAD.top + 6})`}>
             <rect width={176} height={hovered.delivered != null ? 68 : 42} rx={8} fill="white" stroke="#e1e0d9" />
-            <text x={12} y={20} className="fill-slate-500" style={{ fontSize: 15 }}>
+            <text x={12} y={20} className="fill-slate-500" style={{ fontSize: 11 }}>
               {hovered.month} 2026
             </text>
-            <text x={12} y={hovered.delivered != null ? 40 : 34} className="fill-slate-600" style={{ fontSize: 16 }}>
+            <text x={12} y={hovered.delivered != null ? 40 : 34} className="fill-slate-600" style={{ fontSize: 12 }}>
               Hoshin: €{hovered.hoshin.toFixed(2)}M
             </text>
             {hovered.delivered != null && (
-              <text x={12} y={60} fill={hovered.delivered < hovered.hoshin ? RED : GREEN} style={{ fontSize: 16, fontWeight: 600 }}>
+              <text x={12} y={60} fill={hovered.delivered < hovered.hoshin ? RED : GREEN} style={{ fontSize: 12, fontWeight: 600 }}>
                 Delivered: €{hovered.delivered.toFixed(2)}M
               </text>
             )}
           </g>
         )}
-      </svg>
+        </svg>
+      </div>
     </div>
   );
 }

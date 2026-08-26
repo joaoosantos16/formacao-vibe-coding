@@ -53,28 +53,33 @@ export default function KpiShareChart({ kpisWithCalc }) {
 
   const legendX = cx + r + 30;
 
+  // max-width no wrapper para o donut não crescer a mais num cartão
+  // muito largo (className="w-full" sozinho estica o SVG até encher o
+  // cartão inteiro, ficando enorme).
   return (
-    <svg viewBox={`0 0 ${W} ${H}`} className="w-full">
-      {arcs}
-      <text x={cx} y={cy - 3} fontSize="19" fontWeight="700" fill="#16221F" textAnchor="middle">{formatEur(total)}</text>
-      <text x={cx} y={cy + 16} fontSize="11" fill="#6B6B7A" textAnchor="middle">annualized</text>
-      {items.slice(0, 8).map((it, i) => {
-        const y = 30 + i * 27;
-        return (
-          <g key={it.name}>
-            <rect x={legendX} y={y - 9} width={12} height={12} rx={3} fill={it.color} />
-            <text x={legendX + 18} y={y} fontSize="12" fill="#333">
-              {it.name.length > 26 ? `${it.name.slice(0, 25)}…` : it.name}
-            </text>
-            <text x={W - 10} y={y} fontSize="12" fill="#0E7A68" fontWeight="700" textAnchor="end">
-              {Math.round((it.value / total) * 100)}%
-            </text>
-          </g>
-        );
-      })}
-      {items.length > 8 && (
-        <text x={legendX} y={30 + 8 * 27} fontSize="11" fill="#6B6B7A">+{items.length - 8} KPIs</text>
-      )}
-    </svg>
+    <div className="max-w-lg">
+      <svg viewBox={`0 0 ${W} ${H}`} className="w-full">
+        {arcs}
+        <text x={cx} y={cy - 3} fontSize="19" fontWeight="700" fill="#16221F" textAnchor="middle">{formatEur(total)}</text>
+        <text x={cx} y={cy + 16} fontSize="11" fill="#6B6B7A" textAnchor="middle">annualized</text>
+        {items.slice(0, 8).map((it, i) => {
+          const y = 30 + i * 27;
+          return (
+            <g key={it.name}>
+              <rect x={legendX} y={y - 9} width={12} height={12} rx={3} fill={it.color} />
+              <text x={legendX + 18} y={y} fontSize="12" fill="#333">
+                {it.name.length > 26 ? `${it.name.slice(0, 25)}…` : it.name}
+              </text>
+              <text x={W - 10} y={y} fontSize="12" fill="#0E7A68" fontWeight="700" textAnchor="end">
+                {Math.round((it.value / total) * 100)}%
+              </text>
+            </g>
+          );
+        })}
+        {items.length > 8 && (
+          <text x={legendX} y={30 + 8 * 27} fontSize="11" fill="#6B6B7A">+{items.length - 8} KPIs</text>
+        )}
+      </svg>
+    </div>
   );
 }

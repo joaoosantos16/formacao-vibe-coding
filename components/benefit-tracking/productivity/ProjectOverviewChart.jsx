@@ -71,20 +71,18 @@ export default function ProjectOverviewChart() {
         <span className="flex items-center gap-1.5"><span className="inline-block w-3 h-0.5 bg-emerald-600" /> Forecast green days available (right axis)</span>
       </div>
 
-      {/* preserveAspectRatio="none" + altura fixa: sem isto, num cartão a
-          toda a largura (sem margens laterais) a altura do gráfico crescia
-          proporcionalmente e linhas/texto ficavam enormes. */}
+      {/* max-width no wrapper, não preserveAspectRatio="none" no svg —
+          "none" escala X/Y de forma independente e distorce o texto. */}
+      <div className="max-w-2xl">
       <svg
         viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
-        preserveAspectRatio="none"
         className="w-full"
-        style={{ height: HEIGHT * 0.85, maxHeight: 260 }}
         onMouseMove={handleMove}
         onMouseLeave={() => setHoverIndex(null)}
       >
         {occTicks.map((tick) => (
           <g key={`occ-${tick}`}>
-            <line x1={PAD.left} x2={WIDTH - PAD.right} y1={yForOcc(tick)} y2={yForOcc(tick)} stroke="#e2e8f0" strokeWidth={1} vectorEffect="non-scaling-stroke" />
+            <line x1={PAD.left} x2={WIDTH - PAD.right} y1={yForOcc(tick)} y2={yForOcc(tick)} stroke="#e2e8f0" strokeWidth={1} />
             <text x={PAD.left - 6} y={yForOcc(tick) + 3} textAnchor="end" className="fill-slate-400" style={{ fontSize: 10 }}>
               {tick}%
             </text>
@@ -141,6 +139,7 @@ export default function ProjectOverviewChart() {
           </g>
         )}
       </svg>
+      </div>
     </div>
   );
 }
