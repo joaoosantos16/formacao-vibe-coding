@@ -67,7 +67,7 @@ export default function ConsultantView() {
         <SimpleTrendChart title="# Green days evolution over time" data={greenDaysSeries} unit="" color="#059669" />
       </div>
 
-      <ProjectsOccupationDetailTable />
+      <ProjectsOccupationDetailTable level={level} consultant={consultant} />
     </div>
   );
 }

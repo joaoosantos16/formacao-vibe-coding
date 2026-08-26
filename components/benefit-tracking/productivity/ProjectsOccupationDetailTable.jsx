@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { getProductivityTopFree } from '@/lib/benefitTracking';
+import { getProductivityTopFree, getConsultants } from '@/lib/benefitTracking';
 
 const COLUMNS = [
   { key: 'project', label: 'Project', type: 'text' },
@@ -10,8 +10,12 @@ const COLUMNS = [
   { key: 'greenDays', label: '# Green Days', type: 'number' },
 ];
 
-export default function ProjectsOccupationDetailTable() {
+export default function ProjectsOccupationDetailTable({ level = 'all', consultant = 'all' }) {
   const rows = getProductivityTopFree();
+  const consultantLevelByCode = useMemo(
+    () => Object.fromEntries(getConsultants().map((c) => [c.consultant, c.level])),
+    []
+  );
   const [sort, setSort] = useState({ key: 'project', direction: 'asc' });
 
   function toggleSort(key) {
@@ -22,16 +26,24 @@ export default function ProjectsOccupationDetailTable() {
     );
   }
 
+  const filtered = useMemo(
+    () =>
+      rows
+        .filter((r) => consultant === 'all' || r.em === consultant)
+        .filter((r) => level === 'all' || consultantLevelByCode[r.em] === level),
+    [rows, level, consultant, consultantLevelByCode]
+  );
+
   const sorted = useMemo(() => {
     const column = COLUMNS.find((c) => c.key === sort.key);
     const factor = sort.direction === 'asc' ? 1 : -1;
-    return [...rows].sort((a, b) => {
+    return [...filtered].sort((a, b) => {
       const va = a[sort.key];
       const vb = b[sort.key];
       if (column.type === 'number') return (va - vb) * factor;
       return String(va).localeCompare(String(vb)) * factor;
     });
-  }, [rows, sort]);
+  }, [filtered, sort]);
 
   return (
     <div className="overflow-x-auto rounded-3xl bg-white/70 backdrop-blur-xl shadow-[0_8px_30px_rgb(0,0,0,0.06)] ring-1 ring-black/5">
@@ -75,6 +87,13 @@ export default function ProjectsOccupationDetailTable() {
               <td className="px-4 py-2 text-right tabular-nums text-slate-600 whitespace-nowrap">{row.greenDays}</td>
             </tr>
           ))}
+          {sorted.length === 0 && (
+            <tr>
+              <td colSpan={COLUMNS.length} className="px-4 py-6 text-center text-slate-400">
+                No projects for this filter.
+              </td>
+            </tr>
+          )}
         </tbody>
       </table>
     </div>
