@@ -33,3 +33,7 @@ Thumbs.db
 # para o Supabase; ficam só no computador de quem os recebeu)
 Spark Week Data*
 *.xlsx
+
+# Material de referência de outras equipas (não é código nosso — só
+# consultado para portar ideias, ver CLAUDE.md)
+Benefit_Tracking_Final*.html

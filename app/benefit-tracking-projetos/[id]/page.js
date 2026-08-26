@@ -5,8 +5,13 @@ import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import ComboSelect from '@/components/bt/ComboSelect';
 import MultiComboSelect from '@/components/bt/MultiComboSelect';
-import KpiChart from '@/components/bt/KpiChart';
+import BenefitStats from '@/components/bt/BenefitStats';
+import BenefitMatrix from '@/components/bt/BenefitMatrix';
+import MonthlyBenefitChart from '@/components/bt/MonthlyBenefitChart';
+import KpiShareChart from '@/components/bt/KpiShareChart';
+import AuditHistoryModal from '@/components/bt/AuditHistoryModal';
 import { formatNumber, formatWithUnit } from '@/lib/format';
+import { projectMonthRange, monthsBetween, calcKpi, projectTotals, kpiColor } from '@/lib/benefitCalc';
 import {
   getProject,
   updateProject,
@@ -15,6 +20,9 @@ import {
   addKpiToProject,
   removeKpiFromProject,
   setMeasurement,
+  setPlanOverride,
+  setVolumeOverride,
+  getAuditTrail,
   generatePeriods,
   KPI_FREQUENCY,
   KPI_FREQUENCY_LABELS,
@@ -29,7 +37,7 @@ import {
 } from '@/lib/benefitTrackingStore';
 
 const TABS = [
-  { key: 'dashboard', label: 'Dashboard & Reports' },
+  { key: 'dashboard', label: 'Benefit' },
   { key: 'general', label: 'General Information' },
   { key: 'kpi-config', label: 'KPI Configuration' },
   { key: 'tracking', label: 'Benefit Tracking Update' },
@@ -116,7 +124,7 @@ export default function ProjectPage() {
         ))}
       </div>
 
-      {activeTab === 'dashboard' && <DashboardTab project={project} />}
+      {activeTab === 'dashboard' && <BenefitTab project={project} onSaved={reload} />}
       {activeTab === 'general' && <GeneralInfoTab project={project} onSaved={reload} />}
       {activeTab === 'kpi-config' && <KpiConfigTab project={project} onSaved={reload} />}
       {activeTab === 'tracking' && <TrackingTab project={project} onSaved={reload} />}
@@ -132,210 +140,116 @@ function Card({ children, className = '' }) {
   );
 }
 
-// ---------- Dashboard & Reports ----------
+// ---------- Benefit ----------
+// Vista principal do projeto — inspirada no motor de referência trazido
+// de outra equipa (Benefit_Tracking_Final_...html): Plano (rampa linear
+// baseline->objetivo, editável célula a célula), Atual (das capturas),
+// Poupança € com tooltip de metodologia, RAG, e histórico de alterações.
+// Ver lib/benefitCalc.js.
 
-function evaluateStatus(current, target, direction) {
-  if (current == null || target == null) return 'unknown';
-  const diff = direction === 'lower' ? target - current : current - target;
-  const pct = target !== 0 ? diff / Math.abs(target) : 0;
-  if (pct >= 0) return 'on_target';
-  if (pct >= -0.1) return 'close';
-  return 'below_target';
-}
-
-const STATUS_BAR = {
-  on_target: 'bg-emerald-500',
-  close: 'bg-amber-500',
-  below_target: 'bg-rose-500',
-  unknown: 'bg-slate-200',
-};
-
-const STATUS_TEXT = {
-  on_target: 'Target achieved',
-  close: 'Close to target',
-  below_target: 'Below target',
-  unknown: 'No data yet',
-};
-
-function DashboardTab({ project }) {
-  const [widgets, setWidgets] = useState(project.kpis.map((k) => k.id));
-  const [report, setReport] = useState(null);
-  const [expanded, setExpanded] = useState(null);
+function BenefitTab({ project, onSaved }) {
+  const [showAudit, setShowAudit] = useState(false);
+  const [auditEntries, setAuditEntries] = useState([]);
+  const [auditLoading, setAuditLoading] = useState(false);
 
   if (project.kpis.length === 0) {
     return (
       <Card>
-        <p className="text-slate-500">No KPIs configured yet. Go to <strong>KPI Configuration</strong> to add KPIs before building the dashboard.</p>
+        <p className="text-slate-500">
+          Este projeto ainda não tem indicadores. Vai a <strong>KPI Configuration</strong> e escolhe do catálogo.
+        </p>
       </Card>
     );
   }
 
-  function toggleWidget(id) {
-    setWidgets((w) => (w.includes(id) ? w.filter((x) => x !== id) : [...w, id]));
+  const { start, end } = projectMonthRange(project);
+  const months = monthsBetween(start, end);
+  const kpisWithCalc = project.kpis.map((kpi, i) => ({
+    kpi,
+    calc: calcKpi(project, kpi, months),
+    color: kpiColor(i),
+  }));
+  const totals = projectTotals(kpisWithCalc, months);
+  const alerts = kpisWithCalc.filter(({ calc }) => Number.isNaN(calc.rate));
+
+  async function handlePlanChange(kpiId, mk, value) {
+    await setPlanOverride(project.id, kpiId, mk, value === '' ? null : Number(value));
+    onSaved();
   }
 
-  const kpisForReport = report
-    ? project.kpis.filter((k) => k.frequency === report && Object.keys(project.measurements[k.id] ?? {}).length > 0)
-    : [];
+  async function handleVolumeChange(kpiId, mk, value) {
+    await setVolumeOverride(project.id, kpiId, mk, value === '' ? null : Number(value));
+    onSaved();
+  }
 
-  // Impacto financeiro — cálculo ilustrativo (protótipo, sem fórmula de negócio definida):
-  // fee variável associada ao projeto + custo do projeto, para dar contexto ao desempenho dos KPIs acima.
-  const financialImpact = (project.variableFee ?? 0);
+  async function openAudit() {
+    setAuditLoading(true);
+    setAuditEntries(await getAuditTrail(project.id));
+    setAuditLoading(false);
+    setShowAudit(true);
+  }
 
   return (
     <div className="space-y-6">
-      <Card>
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <h2 className="font-semibold text-slate-700">Build Your Project Dashboard</h2>
-            <p className="text-sm text-slate-400">Toggle KPI widgets on or off the dashboard below. Click a chart to see it in detail.</p>
-          </div>
-          <div className="flex gap-2">
-            <button onClick={() => setReport('weekly')} className="rounded-full px-4 py-2 text-sm font-medium ring-1 ring-slate-200 text-slate-600 hover:bg-slate-900/5">
-              Weekly Report
-            </button>
-            <button onClick={() => setReport('monthly')} className="rounded-full px-4 py-2 text-sm font-medium ring-1 ring-slate-200 text-slate-600 hover:bg-slate-900/5">
-              Monthly Report
-            </button>
-          </div>
-        </div>
+      <BenefitStats totals={totals} />
 
-        <div className="mt-4 flex flex-wrap gap-2">
-          {project.kpis.map((k) => (
-            <button
-              key={k.id}
-              onClick={() => toggleWidget(k.id)}
-              className={`rounded-full px-4 py-2 text-xs font-medium ring-1 transition-colors ${
-                widgets.includes(k.id)
-                  ? 'bg-emerald-50 text-emerald-700 ring-emerald-200'
-                  : 'text-slate-500 ring-slate-200 hover:bg-slate-900/5'
-              }`}
-            >
-              {k.name} · {k.chart || 'no chart set'}
-            </button>
-          ))}
-        </div>
-      </Card>
-
-      {report && (
+      {alerts.length > 0 && (
         <Card>
-          <h2 className="font-semibold text-slate-700 mb-3">
-            {report === 'weekly' ? 'Weekly Report' : 'Monthly Report'}
-          </h2>
-          {kpisForReport.length === 0 ? (
-            <p className="text-sm text-slate-400">No {report} KPIs with recorded data for this project yet.</p>
-          ) : (
-            <div className="space-y-3">
-              {kpisForReport.map((k) => {
-                const values = Object.values(project.measurements[k.id] ?? {});
-                const current = values[values.length - 1];
-                const status = evaluateStatus(current, k.target, k.direction);
-                return (
-                  <div key={k.id} className="flex items-center justify-between border-b border-slate-100 pb-2 last:border-0">
-                    <span className="text-sm text-slate-600">{k.name}</span>
-                    <span className="text-sm text-slate-500">
-                      {formatWithUnit(current, k.unit)} (baseline {formatWithUnit(k.baseline, k.unit)}, target {formatWithUnit(k.target, k.unit)})
-                    </span>
-                    <span className={`h-2 w-16 rounded-full ${STATUS_BAR[status]}`} />
-                  </div>
-                );
-              })}
-            </div>
-          )}
+          <div className="mb-2 flex items-center gap-2">
+            <h2 className="font-semibold text-slate-700">Avisos</h2>
+            <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700">
+              {alerts.length}
+            </span>
+          </div>
+          <ul className="space-y-1.5 text-sm text-slate-600">
+            {alerts.map(({ kpi }) => (
+              <li key={kpi.id}>
+                <strong>{kpi.name}</strong> não é possível converter a € — falta baseline, objetivo, volume ou
+                benefício ao objetivo (ver <em>KPI Configuration</em>).
+              </li>
+            ))}
+          </ul>
         </Card>
       )}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-        {project.kpis.filter((k) => widgets.includes(k.id)).map((k) => {
-          const periods = Object.keys(project.measurements[k.id] ?? {});
-          const values = Object.values(project.measurements[k.id] ?? {});
-          const current = values[values.length - 1];
-          const status = evaluateStatus(current, k.target, k.direction);
-          const varianceBaseline = current != null && k.baseline != null ? current - k.baseline : null;
-          const varianceTarget = current != null && k.target != null ? current - k.target : null;
-          return (
-            <Card key={k.id} className="relative overflow-hidden pt-7">
-              <div className={`absolute top-0 left-0 right-0 h-1.5 ${STATUS_BAR[status]}`} />
-              <div className="flex items-start justify-between">
-                <div>
-                  <p className="text-xs uppercase tracking-wide text-slate-400">{k.chart || 'KPI Card'}</p>
-                  <h3 className="font-semibold text-slate-700">{k.name}</h3>
-                </div>
-                <p className="text-2xl font-semibold text-slate-800 text-right">
-                  {formatNumber(current)} <span className="text-sm font-normal text-slate-400">{k.unit}</span>
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={() => setExpanded(k)}
-                className="mt-2 w-full cursor-zoom-in"
-                title="Click to expand"
-              >
-                <KpiChart periods={periods} values={values} target={k.target} unit={k.unit} compact />
-              </button>
-              <div className="mt-2 grid grid-cols-2 gap-2 text-xs text-slate-500">
-                <span>Baseline: {formatWithUnit(k.baseline, k.unit)}</span>
-                <span>Target: {formatWithUnit(k.target, k.unit)}</span>
-                <span>vs Baseline: {varianceBaseline != null ? formatWithUnit(varianceBaseline.toFixed(1), k.unit) : '—'}</span>
-                <span>vs Target: {varianceTarget != null ? formatWithUnit(varianceTarget.toFixed(1), k.unit) : '—'}</span>
-              </div>
-              <p className="mt-2 text-xs font-medium text-slate-500">{STATUS_TEXT[status]}</p>
-            </Card>
-          );
-        })}
-      </div>
-
-      <Card>
-        <h2 className="font-semibold text-slate-700 mb-4">Financial Impact</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
+      <Card className="p-0">
+        <div className="flex flex-wrap items-center justify-between gap-3 px-6 pt-6">
           <div>
-            <p className="text-xs text-slate-400">Project Cost</p>
-            <p className="text-xl font-semibold text-slate-800">{formatWithUnit(project.projectCost, 'EUR')}</p>
+            <h2 className="font-semibold text-slate-700">Matriz Benefit</h2>
+            <p className="text-xs text-slate-400">
+              {kpisWithCalc.length} KPI · Plano e Volume editáveis célula a célula · Atual vem das capturas
+            </p>
           </div>
-          <div>
-            <p className="text-xs text-slate-400">Variable Fee</p>
-            <p className="text-xl font-semibold text-slate-800">{formatWithUnit(project.variableFee, 'EUR')}</p>
-          </div>
-          <div>
-            <p className="text-xs text-slate-400">Estimated Financial Impact</p>
-            <p className="text-xl font-semibold text-emerald-600">{formatWithUnit(financialImpact, 'EUR')}</p>
-          </div>
+          <button
+            type="button"
+            onClick={openAudit}
+            className="rounded-full px-4 py-2 text-xs font-medium text-slate-600 ring-1 ring-slate-200 hover:bg-slate-900/5"
+          >
+            {auditLoading ? 'A carregar…' : 'Histórico'}
+          </button>
         </div>
-        <p className="mt-3 text-xs text-slate-400">
-          Illustrative figure for this prototype — a real financial impact formula (linking KPI improvement to euros) is not yet defined.
-        </p>
+        <div className="mt-4 px-2 pb-2">
+          <BenefitMatrix
+            kpisWithCalc={kpisWithCalc}
+            months={months}
+            onPlanChange={handlePlanChange}
+            onVolumeChange={handleVolumeChange}
+          />
+        </div>
       </Card>
 
-      {expanded && (
-        <ExpandedChartModal
-          kpi={expanded}
-          periods={Object.keys(project.measurements[expanded.id] ?? {})}
-          values={Object.values(project.measurements[expanded.id] ?? {})}
-          onClose={() => setExpanded(null)}
-        />
-      )}
-    </div>
-  );
-}
-
-function ExpandedChartModal({ kpi, periods, values, onClose }) {
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4" onClick={onClose}>
-      <div className="w-full max-w-3xl rounded-3xl bg-white p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
-        <div className="flex items-start justify-between mb-4">
-          <div>
-            <h3 className="font-semibold text-slate-700 text-lg">{kpi.name}</h3>
-            <p className="text-xs text-slate-400">{KPI_FREQUENCY_LABELS[kpi.frequency] ?? 'No frequency set'} · {kpi.unit}</p>
-          </div>
-          <button onClick={onClose} className="text-sm text-slate-400 hover:text-slate-700">Close</button>
-        </div>
-        <KpiChart periods={periods} values={values} target={kpi.target} unit={kpi.unit} compact={false} />
-        <div className="mt-4 flex gap-2 text-xs text-slate-400">
-          <span className="flex items-center gap-1"><span className="inline-block w-3 h-0.5 bg-emerald-500" /> Actual</span>
-          <span className="flex items-center gap-1"><span className="inline-block w-3 h-0.5 bg-slate-300" style={{ borderTop: '1.5px dashed #cbd5e1' }} /> Target</span>
-          <span className="flex items-center gap-1"><span className="inline-block w-3 h-0.5 bg-slate-300" style={{ borderTop: '1.5px dashed #cbd5e1' }} /> Trend</span>
-        </div>
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
+        <Card>
+          <h2 className="mb-3 font-semibold text-slate-700">Benefício mensal · logrado vs plano</h2>
+          <MonthlyBenefitChart months={months} byMonth={totals.byMonth} byMonthPlan={totals.byMonthPlan} />
+        </Card>
+        <Card>
+          <h2 className="mb-3 font-semibold text-slate-700">Reparto do benefício por KPI</h2>
+          <KpiShareChart kpisWithCalc={kpisWithCalc} />
+        </Card>
       </div>
+
+      {showAudit && <AuditHistoryModal entries={auditEntries} onClose={() => setShowAudit(false)} />}
     </div>
   );
 }
@@ -539,6 +453,11 @@ function KpiConfigTab({ project, onSaved }) {
                 <th className="py-2 pr-4">Baseline</th>
                 <th className="py-2 pr-4">Target</th>
                 <th className="py-2 pr-4">Frequency</th>
+                <th className="py-2 pr-4">Aggregation</th>
+                <th className="py-2 pr-4" title="Impacto económico ao objetivo (€) — junto com Volume, define a tarifa unitária usada na Matriz Benefit">Impact at target (€)</th>
+                <th className="py-2 pr-4" title="Volume anual (ex: unidades produzidas/ano) — usado para calcular a tarifa unitária">Annual volume</th>
+                <th className="py-2 pr-4">Start month</th>
+                <th className="py-2 pr-4">Target month</th>
                 <th className="py-2 pr-4">Actions</th>
               </tr>
             </thead>
@@ -597,6 +516,49 @@ function KpiConfigTab({ project, onSaved }) {
                         <option key={f} value={f}>{KPI_FREQUENCY_LABELS[f]}</option>
                       ))}
                     </select>
+                  </td>
+                  <td className="py-2 pr-4">
+                    <select
+                      defaultValue={k.monthlyAggregation ?? 'avg'}
+                      onChange={(e) => save(k.id, { monthlyAggregation: e.target.value })}
+                      className="rounded-lg border border-slate-200 px-2 py-1 text-sm"
+                    >
+                      <option value="avg">Average</option>
+                      <option value="sum">Sum</option>
+                      <option value="last">Last</option>
+                    </select>
+                  </td>
+                  <td className="py-2 pr-4">
+                    <input
+                      type="number"
+                      defaultValue={k.beneficio ?? ''}
+                      onBlur={(e) => save(k.id, { beneficio: e.target.value === '' ? null : Number(e.target.value) })}
+                      className="w-24 rounded-lg border border-slate-200 px-2 py-1 text-sm"
+                    />
+                  </td>
+                  <td className="py-2 pr-4">
+                    <input
+                      type="number"
+                      defaultValue={k.volume ?? ''}
+                      onBlur={(e) => save(k.id, { volume: e.target.value === '' ? null : Number(e.target.value) })}
+                      className="w-24 rounded-lg border border-slate-200 px-2 py-1 text-sm"
+                    />
+                  </td>
+                  <td className="py-2 pr-4">
+                    <input
+                      type="month"
+                      defaultValue={k.mesInicio ?? ''}
+                      onChange={(e) => save(k.id, { mesInicio: e.target.value || null })}
+                      className="rounded-lg border border-slate-200 px-2 py-1 text-sm"
+                    />
+                  </td>
+                  <td className="py-2 pr-4">
+                    <input
+                      type="month"
+                      defaultValue={k.mesObjetivo ?? ''}
+                      onChange={(e) => save(k.id, { mesObjetivo: e.target.value || null })}
+                      className="rounded-lg border border-slate-200 px-2 py-1 text-sm"
+                    />
                   </td>
                   <td className="py-2 pr-4">
                     <button type="button" onClick={() => remove(k.id)} className="text-xs text-slate-400 hover:text-rose-500">
