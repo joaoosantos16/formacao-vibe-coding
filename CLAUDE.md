@@ -75,27 +75,41 @@ isso antes de assumir.
   fixo, esconde/mostra com scroll), landing page (`/`) com fundo escuro
   full-bleed, 1 cor (índigo/violeta), tipografia Inter — ver
   `docs/estrutura-do-site.md`.
-- **Modelo de dados fechado e tabela criada**: `projetos` no Supabase
-  (`codigo`, `em`, `setor`, `subsetor`, `consultores`, `kpi`, `revenue`,
-  `colaboradores`, `ebitda`, `cliente`, `estado`), RLS ativo com
-  políticas abertas (sem auth implementada) — ver
-  `docs/modelo-de-dados.md`.
+- **Modelo de dados fechado e schema criado no Supabase**: tabela
+  `projetos` (campos originais + `pais`, `sr`, `data_inicio`,
+  `data_fim`, `critico`, `continuidade`, `client_revenue`,
+  `project_cost`, `variable_fee`), mais `projeto_kpis` (com `categoria`
+  GQCDM e `chart_type`), `projeto_kpi_medicoes`,
+  `projeto_honorarios_variaveis`, `projeto_ocupacao_semanal`. RLS ativo
+  com políticas abertas (sem auth implementada) — ver
+  `docs/modelo-de-dados.md`. 75 projetos reais da Spark Week já na
+  tabela `projetos`.
 - **Integração final feita (25/08) — as 3 páginas têm conteúdo real**:
+  - **Benefit Tracking Projetos** (Equipa B) — **ligada ao Supabase a
+    sério** (26/08): portfólio, criação, edição e página individual de
+    projeto, configuração e medição de KPIs — tudo lê/escreve nas
+    tabelas reais (`lib/benefitTrackingStore.js`). Build de produção
+    validado.
   - **Benchmarking** (Equipa A): drill-down de KPIs por GQCDM com
     matching de projetos relacionados, barras "bullet" comparativas,
-    ordenação, e um gerador de apresentação
+    ordenação, gerador de apresentação
     (`app/benchmarking/PresentationGenerator.jsx`). Dados em
-    `app/benchmarking/data.js` (mock).
-  - **Benefit Tracking Projetos** (Equipa B): portfólio de projetos,
-    criação de projeto novo (`/benefit-tracking-projetos/novo`), página
-    individual por projeto (`/benefit-tracking-projetos/[id]`),
-    componentes reutilizáveis (`components/bt/`). Dados em
-    `lib/benefitTrackingStore.js` — **100% dummy, em localStorage do
-    browser, não lê nem escreve no Supabase ainda**.
-  - **Benefit Tracking Kaizen** (Equipa C): sub-navegação própria
-    (Hoshin Overview, Productivity, Variables —
-    `components/benefit-tracking/`), gráficos e tabelas. Dados em
-    `lib/benefitTracking.js` — **também mock, não ligado ao Supabase**.
+    `app/benchmarking/data.js` — **ainda mock**; ligar exigiria também
+    reconciliar a taxonomia de setores (a lista da Equipa A não bate
+    certo com a da Equipa B) e reconstruir o GQCDM a partir de
+    `projeto_kpis.categoria` em vez de estático.
+  - **Benefit Tracking Kaizen** (Equipa C): Hoshin Overview,
+    Productivity, Variables (`components/benefit-tracking/`). Dados em
+    `lib/benefitTracking.js` — **ainda mock**. Hoshin fica sempre mock
+    (é dashboard agregado, fora de alcance — ver
+    `docs/modelo-de-dados.md`). Variables/Productivity têm tabelas
+    prontas (`projeto_honorarios_variaveis`,
+    `projeto_ocupacao_semanal`) mas sem formulário de criação — ligar
+    mostraria só estados vazios até haver como lá meter dados.
+- **Gap conhecido**: `pais` não foi preenchido nos 75 projetos
+  importados (só existia como código de 2 letras no ficheiro de
+  origem, não foi transformado) — o filtro "Country" da Equipa A fica
+  vazio para dados reais.
 - Projeto Vercel ligado ao repositório: deploy automático por branch.
   Produção (`main`): https://formacao-vibe-coding.vercel.app
 - Projeto Supabase dedicado (org Kaizen Institute, região eu-west-1,
@@ -138,24 +152,19 @@ acrescentadas aqui por quem as tomar, com uma frase do porquê)_
 
 ## Próximo Passo Imediato
 
-1. **Ligar as 3 páginas à tabela `projetos` real no Supabase**, em vez
-   dos dados mock/localStorage atuais — é o maior trabalho que falta.
-   A tabela já tem **75 projetos reais** (dados da "Spark Week",
-   importados de `projects.xlsx`/`days.xlsx` — os 75 mais recentes com
-   contrato ativo ou concluído; `kpi`/`ebitda`/`colaboradores` ficam
-   vazios de propósito, são para a app recolher). Os campos já batem
-   certo com `docs/modelo-de-dados.md`, por isso é sobretudo troca de
-   fonte de dados, não redesenho.
-   ⚠️ **Estes são dados reais e identificáveis de clientes Kaizen**
-   (nomes de empresas, valores de projeto). O ficheiro de origem
-   (`Spark Week Data.zip`) está no `.gitignore` — nunca deve ir para o
-   git. O acesso à app continua sem login; foi uma decisão consciente
-   do formador (link só partilhado internamente), não esquecer se a
-   app for partilhada mais amplamente no futuro.
-2. Decidir se as políticas de RLS abertas da tabela `projetos` ficam
+1. **Ligar Benchmarking (Equipa A) e Benefit Tracking Kaizen (Equipa C)
+   ao Supabase** — só a Equipa B está ligada a sério até agora. A
+   Equipa A precisa também de reconciliar a sua taxonomia de setores
+   com a da Equipa B (não batem certo) e de o GQCDM passar a ser
+   calculado a partir de `projeto_kpis.categoria` em vez de estático.
+   A Equipa C (Variables/Productivity) precisa primeiro de formulários
+   de criação — sem isso, ligar às tabelas reais só mostra vazio.
+2. Preencher `pais` nos 75 projetos importados (só existia como código
+   de 2 letras no ficheiro de origem — ver "Gap conhecido" acima).
+3. Decidir se as políticas de RLS abertas da tabela `projetos` ficam
    assim (é uma formação, sem dados sensíveis a sério) ou se vale a
    pena apertar antes de mostrar a alguém de fora.
-3. Rever visualmente as 3 páginas em conjunto — foram construídas em
+4. Rever visualmente as 3 páginas em conjunto — foram construídas em
    paralelo, vale a pena confirmar que a linguagem visual (cores,
    ícones/emojis, cartões) ficou mesmo consistente entre elas.
 
