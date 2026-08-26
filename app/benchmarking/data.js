@@ -70,6 +70,108 @@ export const STANDARD_WORKSHOPS = [
   "Value Review", "Value Stream Analysis", "Variable Fee", "Voice of Customer",
 ];
 
+// Industry -> Sector (Macro Sector).
+//
+// ATENÇÃO — ISTO É INFERIDO, PRECISA DE CONFIRMAÇÃO.
+// O ficheiro "Industry Macro Sector Business Area.xlsx" tem as três
+// listas em colunas independentes, não linha a linha: a coluna do Macro
+// Sector acaba na linha 11, por isso o par "Agriculture / Healthcare"
+// que lá aparece é um acaso de layout, não uma relação real.
+//
+// O que dá para deduzir com confiança: a coluna Industry está agrupada
+// em 8 blocos, e dentro de cada bloco a ordem é alfabética (reinicia em
+// cada bloco). 8 blocos = os 8 macro sectores distintos. O mapa abaixo
+// segue esses blocos.
+//
+// Menos seguros: "Agriculture" e "Building Materials" caem no bloco de
+// Discrete & Assembly, o que é discutível; e "Others" é um catch-all.
+// Confirmar com a equipa antes de isto ir para um cliente.
+//
+// Nota adicional: a lista de macro sectores tem "Services" e "Services
+// Industries" como valores separados, e "Public Sector" repetido — o que
+// parece um problema de qualidade dos dados de origem. Aqui usa-se só
+// "Services Industries".
+export const INDUSTRY_SECTOR = {
+  // Discrete & Assembly Industries
+  Agriculture: "Discrete & Assembly Industries",
+  Automotive: "Discrete & Assembly Industries",
+  "Building Materials": "Discrete & Assembly Industries",
+  "Consumer Electronics": "Discrete & Assembly Industries",
+  "Consumer Goods": "Discrete & Assembly Industries",
+  Furniture: "Discrete & Assembly Industries",
+  "Medical Devices": "Discrete & Assembly Industries",
+  Others: "Discrete & Assembly Industries",
+  Plastics: "Discrete & Assembly Industries",
+  Stamping: "Discrete & Assembly Industries",
+  Tableware: "Discrete & Assembly Industries",
+  Textiles: "Discrete & Assembly Industries",
+
+  // Healthcare
+  "Hospital & Healthcare": "Healthcare",
+  Laboratory: "Healthcare",
+  Pharmaceuticals: "Healthcare",
+
+  // Logistics
+  "Airlines/Aviation": "Logistics",
+  Maritime: "Logistics",
+  "Package/Freight Delivery": "Logistics",
+  "Transportation/Trucking/Railroad": "Logistics",
+  Warehousing: "Logistics",
+  "Warehousing & Transportation": "Logistics",
+
+  // Process Industries
+  Chemicals: "Process Industries",
+  "Food & Beverages": "Process Industries",
+  "Glass, Ceramics and Concrete": "Process Industries",
+  "Mining & Metals": "Process Industries",
+  "Oil & Energy": "Process Industries",
+  "Paper & Forest Products": "Process Industries",
+  Printing: "Process Industries",
+
+  // Project Based, IT, Construction
+  Construction: "Project Based, IT, Construction",
+  "Information Technology and Services": "Project Based, IT, Construction",
+  Research: "Project Based, IT, Construction",
+
+  // Public Sector
+  "Central Administration": "Public Sector",
+  "Local Administration": "Public Sector",
+
+  // Retail
+  "Apparel & Fashion": "Retail",
+  "Luxury Goods & Jewerly": "Retail",
+  Retail: "Retail",
+  "Sporting goods": "Retail",
+  Supermarkets: "Retail",
+  Telecommunications: "Retail",
+  Wholesale: "Retail",
+
+  // Services Industries
+  "After-sales services": "Services Industries",
+  Banking: "Services Industries",
+  "Civic & Social Organization": "Services Industries",
+  "Consumer Services": "Services Industries",
+  "Field Services": "Services Industries",
+  Hospitality: "Services Industries",
+  Insurance: "Services Industries",
+  "Investment Management": "Services Industries",
+  "Leisure, Travel & Tourism": "Services Industries",
+  "Management Consulting": "Services Industries",
+  "Public Relations & Communications": "Services Industries",
+  "Real Estate": "Services Industries",
+  "Shared Services": "Services Industries",
+  Utilities: "Services Industries",
+};
+
+export function sectorForIndustry(industry) {
+  return INDUSTRY_SECTOR[industry] || null;
+}
+
+export function industriesForSector(sector) {
+  if (!sector) return STANDARD_INDUSTRIES;
+  return STANDARD_INDUSTRIES.filter((i) => INDUSTRY_SECTOR[i] === sector);
+}
+
 export const COLABORADORES_RANGES = ["<50", "50-200", "200-500", "500+"];
 export const REVENUE_RANGES = ["<20M", "20-50M", "50-100M", "100M+"];
 
@@ -362,8 +464,13 @@ export function parseMetric(text) {
 
 // Todos os registos de projeto para um dado KPI (cada projeto tem os seus
 // próprios baseline/target — é isso que se vê como pontos na barra).
-export function projectKpisFor(kpiName) {
+// Registos de um KPI, opcionalmente só dos projetos relevantes para os
+// filtros ativos. Sem `onlyMatching`, devolve a base histórica toda.
+export function projectKpisFor(kpiName, { filters, onlyMatching } = {}) {
   return mockProjects
+    .filter((project) =>
+      onlyMatching && filters ? computeMatch(project, filters) > 0 : true
+    )
     .map((project) => project.kpis.find((k) => k.name === kpiName))
     .filter(Boolean);
 }

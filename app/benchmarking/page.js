@@ -30,6 +30,8 @@ import {
   formatBenefit,
   parseMetric,
   projectKpisFor,
+  sectorForIndustry,
+  industriesForSector,
 } from "./data";
 import PresentationGenerator from "./PresentationGenerator";
 
@@ -48,13 +50,13 @@ import PresentationGenerator from "./PresentationGenerator";
 // benchmark, em cima ou à direita atingiram-no ou superaram-no.
 const BAR_SCALE = 1.25; // 25% de folga à direita do target
 
-function BulletBar({ kpi }) {
+function BulletBar({ kpi, filters, onlyMatching }) {
   const baseline = parseMetric(kpi.baseline);
   const target = parseMetric(kpi.target);
   if (baseline === null || target === null || baseline === target) return null;
 
   const span = target - baseline;
-  const ratios = projectKpisFor(kpi.name)
+  const ratios = projectKpisFor(kpi.name, { filters, onlyMatching })
     .map((k) => parseMetric(k.target))
     .filter((v) => v !== null)
     .map((v) => (v - baseline) / span);
@@ -72,6 +74,8 @@ function BulletBar({ kpi }) {
         (ratios.length
           ? `\n${ratios.length} project${ratios.length > 1 ? "s" : ""}, ` +
             `${metCount} at or above the benchmark target`
+          : onlyMatching
+          ? "\nNo project matching the current filters"
           : "\nNo projects linked yet")
       }
     >
@@ -243,6 +247,35 @@ function SummaryStrip({ filters }) {
 function FilterBar({ filters, setFilters, hideNonMatching, setHideNonMatching }) {
   const activeFields = filterFields.filter((f) => filters[f.key]);
 
+  // Industry e Sector estão ligados: uma indústria pertence a um só
+  // macro sector. Sem isto era possível escolher combinações que não
+  // existem (ex: Tableware + Healthcare).
+  const handleChange = (key, value) => {
+    setFilters((prev) => {
+      const next = { ...prev, [key]: value };
+
+      if (key === "industry") {
+        // Escolher uma indústria fixa o sector a que pertence.
+        const sector = sectorForIndustry(value);
+        if (sector) next.setor = sector;
+        else if (!value) next.setor = prev.setor;
+      }
+
+      if (key === "setor") {
+        // Mudar de sector invalida uma indústria que já não lhe pertence.
+        if (value && prev.industry && sectorForIndustry(prev.industry) !== value) {
+          next.industry = "";
+        }
+      }
+
+      return next;
+    });
+  };
+
+  // A lista de indústrias segue o sector escolhido.
+  const optionsFor = (field) =>
+    field.key === "industry" ? industriesForSector(filters.setor) : field.options;
+
   return (
     <SectionCard className="px-8 py-6">
       <SectionLabel
@@ -278,7 +311,7 @@ function FilterBar({ filters, setFilters, hideNonMatching, setHideNonMatching })
           {activeFields.map((field) => (
             <button
               key={field.key}
-              onClick={() => setFilters((prev) => ({ ...prev, [field.key]: "" }))}
+              onClick={() => handleChange(field.key, "")}
               title={`Remove ${field.label} filter`}
               className="group inline-flex max-w-full items-center gap-2 rounded-full bg-emerald-500/10 py-1.5 pl-3 pr-2.5 text-xs font-medium text-emerald-800 transition-colors hover:bg-emerald-500/20"
             >
@@ -302,9 +335,7 @@ function FilterBar({ filters, setFilters, hideNonMatching, setHideNonMatching })
               key={field.key}
               aria-label={field.label}
               value={filters[field.key]}
-              onChange={(e) =>
-                setFilters((prev) => ({ ...prev, [field.key]: e.target.value }))
-              }
+              onChange={(e) => handleChange(field.key, e.target.value)}
               className={`w-full truncate rounded-xl border px-3 py-2 text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-400/40 ${
                 isActive
                   ? "border-emerald-300 bg-emerald-50/60 font-medium text-slate-800"
@@ -312,7 +343,7 @@ function FilterBar({ filters, setFilters, hideNonMatching, setHideNonMatching })
               }`}
             >
               <option value="">{field.label}</option>
-              {field.options.map((value) => (
+              {optionsFor(field).map((value) => (
                 <option key={value} value={value}>
                   {value}
                 </option>
@@ -442,7 +473,7 @@ function KpiRow({ kpi, filters, hideNonMatching }) {
         <td className="py-3 tabular-nums text-slate-500">{kpi.baseline}</td>
         <td className="py-3 tabular-nums text-slate-500">{kpi.target}</td>
         <td className="py-3 pr-4">
-          <BulletBar kpi={kpi} />
+          <BulletBar kpi={kpi} filters={filters} onlyMatching={hideNonMatching} />
         </td>
         <td className="py-3 tabular-nums text-slate-500">{kpi.increase}</td>
         <td className="py-3 tabular-nums font-medium text-emerald-600">

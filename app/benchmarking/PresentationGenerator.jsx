@@ -34,7 +34,8 @@
 //    confiança, fallback por níveis) — mas a correr sobre os dados mock
 //    de data.js. Quando o Supabase entrar, muda-se só data.js.
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import {
   mockProjects,
   mockGqcdm,
@@ -208,7 +209,11 @@ function Slide({ children, index, total, title, cover = false }) {
         />
       )}
 
-      <div className="flex flex-1 flex-col px-[6%] pb-[5%] pt-[6%]">
+      {/* min-h-0 é obrigatório: um flex item tem min-height:auto por
+          omissão e recusa encolher abaixo do conteúdo. Sem isto o slide
+          fica mais alto do que a página e, na impressão, o rodapé é
+          empurrado para uma segunda folha — 5 slides saíam 10 páginas. */}
+      <div className="flex min-h-0 flex-1 flex-col px-[6%] pb-[5%] pt-[6%]">
         {title && !cover && (
           <h2
             className="mb-[3%] text-[2.6cqw] font-semibold tracking-tight"
@@ -620,6 +625,18 @@ export default function PresentationGenerator({ filters }) {
     allKpis.slice(0, 4).map((k) => k.name)
   );
   const [slides, setSlides] = useState([]);
+  const [exporting, setExporting] = useState(false);
+  const [exportError, setExportError] = useState(null);
+
+  // O modal e a pré-visualização são montados em document.body via
+  // portal, e NÃO dentro do <header> da página.
+  //
+  // Isto não é cosmético: o CSS de impressão esconde o <header> (para
+  // tirar a navbar do PDF) e `display:none` num antepassado apaga tudo o
+  // que está lá dentro. Com o overlay dentro do header, o deck nunca
+  // chegava a ser impresso — saía a página em vez dos slides.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
 
   // Fecha com Escape.
   useEffect(() => {
@@ -646,18 +663,85 @@ export default function PresentationGenerator({ filters }) {
     }, 250);
   };
 
-  const handleDownload = () => {
-    const safe = (clientName || "client").replace(/[^\w\-]+/g, "-");
-    const stamp = new Date().toISOString().slice(0, 10);
-    const previous = document.title;
-    // O browser usa o document.title como nome sugerido do PDF.
-    document.title = `Kaizen-benchmark-${safe}-${stamp}`;
-    const restore = () => {
-      document.title = previous;
-      window.removeEventListener("afterprint", restore);
-    };
-    window.addEventListener("afterprint", restore);
-    window.print();
+  // Download real do PDF, sem caixa de impressão.
+  //
+  // Porque não window.print(): a caixa do browser tem definições do
+  // utilizador que estragam o resultado — "Margins: Minimum" encolhe a
+  // área imprimível e parte cada slide em duas páginas, e "Headers and
+  // footers" mete o URL e a data dentro do PDF. Nada disso é
+  // controlável a partir da página. Aqui o resultado é determinístico.
+  //
+  // Cada slide é capturado à medida final (297x167mm) e colado como uma
+  // página. É raster, não vetorial — em troca é exatamente o que se vê.
+  const handleDownload = async () => {
+    setExporting(true);
+    try {
+      const [{ default: html2canvas }, { jsPDF }] = await Promise.all([
+        import("html2canvas"),
+        import("jspdf"),
+      ]);
+
+      const PAGE_W = 297; // mm
+      const PAGE_H = 167; // mm
+      const pdf = new jsPDF({
+        orientation: "landscape",
+        unit: "mm",
+        format: [PAGE_W, PAGE_H],
+      });
+
+      const wrappers = [...document.querySelectorAll("#kib-deck > *")];
+
+      for (let i = 0; i < wrappers.length; i += 1) {
+        const wrapper = wrappers[i];
+        const slide = wrapper.querySelector(".kib-slide");
+        if (!slide) continue;
+
+        // Fixa a caixa no tamanho final antes de capturar, para o que
+        // sai ser exatamente a página (e as unidades cqw resolverem
+        // contra a largura certa).
+        const savedWrapper = wrapper.getAttribute("style");
+        const savedSlide = slide.getAttribute("style");
+        wrapper.style.width = `${PAGE_W}mm`;
+        slide.style.width = `${PAGE_W}mm`;
+        slide.style.height = `${PAGE_H}mm`;
+        slide.style.aspectRatio = "auto";
+        slide.style.borderRadius = "0";
+        slide.style.boxShadow = "none";
+
+        const canvas = await html2canvas(slide, {
+          scale: 2, // nítido em ecrã partilhado e impresso
+          useCORS: true,
+          backgroundColor: "#ffffff",
+          logging: false,
+          windowWidth: slide.scrollWidth,
+          windowHeight: slide.scrollHeight,
+        });
+
+        if (savedWrapper === null) wrapper.removeAttribute("style");
+        else wrapper.setAttribute("style", savedWrapper);
+        if (savedSlide === null) slide.removeAttribute("style");
+        else slide.setAttribute("style", savedSlide);
+
+        if (i > 0) pdf.addPage([PAGE_W, PAGE_H], "landscape");
+        pdf.addImage(
+          canvas.toDataURL("image/jpeg", 0.95),
+          "JPEG",
+          0,
+          0,
+          PAGE_W,
+          PAGE_H
+        );
+      }
+
+      const safe = (clientName || "client").replace(/[^\w-]+/g, "-");
+      const stamp = new Date().toISOString().slice(0, 10);
+      pdf.save(`Kaizen-benchmark-${safe}-${stamp}.pdf`);
+    } catch (error) {
+      console.error("PDF export failed:", error);
+      setExportError(String(error?.message || error));
+    } finally {
+      setExporting(false);
+    }
   };
 
   return (
@@ -669,9 +753,9 @@ export default function PresentationGenerator({ filters }) {
         Generate benchmark presentation
       </button>
 
-      {modalOpen && (
+      {mounted && modalOpen && createPortal(
         <div
-          className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-900/30 p-4 backdrop-blur-sm"
+          className="kib-noprint fixed inset-0 z-[60] flex items-center justify-center bg-slate-900/30 p-4 backdrop-blur-sm"
           onClick={() => setModalOpen(false)}
         >
           <div
@@ -788,10 +872,11 @@ export default function PresentationGenerator({ filters }) {
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
-      {previewOpen && (
+      {mounted && previewOpen && createPortal(
         <div className="kib-overlay fixed inset-0 z-[70] overflow-y-auto bg-slate-100 p-6">
           <div className="kib-noprint sticky top-0 z-10 mx-auto mb-6 flex max-w-5xl items-center justify-between rounded-2xl bg-white/90 px-5 py-3 shadow-lg ring-1 ring-black/5 backdrop-blur">
             <div>
@@ -801,6 +886,11 @@ export default function PresentationGenerator({ filters }) {
               <p className="text-xs text-slate-500">
                 {slides.length} slide{slides.length === 1 ? "" : "s"} · 16:9
               </p>
+              {exportError && (
+                <p className="mt-0.5 text-xs text-amber-700">
+                  Export failed: {exportError}
+                </p>
+              )}
             </div>
             <div className="flex gap-2">
               <button
@@ -811,9 +901,10 @@ export default function PresentationGenerator({ filters }) {
               </button>
               <button
                 onClick={handleDownload}
-                className="rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 px-5 py-2 text-sm font-medium text-white shadow-lg shadow-emerald-500/25"
+                disabled={exporting}
+                className="rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 px-5 py-2 text-sm font-medium text-white shadow-lg shadow-emerald-500/25 disabled:opacity-60"
               >
-                Download PDF
+                {exporting ? "Building PDF…" : "Download PDF"}
               </button>
             </div>
           </div>
@@ -829,9 +920,14 @@ export default function PresentationGenerator({ filters }) {
           <style>{`
             @media print {
               @page { size: 297mm 167mm; margin: 0; }
-              html, body { background: #fff !important; }
-              header, .fixed:not(.kib-overlay) { display: none !important; }
-              main { padding: 0 !important; margin: 0 !important; max-width: none !important; }
+              html, body { background: #fff !important; margin: 0 !important; padding: 0 !important; }
+
+              /* O overlay está montado em document.body (portal), por
+                 isso basta esconder todos os IRMÃOS dele. Nunca usar
+                 \`header { display:none }\` aqui: se o overlay estivesse
+                 dentro do header, desaparecia com ele. */
+              body > *:not(.kib-overlay) { display: none !important; }
+
               .kib-noprint { display: none !important; }
               .kib-overlay {
                 position: static !important;
@@ -840,22 +936,39 @@ export default function PresentationGenerator({ filters }) {
                 padding: 0 !important;
               }
               #kib-deck { max-width: none !important; margin: 0 !important; }
-              #kib-deck > * { margin: 0 !important; }
+              #kib-deck > * {
+                margin: 0 !important;
+                break-inside: avoid !important;
+                page-break-inside: avoid !important;
+              }
               .kib-slide {
                 width: 297mm !important;
-                height: 167mm !important;
+                /* 1mm abaixo da altura da página (167mm): sem esta folga,
+                   o arredondamento do browser empurra o rodapé para uma
+                   segunda página e cada slide sai em duas. */
+                height: 166mm !important;
+                /* Sem isto o browser parte o slide a meio em vez de o
+                   manter inteiro — era o que fazia 5 slides = 10 páginas. */
+                break-inside: avoid !important;
+                page-break-inside: avoid !important;
+                overflow: hidden !important;
                 border-radius: 0 !important;
                 box-shadow: none !important;
                 break-after: page;
                 page-break-after: always;
               }
+              /* Cinto e suspensórios: garante que nenhum descendente em
+                 flex se recusa a encolher e volta a estourar a página. */
+              .kib-slide, .kib-slide * { min-height: 0 !important; }
+              .kib-slide > footer { flex-shrink: 0 !important; }
               #kib-deck > *:last-child .kib-slide {
                 break-after: auto;
                 page-break-after: auto;
               }
             }
           `}</style>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );
